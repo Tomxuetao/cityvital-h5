@@ -3,15 +3,32 @@ import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import legacy from '@vitejs/plugin-legacy'
 
+import { visualizer } from 'rollup-plugin-visualizer'
 import ViteCompression from 'vite-plugin-compression'
 import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 
 export default defineConfig({
+  base: '/city-vital',
+  server: {
+    open: false,
+    host: true,
+    proxy: {
+      '/gateway-web': {
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn',
+        secure: false,
+        changeOrigin: true
+      }
+    }
+  },
   plugins: [
     vue(),
     legacy({
       targets: ['chrome 58', 'not IE 11']
+    }),
+    visualizer({
+      open: true,
+      gzipSize: true
     }),
     Components({
       resolvers: [VantResolver()]
