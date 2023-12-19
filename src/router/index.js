@@ -26,7 +26,7 @@ const devRoutes = [
     meta: { title: '运行指标' },
     props: (route) => ({ ...route.query }),
     component: () => import('@/views/modules/run-index/index.vue')
-  },
+  }
 ]
 const routes = [
   {
@@ -34,7 +34,7 @@ const routes = [
     name: 'main-dynamic',
     meta: { title: '动态路由' },
     component: () => import('@/views/layout/main-index.vue'),
-    children: import.meta.env.MODE === 'production' ? [] : devRoutes,
+    children: devRoutes,
     beforeEnter: async ({ name }) => name !== 'main-dynamic' ? true : { replace: true, name: 'home' }
   }
 ]

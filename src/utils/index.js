@@ -4,15 +4,16 @@ export const getEnvByUa = () => {
     const ua = window.navigator.userAgent.toLowerCase()
     const isDingTalk = ua.match(/DingTalk/i) !== null
     const isTaurusApp = ua.match(/TaurusApp/i) !== null
-
+    
     tempEnv = isDingTalk ? 'isDingTalk' : isTaurusApp ? 'isTaurusApp' : 'h5'
     sessionStorage.setItem('curUaEnv', tempEnv)
   }
   return tempEnv
 }
 
+const imgRecords = import.meta.glob(['../views/modules/*/img/*', '../views/common/img/*'], { as: 'url', eager: true })
 export const getImgUrlFn = (base) => {
-  return (name, extName = '.webp') => new URL(`${base}/${name}${extName}`, import.meta.url).href
+  return (name, extName = '.webp') => imgRecords[`${base}/${name}${extName}`]
 }
 
 /**

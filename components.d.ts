@@ -7,7 +7,6 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
-    CommonTab: typeof import('./src/components/common-tab.vue')['default']
     CustomCascader: typeof import('./src/components/custom-cascader.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -21,6 +20,5 @@ declare module 'vue' {
     VanSticky: typeof import('vant/es')['Sticky']
     VanTab: typeof import('vant/es')['Tab']
     VanTabs: typeof import('vant/es')['Tabs']
-    VanTreeSelect: typeof import('vant/es')['TreeSelect']
   }
 }

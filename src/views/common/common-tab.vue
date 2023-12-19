@@ -8,7 +8,7 @@ const getImgUrl = getImgUrlFn('../views/common/img')
 const props = defineProps({
   active: {
     type: Number,
-    default: () => 0
+    default: () => undefined
   }
 })
 
@@ -21,7 +21,7 @@ const tabConfigList = [
   { text: '管理在线', icon: getImgUrl('icon-4'), activeIcon: getImgUrl('icon-4-active') }
 ]
 
-const activeIndex = ref(props.active || 0)
+const activeIndex = ref(props.active || undefined)
 
 const changeTab = (index) => {
   if (index !== activeIndex.value) {

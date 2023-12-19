@@ -15,7 +15,7 @@ export function createHttp() {
    */
   http.interceptors.request.use((config) => {
       config.headers = Object.assign({}, { ...config.headers }, {
-        'Access-Token': import.meta.env.MODE === 'production' ? sessionStorage.getItem('accessToken') : '8de03264-f4cc-4c1a-8b5e-a72f37febe5f'
+        'Access-Token': import.meta.env.MODE === 'production' ? sessionStorage.getItem('accessToken') : '3e9bbbf0-b7ca-4a79-a548-a05cd1b9d87b'
       })
       return config
     },

@@ -6,6 +6,7 @@
     "dev": "vite",
     "build": "vite build",
     "changeset": "changeset",
+    "preview": "vite preview",
     "prepare": "husky install",
     "commit": "git add . && git-cz",
     "version": "changeset version",
