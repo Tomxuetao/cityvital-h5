@@ -1,6 +1,10 @@
 <script setup>
+import CommonTabs from '@/views/common/common-tabs.vue'
+import { Tabs, Tab } from 'vant'
 import { getImgUrlFn } from '@/utils'
-import { nextTick, reactive, ref } from 'vue'
+
+import { h, nextTick, reactive, ref } from 'vue'
+
 
 import EmptyPage from '@/views/common/empty-page.vue'
 
@@ -81,21 +85,15 @@ defineExpose({
     <div class="tabs-wrap">
       <div :class="['tabs-inner', hasFilter ? 'filter-inner' : '']">
         <van-sticky v-if="sticky">
-          <van-tabs
+          <common-tabs
             v-model:active="activeIndex"
+            :tab-config-list="tabConfigList"
             color="#0482FF"
             :swipe-threshold="4"
-            background="#ffffff"
             title-active-color="#0482FF"
             @change="(index) => tabChangeHandler(index)"
           >
-            <van-tab
-              v-for="(item, index) in tabConfigList"
-              :key="index"
-              :name="index"
-              :title="item.title"
-            />
-          </van-tabs>
+          </common-tabs>
           <img
             v-if="hasFilter"
             class="fold-btn"
@@ -105,21 +103,15 @@ defineExpose({
           />
         </van-sticky>
         <template v-else>
-          <van-tabs
+          <common-tabs
             v-model:active="activeIndex"
+            :tab-config-list="tabConfigList"
             color="#0482FF"
             :swipe-threshold="4"
-            background="#ffffff"
             title-active-color="#0482FF"
             @change="(index) => tabChangeHandler(index)"
           >
-            <van-tab
-              v-for="(item, index) in tabConfigList"
-              :key="index"
-              :name="index"
-              :title="item.title"
-            />
-          </van-tabs>
+          </common-tabs>
           <img
             v-if="hasFilter"
             class="fold-btn"
