@@ -15,7 +15,7 @@ export function createHttp() {
    */
   http.interceptors.request.use((config) => {
       config.headers = Object.assign({}, { ...config.headers }, {
-        'Access-Token': import.meta.env.MODE === 'production' ? sessionStorage.getItem('accessToken') : '3e9bbbf0-b7ca-4a79-a548-a05cd1b9d87b'
+        'Access-Token': sessionStorage.getItem('accessToken')
       })
       return config
     },
@@ -44,4 +44,6 @@ export const http = createHttp()
 
 // 指标数据统一前缀
 export const gatewayServer = '/gateway-web/cv_data/api/v1'
+
+export const oauth2Server = '/oauth2'
 

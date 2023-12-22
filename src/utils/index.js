@@ -2,10 +2,9 @@ export const getEnvByUa = () => {
   let tempEnv = sessionStorage.getItem('curUaEnv')
   if (!tempEnv) {
     const ua = window.navigator.userAgent.toLowerCase()
-    const isDingTalk = ua.match(/DingTalk/i) !== null
     const isTaurusApp = ua.match(/TaurusApp/i) !== null
     
-    tempEnv = isDingTalk ? 'isDingTalk' : isTaurusApp ? 'isTaurusApp' : 'h5'
+    tempEnv = isTaurusApp ? 'isTaurusApp' : 'h5'
     sessionStorage.setItem('curUaEnv', tempEnv)
   }
   return tempEnv

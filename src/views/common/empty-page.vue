@@ -40,13 +40,13 @@ const props = defineProps({
 <style scoped lang="scss">
 .empty-wrapper {
   position: absolute;
-  top: 40%;
+  top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
   flex-direction: column;
   justify-content: center;
+  transform: translate(-50%, -50%);
 
   .empty-img {
     width: 160px;

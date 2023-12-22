@@ -1,5 +1,6 @@
 <script setup>
 import CommonTitle from '@/views/common/common-title.vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   item: {
@@ -18,7 +19,18 @@ const alarmLevelMap = new Map([
 </script>
 
 <template>
-  <div class="card-wrap">
+  <div
+    class="card-wrap"
+    @click="$router.push({
+       name: 'alarm-detail',
+       query: {
+         eventId: item.event_id,
+         name: item.factory_name,
+         level: item.alarm_level,
+         status: item.alarm_status
+       }
+    })"
+  >
     <common-title :text="item.factory_name">
       <div :class="['alarm-level', 'level-' + item.alarm_level]">{{ alarmLevelMap.get(item.alarm_level) }}</div>
     </common-title>

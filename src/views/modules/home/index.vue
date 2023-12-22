@@ -1,5 +1,4 @@
 <script setup>
-import CommonTab from '@/views/common/common-tab.vue'
 import CommonTitle from '@/views/common/common-title.vue'
 import IndexCard from '@/views/modules/home/comp/index-card.vue'
 
@@ -13,7 +12,7 @@ import { commonGatewayApi } from '@/api/gateway-api'
 const getImgUrl = getImgUrlFn('../views/modules/home/img')
 
 const signIndexList = ref([
-  { text: '关键设施', num: '0', routeName: '', unit: '个', icon: getImgUrl('icon-1') },
+  { text: '关键设施', num: '0', routeName: 'device', unit: '个', icon: getImgUrl('icon-1') },
   { text: '运行指标', num: '36', routeName: 'run-index', unit: '个', icon: getImgUrl('icon-2') },
   { text: '当前报警', num: '0', routeName: 'alarm', unit: '个', icon: getImgUrl('icon-3') }
 ])
@@ -130,14 +129,15 @@ const otherIndexList = ref([
   }
 ])
 
-const signNum = ref(0)
+const signNum = ref('0')
 /**
  * 获取城市体征指数数值
  * @returns {Promise<void>}
  */
 const getSignNum = async () => {
   const data = await getSignNumApi({ org_name: '全市' })
-  signNum.value = data || 0
+  const tempNum = (data || 0).toString()
+  signNum.value = tempNum.includes('.') ? Number(tempNum).toFixed(2) : tempNum
 }
 getSignNum()
 
@@ -155,7 +155,7 @@ const getCoreIndex = async () => {
           const tempData = tempList.find(temp => data.code === temp.para_code)
           if (tempData) {
             const { para_value: value, unit } = tempData || {}
-            data = Object.assign(data, { unit: unit, num: value.includes('.') ? Number(value).toFixed(2) : value })
+            Object.assign(data, { unit: unit, num: value.includes('.') ? Number(value).toFixed(2) : value })
           }
         })
       }
@@ -179,10 +179,6 @@ const gotoOther = (routeName, num) => {
 
 <template>
   <div class="home-wrap">
-    <div class="header-wrap">
-      <div class="home-header"></div>
-      <common-tab></common-tab>
-    </div>
     <div class="ctx-wrap">
       <div class="ctx-item">
         <div class="sign-wrap">
@@ -238,16 +234,6 @@ const gotoOther = (routeName, num) => {
 
 <style scoped lang="scss">
 .home-wrap {
-
-  .header-wrap {
-    .home-header {
-      height: 85px;
-      width: 375px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-image: url("@/views/modules/home/img/img-home-bg.webp");
-    }
-  }
 
   .ctx-wrap {
     display: grid;

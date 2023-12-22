@@ -15,9 +15,14 @@ export default defineConfig({
     host: true,
     proxy: {
       '/gateway-web': {
-        target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         secure: false,
-        changeOrigin: true
+        changeOrigin: true,
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn'
+      },
+      '/oauth2': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.116'
       }
     }
   },

@@ -27,6 +27,8 @@ const props = defineProps({
 
 <style scoped lang="scss">
 .title-wrap {
+  padding-top: 2px;
+
   .title-inner {
     height: 44px;
     width: 347px;
@@ -35,15 +37,12 @@ const props = defineProps({
     align-items: center;
     grid-auto-flow: column;
     grid-gap: 0 12px;
+    padding: 0 14px;
+    margin: 0 2px 0 2px;
+    border-radius: 10px 10px 0 0;
     justify-content: space-between;
     grid-template-columns: max-content/max-content;
-    margin: 2px 2px 0 2px;
-    padding: 0 14px;
-    border-radius: 10px 10px 0 0;
-    background-size: 347px 44px;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-image: url("@/views/common/img/header-bg.webp");
+    background-image: linear-gradient(359deg, rgba(241, 250, 255, 0.00) 0%, #f1faff);
 
     .inner-left {
       height: 44px;

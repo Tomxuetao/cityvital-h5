@@ -1,19 +1,22 @@
 <script setup>
+import CommonList from '@/views/common/common-list.vue'
 import AlarmCard from '@/views/modules/alarm/comp/alarm-card.vue'
-import CustomList from '@/views/modules/alarm/comp/custom-list.vue'
 
 import { reactive, ref } from 'vue'
-import { commonGatewayApi } from '@/api/gateway-api'
+import { useCommonStore } from '@/store'
 
 const tabList = [
-  { title: '当前报警', code: '21f73cb8aa' },
-  { title: '历史报警', code: '21f8389b4f' }
+  { title: '当前报警', code: '21f73cb8aa', prefix: '/share-api/data/admin', customForm: { alarm_level: '1,2' } },
+  { title: '历史报警', code: '21f8389b4f', prefix: '/share-api/data/admin', customForm: {} }
 ]
 const customListRef = ref()
 
+const commonState = useCommonStore()
+
 const treeList = ref([])
 const getSearchTree = async () => {
-  const dataList = await commonGatewayApi('21f7ec0b97')
+  // 获取领域分类
+  const dataList = await commonState.initAreaListAction()
   if (Array.isArray(dataList)) {
     dataList.forEach(({ page, model, type }) => {
       const tempData = treeList.value.find(temp => temp.text === page)
@@ -32,11 +35,13 @@ const getSearchTree = async () => {
         })
       }
     })
+
+    console.log(treeList.value)
   }
 }
 getSearchTree()
 
-const searchForm = reactive({
+let searchForm = reactive({
   page: undefined,
   model: undefined,
   type: undefined,
@@ -77,9 +82,7 @@ const cascaderChange = (list) => {
       searchForm.type = data3.value
     }
   } else {
-    searchForm.page = undefined
-    searchForm.model = undefined
-    searchForm.type = undefined
+    searchForm = Object.assign(searchForm, { page: undefined, model: undefined, type: undefined })
   }
   getDataList()
 }
@@ -87,10 +90,14 @@ const cascaderChange = (list) => {
 
 <template>
   <div class="alarm-wrap">
-    <custom-list :tab-config-list="tabList" ref="customListRef">
+    <common-list :tab-config-list="tabList" :extend-config="{ hasFilter: false, sticky: true, showSearch: true }"
+                 ref="customListRef">
       <template #search>
-        <van-dropdown-menu ref="menuRef" :overlay="false">
-          <van-dropdown-item :title="searchForm.type || searchForm.model || searchForm.page || '监测领域'" @open="showPopup = true"></van-dropdown-item>
+        <van-dropdown-menu :overlay="false">
+          <van-dropdown-item
+            :title="searchForm.type || searchForm.model || searchForm.page || '监测领域'"
+            @open="showPopup = true"
+          />
           <van-dropdown-item
             v-model="searchForm.alarm_level"
             :options="alarmLevelList"
@@ -103,10 +110,10 @@ const cascaderChange = (list) => {
           />
         </van-dropdown-menu>
       </template>
-      <template #card-item="{ data, activeIndex }">
+      <template #card-item="{ data }">
         <alarm-card :item="data"></alarm-card>
       </template>
-    </custom-list>
+    </common-list>
   </div>
   <custom-cascader
     :list="treeList"
@@ -119,9 +126,31 @@ const cascaderChange = (list) => {
 
 <style scoped lang="scss">
 .alarm-wrap {
-  :deep(.custom-wrapper) {
-    .container-wrapper {
-      margin-top: 12px;
+  :deep(.common-list) {
+    .search-slot {
+      position: relative;
+
+      &:before {
+        position: absolute;
+        content: '';
+        z-index: 1;
+        top: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 0.5px;
+        background-color: #f0f2f5;
+      }
+
+      .van-dropdown-menu {
+        .van-dropdown-menu__bar {
+          box-shadow: none;
+        }
+      }
+    }
+
+    .list-wrap {
+      margin: 12px 12px 0 12px;
 
       .van-list {
         display: grid;

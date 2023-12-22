@@ -1,18 +1,27 @@
 <template>
   <div class="site-wrapper">
-    <router-view/>
+    <main-header></main-header>
+    <div class="route-wrap">
+      <router-view/>
+    </div>
   </div>
 </template>
 
 <script setup>
+import MainHeader from '@/views/layout/main-header.vue'
 </script>
 <style scoped lang="scss">
 .site-wrapper {
   position: relative;
   width: 100vw;
-  min-height: 100vh;
-  padding-bottom: 16px;
+  height: 100vh;
   background-color: #f0f2f5;
+
+  .route-wrap {
+    padding-bottom: 16px;
+    background-color: #f0f2f5;
+    min-height: calc(100vh - 139px);
+  }
 
   &:before {
     position: absolute;

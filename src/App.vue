@@ -1,9 +1,10 @@
 <script setup>
 const themeVars = {
+  searchInputHeight: '36px',
   dropdownMenuHeight: '36px',
   tabsBottomBarWidth: '20px',
-  tabsBottomBarColor: '#0482FF',
   actionSheetMaxHeight: '60%',
+  tabsBottomBarColor: '#0482FF',
   fieldInputDisabledTextColor: '#333333'
 }
 </script>
