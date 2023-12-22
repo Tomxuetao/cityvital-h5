@@ -28,7 +28,20 @@ const alarmLevelMap = new Map([
         </div>
       </div>
     </div>
-    <img class="card-img" src="@/views/modules/vital-signs/img/icon-arrow.webp" alt=""/>
+    <img
+      class="card-img"
+      src="@/views/modules/vital-signs/img/icon-arrow.webp"
+      alt=""
+      @click="$router.push({
+       name: 'alarm-detail',
+       query: {
+         eventId: data.eventId,
+         name: data.extraMap.factoryName,
+         level: data.extraMap.latestAlarmLevel,
+         status: data.eventStatus
+       }
+    })"
+    />
   </div>
 </template>
 

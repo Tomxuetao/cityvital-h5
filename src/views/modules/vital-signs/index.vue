@@ -129,8 +129,11 @@ const getAreaDataList = async () => {
 getAreaDataList()
 
 const searchForm = reactive({
-  name: ''
+  thirdType: undefined,
+  factoryName: undefined
 })
+
+const commonListRef = ref()
 </script>
 
 <template>
@@ -159,6 +162,7 @@ const searchForm = reactive({
             v-if="tabConfigList[activeIndex].children?.length"
             :tab-config-list="tabConfigList[activeIndex].children"
             :key="activeIndex"
+            ref="commonListRef"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
             <template #card-item="{ data }">
@@ -169,9 +173,20 @@ const searchForm = reactive({
             <template #search>
               <div class="search-wrap">
                 <div class="third-wrap">
-                  <div class="third-item" v-for="(item, index) in thirdTypeList" :key="index">{{ item.type }}</div>
+                  <div
+                    v-for="(item, index) in thirdTypeList"
+                    :key="index"
+                    :class="['third-item', searchForm.thirdType === item.type ? 'item-active' : '']"
+                    @click="() => searchForm.thirdType = item.type"
+                  >
+                    {{ item.type }}
+                  </div>
                 </div>
-                <common-input v-model="searchForm.name" placeholder="请输入名称"></common-input>
+                <common-input
+                  v-model="searchForm.factoryName"
+                  placeholder="请输入名称"
+                >
+                </common-input>
               </div>
             </template>
           </common-list>
@@ -254,6 +269,11 @@ const searchForm = reactive({
               line-height: 32px;
               border-radius: 6px;
               background-color: #F5F7FA;
+            }
+
+            .item-active {
+              color: #0482FF;
+              background-color: rgba(4, 130, 255, 0.10);
             }
           }
         }

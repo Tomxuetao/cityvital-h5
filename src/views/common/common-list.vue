@@ -1,14 +1,10 @@
 <script setup>
-import CommonTabs from '@/views/common/common-tabs.vue'
-import { Tabs, Tab } from 'vant'
 import { getImgUrlFn } from '@/utils'
-
-import { h, nextTick, reactive, ref } from 'vue'
-
+import { nextTick, reactive, ref } from 'vue'
+import { commonGatewayApi } from '@/api/gateway-api'
 
 import EmptyPage from '@/views/common/empty-page.vue'
-
-import { commonGatewayApi } from '@/api/gateway-api'
+import CommonTabs from '@/views/common/common-tabs.vue'
 
 const props = defineProps({
   tabConfigList: {
@@ -28,9 +24,9 @@ const { hasFilter = true, sticky = false, showSearch = false } = props.extendCon
 const getImgUrl = getImgUrlFn('../views/common/img')
 
 const activeIndex = ref(0)
-const dataLoading = ref(false)
+const dataLoading = ref(true)
 const loadFinished = ref(false)
-const vanLoadingRef = ref(false)
+const vanLoadingRef = ref(true)
 
 const dataList = ref([])
 
@@ -131,7 +127,7 @@ defineExpose({
     <div v-else class="list-wrap">
       <van-list
         v-if="dataList.length > 0"
-        v-model:loading="dataLoading"
+        :loading="dataLoading"
         :finished="loadFinished"
         finished-text="没有更多了"
         @load="getDataListHandler()"
@@ -140,7 +136,7 @@ defineExpose({
           <slot name="card-item" :data="item" :active-index="activeIndex"/>
         </div>
       </van-list>
-      <empty-page v-else/>
+      <empty-page v-if="dataList.length === 0 && !dataLoading"/>
     </div>
   </div>
 </template>

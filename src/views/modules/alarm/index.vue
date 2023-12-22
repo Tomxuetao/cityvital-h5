@@ -90,8 +90,11 @@ const cascaderChange = (list) => {
 
 <template>
   <div class="alarm-wrap">
-    <common-list :tab-config-list="tabList" :extend-config="{ hasFilter: false, sticky: true, showSearch: true }"
-                 ref="customListRef">
+    <common-list
+      ref="customListRef"
+      :tab-config-list="tabList"
+      :extend-config="{ hasFilter: false, sticky: true, showSearch: true }"
+    >
       <template #search>
         <van-dropdown-menu :overlay="false">
           <van-dropdown-item
