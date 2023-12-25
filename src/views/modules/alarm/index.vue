@@ -1,13 +1,23 @@
 <script setup>
-import CommonList from '@/views/common/common-list.vue'
+import CustomList from '@/views/common/custom-list.vue'
 import AlarmCard from '@/views/modules/alarm/comp/alarm-card.vue'
 
 import { reactive, ref } from 'vue'
 import { useCommonStore } from '@/store'
 
 const tabList = [
-  { title: '当前报警', code: '21f73cb8aa', prefix: '/share-api/data/admin', customForm: { alarm_level: '1,2' } },
-  { title: '历史报警', code: '21f8389b4f', prefix: '/share-api/data/admin', customForm: {} }
+  {
+    title: '当前报警',
+    code: '21f73cb8aa',
+    prefix: '/share-api/data/admin',
+    customForm: { alarm_level: '1,2' }
+  },
+  {
+    title: '历史报警',
+    code: '21f8389b4f',
+    prefix: '/share-api/data/admin',
+    customForm: {}
+  }
 ]
 const customListRef = ref()
 
@@ -19,24 +29,32 @@ const getSearchTree = async () => {
   const dataList = await commonState.initAreaListAction()
   if (Array.isArray(dataList)) {
     dataList.forEach(({ page, model, type }) => {
-      const tempData = treeList.value.find(temp => temp.text === page)
+      const tempData = treeList.value.find((temp) => temp.text === page)
       if (tempData) {
-        const temp = tempData.children.find(temp => temp.text === model)
+        const temp = tempData.children.find((temp) => temp.text === model)
         if (temp) {
           temp.children.push({ value: type, text: type })
         } else {
-          tempData.children.push({ value: model, text: model, children: [{ value: type, text: type }] })
+          tempData.children.push({
+            value: model,
+            text: model,
+            children: [{ value: type, text: type }]
+          })
         }
       } else {
         treeList.value.push({
           value: page,
           text: page,
-          children: [{ value: model, text: model, children: [{ value: type, text: type }] }]
+          children: [
+            {
+              value: model,
+              text: model,
+              children: [{ value: type, text: type }]
+            }
+          ]
         })
       }
     })
-
-    console.log(treeList.value)
   }
 }
 getSearchTree()
@@ -82,7 +100,11 @@ const cascaderChange = (list) => {
       searchForm.type = data3.value
     }
   } else {
-    searchForm = Object.assign(searchForm, { page: undefined, model: undefined, type: undefined })
+    searchForm = Object.assign(searchForm, {
+      page: undefined,
+      model: undefined,
+      type: undefined
+    })
   }
   getDataList()
 }
@@ -90,15 +112,24 @@ const cascaderChange = (list) => {
 
 <template>
   <div class="alarm-wrap">
-    <common-list
+    <custom-list
       ref="customListRef"
       :tab-config-list="tabList"
-      :extend-config="{ hasFilter: false, sticky: true, showSearch: true }"
+      :extend-config="{
+        hasFilter: false,
+        sticky: true,
+        alwaysShowSearch: true,
+      }"
     >
       <template #search>
         <van-dropdown-menu :overlay="false">
           <van-dropdown-item
-            :title="searchForm.type || searchForm.model || searchForm.page || '监测领域'"
+            :title="
+              searchForm.type ||
+              searchForm.model ||
+              searchForm.page ||
+              '监测领域'
+            "
             @open="showPopup = true"
           />
           <van-dropdown-item
@@ -116,7 +147,7 @@ const cascaderChange = (list) => {
       <template #card-item="{ data }">
         <alarm-card :item="data"></alarm-card>
       </template>
-    </common-list>
+    </custom-list>
   </div>
   <custom-cascader
     :list="treeList"
@@ -135,7 +166,7 @@ const cascaderChange = (list) => {
 
       &:before {
         position: absolute;
-        content: '';
+        content: "";
         z-index: 1;
         top: 0;
         left: 0;
@@ -153,12 +184,9 @@ const cascaderChange = (list) => {
     }
 
     .list-wrap {
+      display: grid;
+      grid-gap: 12px 0;
       margin: 12px 12px 0 12px;
-
-      .van-list {
-        display: grid;
-        grid-gap: 12px 0;
-      }
     }
   }
 }

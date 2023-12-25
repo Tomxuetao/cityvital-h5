@@ -1,7 +1,7 @@
 <script setup>
 import CommonTitle from '@/views/common/common-title.vue'
 
-import { commonGatewayApi } from '@/api/gateway-api'
+import { commonBackEndApi } from '@/api/common-api'
 import { reactive, ref } from 'vue'
 
 const props = defineProps({
@@ -34,11 +34,10 @@ let detailData = reactive({})
 const dataLoading = ref(true)
 
 const getDetailHandler = async () => {
-  const { list } = await commonGatewayApi(
-    'event_process_logs/list',
-    { eventId: props.eventId, pageSize: 999 },
-    ''
-  )
+  const { list } = await commonBackEndApi('event_process_logs/list', {
+    eventId: props.eventId,
+    pageSize: 999
+  })
   if (Array.isArray(list) && list.length) {
     const [data] = list
     detailData = Object.assign({}, data || {})
@@ -98,7 +97,7 @@ getDetailHandler()
     border-radius: 12px;
     background-color: #ffffff;
     min-height: calc(100vh - 28px);
-    box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
+    box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
     .card-wrap {
       position: relative;
@@ -140,11 +139,11 @@ getDetailHandler()
       &:nth-child(2n) {
         &:after {
           position: absolute;
-          content: '';
+          content: "";
           width: calc(100% - 32px);
           bottom: 0;
           height: 0.5px;
-          background-color: #EEEEEE;
+          background-color: #eeeeee;
         }
       }
     }

@@ -7,25 +7,46 @@ import { getImgUrlFn } from '@/utils'
 import { useRouter } from 'vue-router'
 
 import { getSignNumApi } from '@/api/home-api'
-import { commonGatewayApi } from '@/api/gateway-api'
+import { commonGatewayApi } from '@/api/common-api'
 
 const getImgUrl = getImgUrlFn('../views/modules/home/img')
 
 const signIndexList = ref([
-  { text: '关键设施', num: '0', routeName: 'device', unit: '个', icon: getImgUrl('icon-1') },
-  { text: '运行指标', num: '36', routeName: 'run-index', unit: '个', icon: getImgUrl('icon-2') },
-  { text: '当前报警', num: '0', routeName: 'alarm', unit: '个', icon: getImgUrl('icon-3') }
+  {
+    text: '关键设施',
+    num: '0',
+    routeName: 'device',
+    unit: '个',
+    icon: getImgUrl('icon-1')
+  },
+  {
+    text: '运行指标',
+    num: '36',
+    routeName: 'run-index',
+    unit: '个',
+    icon: getImgUrl('icon-2')
+  },
+  {
+    text: '当前报警',
+    num: '0',
+    routeName: 'alarm',
+    unit: '个',
+    icon: getImgUrl('icon-3')
+  }
 ])
 
 const getSignDataHandler = () => {
   Promise.all([
     // 关键设施
-    commonGatewayApi('218b575c65', { mod_code: 'P01-T01', class_code: 'P01-T01-000' }),
+    commonGatewayApi('218b575c65', {
+      mod_code: 'P01-T01',
+      class_code: 'P01-T01-000'
+    }),
     // 运行指标
     // commonGatewayApi('218b575c65', { mod_code: 'P01-T02', class_code: 'P01-T02-000' }),
     // 今日报警
-    commonGatewayApi('2264e44971')]
-  ).then(([data1List, data3List]) => {
+    commonGatewayApi('2264e44971')
+  ]).then(([data1List, data3List]) => {
     if (Array.isArray(data1List)) {
       const [data] = data1List
       const { NUM: num } = data || {}
@@ -93,7 +114,12 @@ const coreIndexList = ref([
     iconName: 'icon-9',
     list: [
       { text: '管道燃气销售量', code: null, num: '', unit: '' },
-      { text: '红码气瓶量', code: 'pzrqlzxx_alarm_num2', num: '31152', unit: '个' }
+      {
+        text: '红码气瓶量',
+        code: 'pzrqlzxx_alarm_num2',
+        num: '31152',
+        unit: '个'
+      }
     ]
   },
   {
@@ -148,14 +174,21 @@ getSignNum()
 const getCoreIndex = async () => {
   const dataList = await commonGatewayApi('2180e0fc83', { org_name: '全市' })
   if (Array.isArray(dataList)) {
-    coreIndexList.value.forEach(item => {
-      const tempList = dataList.filter(temp => temp.sys_code === item.alias && temp.para_value !== '异常')
+    coreIndexList.value.forEach((item) => {
+      const tempList = dataList.filter(
+        (temp) => temp.sys_code === item.alias && temp.para_value !== '异常'
+      )
       if (tempList) {
-        item.list.forEach(data => {
-          const tempData = tempList.find(temp => data.code === temp.para_code)
+        item.list.forEach((data) => {
+          const tempData = tempList.find(
+            (temp) => data.code === temp.para_code
+          )
           if (tempData) {
             const { para_value: value, unit } = tempData || {}
-            Object.assign(data, { unit: unit, num: value.includes('.') ? Number(value).toFixed(2) : value })
+            Object.assign(data, {
+              unit: unit,
+              num: value.includes('.') ? Number(value).toFixed(2) : value
+            })
           }
         })
       }
@@ -195,7 +228,7 @@ const gotoOther = (routeName, num) => {
               @click="gotoOther(item.routeName, item.num)"
             >
               <div class="item-header">
-                <img class="header-icon" :src="item.icon" alt=""/>
+                <img class="header-icon" :src="item.icon" alt="" />
                 <div class="header-text">{{ item.text }}</div>
               </div>
               <div class="item-num">
@@ -234,7 +267,6 @@ const gotoOther = (routeName, num) => {
 
 <style scoped lang="scss">
 .home-wrap {
-
   .ctx-wrap {
     display: grid;
     grid-gap: 12px 0;
@@ -243,7 +275,7 @@ const gotoOther = (routeName, num) => {
     .ctx-item {
       border-radius: 12px;
       background-color: #ffffff;
-      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
+      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
       .sign-wrap {
         padding-bottom: 16px;

@@ -1,12 +1,13 @@
 <script setup>
+import CommonTabs from '@/views/common/common-tabs.vue'
 import dayjs from 'dayjs'
 import { reactive, ref } from 'vue'
 
 import { useCommonStore } from '@/store'
-import CommonList from '@/views/common/common-list.vue'
-import CommonInput from '@/views/common/common-input.vue'
 import EmptyPage from '@/views/common/empty-page.vue'
-import RiverCard from '@/views/modules/vital-signs/comp/river-card.vue'
+import CustomList from '@/views/common/custom-list.vue'
+import CommonInput from '@/views/common/common-input.vue'
+import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
 
 const commonState = useCommonStore()
 
@@ -19,6 +20,7 @@ const tabConfigList = [
       {
         title: '供水',
         code: 'event/list',
+        isGateway: false,
         customForm: {
           title: '水设施河道-供水',
           sortTimeFiled: 'latestCheckTime',
@@ -29,6 +31,7 @@ const tabConfigList = [
       {
         title: '污水',
         code: 'event/list',
+        isGateway: false,
         customForm: {
           title: '水设施河道-污水',
           sortTimeFiled: 'latestCheckTime',
@@ -39,6 +42,7 @@ const tabConfigList = [
       {
         title: '河道',
         code: 'event/list',
+        isGateway: false,
         customForm: {
           title: '水设施河道-河道',
           sortTimeFiled: 'latestCheckTime',
@@ -49,6 +53,7 @@ const tabConfigList = [
       {
         title: '内涝',
         code: 'event/list',
+        isGateway: false,
         customForm: {
           title: '水设施河道-内涝',
           sortTimeFiled: 'latestCheckTime',
@@ -115,10 +120,13 @@ const activeIndex = ref(0)
 const areaDataList = ref([])
 const thirdTypeList = ref([])
 const tabChangeHandler = (index, level) => {
-  const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
+  const tempList =
+    tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
     const { title } = tempList[level === 1 ? 0 : index]
-    thirdTypeList.value = areaDataList.value.filter(item => item.model === title)
+    thirdTypeList.value = areaDataList.value.filter(
+      (item) => item.model === title
+    )
   }
 }
 
@@ -133,41 +141,35 @@ const searchForm = reactive({
   factoryName: undefined
 })
 
-const commonListRef = ref()
+const customListRef = ref()
 </script>
 
 <template>
   <div class="vital-signs">
     <div class="signs-inner">
       <div class="tabs-wrap">
-        <van-tabs
+        <common-tabs
           v-model:active="activeIndex"
+          :tab-config-list="tabConfigList"
+          color="#0482FF"
+          :swipe-threshold="4"
           title-active-color="#0482FF"
-          title-inactive-color="#666666"
           @change="(index) => tabChangeHandler(index, 1)"
         >
-          <van-tab
-            v-for="(item, index) in tabConfigList"
-            :key="index"
-            :name="index"
-            :title="item.title"
-          >
-          </van-tab>
-        </van-tabs>
+        </common-tabs>
       </div>
 
       <div class="ctx-wrap">
         <div class="ctx-inner">
-          <common-list
+          <custom-list
+            ref="customListRef"
             v-if="tabConfigList[activeIndex].children?.length"
             :tab-config-list="tabConfigList[activeIndex].children"
-            :key="activeIndex"
-            ref="commonListRef"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
             <template #card-item="{ data }">
               <div class="card-wrap">
-                <river-card :data="data"></river-card>
+                <water-card :data="data"></water-card>
               </div>
             </template>
             <template #search>
@@ -176,8 +178,11 @@ const commonListRef = ref()
                   <div
                     v-for="(item, index) in thirdTypeList"
                     :key="index"
-                    :class="['third-item', searchForm.thirdType === item.type ? 'item-active' : '']"
-                    @click="() => searchForm.thirdType = item.type"
+                    :class="[
+                      'third-item',
+                      searchForm.thirdType === item.type ? 'item-active' : '',
+                    ]"
+                    @click="() => (searchForm.thirdType = item.type)"
                   >
                     {{ item.type }}
                   </div>
@@ -189,7 +194,7 @@ const commonListRef = ref()
                 </common-input>
               </div>
             </template>
-          </common-list>
+          </custom-list>
           <empty-page v-else :empty-type="2" desc="内容建设中"></empty-page>
         </div>
       </div>
@@ -205,7 +210,7 @@ const commonListRef = ref()
 
       &:before {
         position: absolute;
-        content: '';
+        content: "";
         z-index: 1;
         top: 0;
         left: 0;
@@ -242,7 +247,7 @@ const commonListRef = ref()
 
     .ctx-wrap {
       padding: 12px 12px 0 12px;
-      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
+      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
       .ctx-inner {
         min-height: calc(100vh - 199px);
@@ -268,12 +273,12 @@ const commonListRef = ref()
               font-size: 12px;
               line-height: 32px;
               border-radius: 6px;
-              background-color: #F5F7FA;
+              background-color: #f5f7fa;
             }
 
             .item-active {
-              color: #0482FF;
-              background-color: rgba(4, 130, 255, 0.10);
+              color: #0482ff;
+              background-color: rgba(4, 130, 255, 0.1);
             }
           }
         }

@@ -16,11 +16,26 @@ const alarmLevelMap = new Map([
 <template>
   <div class="river-card">
     <div class="card-ctx">
-      <div class="card-title">{{ data.extraMap?.factoryName }}</div>
+      <div
+        class="card-title"
+        @click="
+          $router.push({
+            name: 'water-detail',
+            query: {
+              id: data.extraMap?.factoryId,
+              name: data.extraMap?.factoryName,
+            },
+          })
+        "
+      >
+        {{ data.extraMap?.factoryName }}
+      </div>
       <div class="ctx-wrap">
         <div class="desc-item">
           <div class="item-label">报警等级：</div>
-          <div class="item-text">{{ alarmLevelMap.get(data.extraMap?.latestAlarmLevel) }}</div>
+          <div class="item-text">
+            {{ alarmLevelMap.get(data.extraMap?.latestAlarmLevel) }}
+          </div>
         </div>
         <div class="desc-item">
           <div class="item-label">报警指标：</div>
@@ -32,15 +47,17 @@ const alarmLevelMap = new Map([
       class="card-img"
       src="@/views/modules/vital-signs/img/icon-arrow.webp"
       alt=""
-      @click="$router.push({
-       name: 'alarm-detail',
-       query: {
-         eventId: data.eventId,
-         name: data.extraMap.factoryName,
-         level: data.extraMap.latestAlarmLevel,
-         status: data.eventStatus
-       }
-    })"
+      @click="
+        $router.push({
+          name: 'alarm-detail',
+          query: {
+            eventId: data.eventId,
+            name: data.extraMap.factoryName,
+            level: data.extraMap.latestAlarmLevel,
+            status: data.eventStatus,
+          },
+        })
+      "
     />
   </div>
 </template>
@@ -57,11 +74,11 @@ const alarmLevelMap = new Map([
 
   &:after {
     position: absolute;
-    content: '';
+    content: "";
     height: 0.5px;
     width: 100%;
     bottom: 0;
-    background-color: #EEEEEE;
+    background-color: #eeeeee;
   }
 
   .card-ctx {
@@ -103,7 +120,6 @@ const alarmLevelMap = new Map([
       }
     }
   }
-
 
   .card-img {
     width: 14px;

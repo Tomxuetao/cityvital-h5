@@ -51,6 +51,13 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/index.vue')
   },
   {
+    path: '/water-detail',
+    name: 'water-detail',
+    meta: { title: '水设施河道详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/water-detail.vue')
+  },
+  {
     path: '/synergy',
     name: 'synergy',
     meta: { title: '城市治理多跨协同' },
@@ -79,7 +86,8 @@ const routes = [
     meta: { title: '动态路由' },
     component: () => import('@/views/layout/main-index.vue'),
     children: devRoutes,
-    beforeEnter: async ({ name }) => name !== 'main-dynamic' ? true : { replace: true, name: 'home' }
+    beforeEnter: async ({ name }) =>
+      name !== 'main-dynamic' ? true : { replace: true, name: 'home' }
   }
 ]
 

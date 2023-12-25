@@ -1,8 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import { buildTree } from '@/utils'
-import { commonGatewayApi } from '@/api/gateway-api'
-
+import { commonGatewayApi } from '@/api/common-api'
 
 import CardWrap from '@/views/modules/device/comp/card-wrap.vue'
 
@@ -23,31 +22,51 @@ const activeIndex = ref(0)
 
 const getDataHandler = () => {
   dataLoading.value = true
-  commonGatewayApi('218b575c65', { mod_code: 'P01-T01' }).then(dataList => {
-    if (Array.isArray(dataList)) {
-      const tempList1 = dataList.filter(item => item.CLASS_CODE_2 === '1' || !item.CLASS_CODE_2)
-      const tempList2 = dataList.filter(item => item.CLASS_CODE_2 === '0' || !item.CLASS_CODE_2)
-      // 一级设施
-      const [dataTree1] = buildTree(tempList1, 'P01-T01-000', 'ID', 'CLASS_CODE')
-      const { children: list1 } = dataTree1 || { children: [] }
-      tabConfigList.value[0].list = list1
-      tabConfigList.value[0].num = list1.reduce((acc, cur) => acc + Number(cur.NUM), 0)
-      // 二级设施
-      const [dataTree2] = buildTree(tempList2, 'P01-T01-000', 'ID', 'CLASS_CODE')
-      const { children: list2 } = dataTree2 || { children: [] }
-      tabConfigList.value[1].list = list2
-      tabConfigList.value[1].num = list2.reduce((acc, cur) => acc + Number(cur.NUM), 0)
-    }
-    dataLoading.value = false
-  }).catch(() => {
-    dataLoading.value = false
-  })
+  commonGatewayApi('218b575c65', { mod_code: 'P01-T01' })
+    .then((dataList) => {
+      if (Array.isArray(dataList)) {
+        const tempList1 = dataList.filter(
+          (item) => item.CLASS_CODE_2 === '1' || !item.CLASS_CODE_2
+        )
+        const tempList2 = dataList.filter(
+          (item) => item.CLASS_CODE_2 === '0' || !item.CLASS_CODE_2
+        )
+        // 一级设施
+        const [dataTree1] = buildTree(
+          tempList1,
+          'P01-T01-000',
+          'ID',
+          'CLASS_CODE'
+        )
+        const { children: list1 } = dataTree1 || { children: [] }
+        tabConfigList.value[0].list = list1
+        tabConfigList.value[0].num = list1.reduce(
+          (acc, cur) => acc + Number(cur.NUM),
+          0
+        )
+        // 二级设施
+        const [dataTree2] = buildTree(
+          tempList2,
+          'P01-T01-000',
+          'ID',
+          'CLASS_CODE'
+        )
+        const { children: list2 } = dataTree2 || { children: [] }
+        tabConfigList.value[1].list = list2
+        tabConfigList.value[1].num = list2.reduce(
+          (acc, cur) => acc + Number(cur.NUM),
+          0
+        )
+      }
+      dataLoading.value = false
+    })
+    .catch(() => {
+      dataLoading.value = false
+    })
 }
 getDataHandler()
 
-const tabChangeHandler = () => {
-
-}
+const tabChangeHandler = () => {}
 </script>
 
 <template>
@@ -122,16 +141,19 @@ const tabChangeHandler = () => {
     border-radius: 12px;
     background-color: #ffffff;
     margin: -12px 12px 0 12px;
-    box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
+    box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
     .tabs-wrap {
-
       padding-top: 2px;
 
       .tabs-inner {
         margin: 0 2px;
         border-radius: 10px 10px 0 0;
-        background-image: linear-gradient(359deg, rgba(241, 250, 255, 0.00) 0%, #f1faff);
+        background-image: linear-gradient(
+          359deg,
+          rgba(241, 250, 255, 0) 0%,
+          #f1faff
+        );
 
         :deep(.van-tabs--line) {
           background-color: transparent;
@@ -153,7 +175,6 @@ const tabChangeHandler = () => {
       .ctx-inner {
         padding: 0 12px;
         grid-template-rows: repeat(3, 1fr);
-
       }
     }
   }

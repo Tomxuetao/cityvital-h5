@@ -1,5 +1,5 @@
 <script setup>
-import { commonGatewayApi } from '@/api/gateway-api'
+import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
 import SignCard from '@/views/modules/sign/comp/sign-card.vue'
 import SignTitle from '@/views/modules/sign/comp/sign-title.vue'
@@ -81,13 +81,19 @@ const coreSignList = ref([
 const getSignDetailList = async () => {
   const dataList = await commonGatewayApi('22013cbebb', { org_name: '全市' })
   if (Array.isArray(dataList)) {
-    coreSignList.value.forEach(signData => {
-      const tempList = dataList.filter(item => item.page === signData.title)
-      tempList.forEach(temp => {
-        signData.score = temp.score < signData.score ? temp.score: signData.score
-        const record = signData.records.find(record => record.alarmLevel === temp.alarm_level)
+    coreSignList.value.forEach((signData) => {
+      const tempList = dataList.filter((item) => item.page === signData.title)
+      tempList.forEach((temp) => {
+        signData.score =
+          temp.score < signData.score ? temp.score : signData.score
+        const record = signData.records.find(
+          (record) => record.alarmLevel === temp.alarm_level
+        )
         if (record) {
-          Object.assign(record, { num: +temp.total_num, deductScore: +temp.delete_score})
+          Object.assign(record, {
+            num: +temp.total_num,
+            deductScore: +temp.delete_score
+          })
         }
       })
     })
@@ -127,7 +133,11 @@ const otherSignList = ref([
       <div class="ctx-item">
         <common-title text="六大领域"></common-title>
         <div class="ctx-inner">
-          <div class="item-ctx" v-for="(item, index) in coreSignList" :key="index">
+          <div
+            class="item-ctx"
+            v-for="(item, index) in coreSignList"
+            :key="index"
+          >
             <sign-title :item="item"></sign-title>
             <sign-card :list="item.records"></sign-card>
           </div>
@@ -136,10 +146,18 @@ const otherSignList = ref([
       <div class="ctx-item">
         <common-title text="扩展领域"></common-title>
         <div class="ctx-inner">
-          <div class="item-ctx" v-for="(item, index) in otherSignList" :key="index">
+          <div
+            class="item-ctx"
+            v-for="(item, index) in otherSignList"
+            :key="index"
+          >
             <sign-title :item="item"></sign-title>
             <div class="other-wrap">
-              <div class="other-item" v-for="(record, index) in item.records" :key="index">
+              <div
+                class="other-item"
+                v-for="(record, index) in item.records"
+                :key="index"
+              >
                 <div class="item-label">{{ record.title }}</div>
                 <div class="item-text">{{ record.text }}</div>
               </div>
@@ -190,7 +208,7 @@ const otherSignList = ref([
       border-radius: 12px;
       padding-bottom: 16px;
       background-color: #ffffff;
-      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
+      box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
       .ctx-inner {
         display: grid;

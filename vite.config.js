@@ -14,15 +14,30 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
-      '/oauth2': {
-        secure: false,
-        changOrigin: true,
-        target: 'http://10.54.38.116'
-      },
-      '/gateway-web': {
+      // 水设施河道下的设施图片
+      '/water-img': {
         secure: false,
         changeOrigin: true,
-        target: 'https://ywtg.citybrain.hangzhou.gov.cn'
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn/cv_res/img/zscqj',
+        rewrite: (path) => path.replace(/^\/water-img/, '')
+      },
+      '/oauth-server': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.116',
+        rewrite: (path) => path.replace(/^\/oauth-server/, '')
+      },
+      '/back-server': {
+        secure: false,
+        changeOrigin: true,
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn',
+        rewrite: (path) => path.replace(/^\/back-server/, '')
+      },
+      '/gateway-server': {
+        secure: false,
+        changeOrigin: true,
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn',
+        rewrite: (path) => path.replace(/^\/gateway-server/, '')
       }
     }
   },
@@ -52,10 +67,12 @@ export default defineConfig({
     }
   },
   resolve: {
-    alias: [{
-      find: '@',
-      replacement: resolve(__dirname, 'src')
-    }],
+    alias: [
+      {
+        find: '@',
+        replacement: resolve(__dirname, 'src')
+      }
+    ],
     extensions: ['.mjs', '.js', '.ts', '.jsx', '.tsx', '.json', '.vue']
   },
   build: {
