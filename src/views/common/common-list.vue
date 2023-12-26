@@ -31,12 +31,12 @@ const getDataListHandler = (dataForm = {}) => {
   const {
     code,
     method = 'get',
-    isGateway = true,
+    isIndexServer = true,
     customForm = {}
   } = props.config
   commonApi(code, Object.assign(searchForm, customForm, dataForm || {}), {
     method: method,
-    isGateway: isGateway
+    isIndexServer: isIndexServer
   })
     .then(({ list, total }) => {
       vanLoadingRef.value = false
@@ -74,13 +74,14 @@ defineExpose({
     <van-list
       class="list-wrap"
       v-if="dataList.length > 0"
+      offset="100"
       :loading="dataLoading"
       :finished="loadFinished"
       finished-text="没有更多了"
       @load="getDataListHandler()"
     >
       <div class="list-item" v-for="(item, index) in dataList" :key="index">
-        <slot name="card-item" :data="item" :active-index="index" />
+        <slot name="card-item" :data="item" />
       </div>
     </van-list>
     <empty-page v-if="dataList.length === 0 && !dataLoading" />

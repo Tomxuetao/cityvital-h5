@@ -1,11 +1,11 @@
 <script setup>
-import CommonTabs from '@/views/common/common-tabs.vue'
 import dayjs from 'dayjs'
 import { reactive, ref } from 'vue'
 
 import { useCommonStore } from '@/store'
 import EmptyPage from '@/views/common/empty-page.vue'
 import CustomList from '@/views/common/custom-list.vue'
+import CommonTabs from '@/views/common/common-tabs.vue'
 import CommonInput from '@/views/common/common-input.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
 
@@ -13,53 +13,51 @@ const commonState = useCommonStore()
 
 const curDate = dayjs().format('YYYY-MM-DD')
 const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
+const commonForm = {
+  sortTimeFiled: 'latestCheckTime',
+  latestCheckEndTime: `${nextDate} 00:00:00`,
+  latestCheckStartTime: `${curDate} 00:00:00`
+}
+const commonConfig = {
+  method: 'post',
+  isIndexServer: false,
+  code: 'event/listAlarms'
+}
 const tabConfigList = [
   {
     title: '水设施河道',
     children: [
       {
         title: '供水',
-        code: 'event/list',
-        isGateway: false,
-        customForm: {
-          title: '水设施河道-供水',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '水设施河道', secondType: '供水' },
+          commonForm
+        )
       },
       {
         title: '污水',
-        code: 'event/list',
-        isGateway: false,
-        customForm: {
-          title: '水设施河道-污水',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '水设施河道', secondType: '污水' },
+          commonForm
+        )
       },
       {
         title: '河道',
-        code: 'event/list',
-        isGateway: false,
-        customForm: {
-          title: '水设施河道-河道',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '水设施河道', secondType: '河道' },
+          commonForm
+        )
       },
       {
         title: '内涝',
-        code: 'event/list',
-        isGateway: false,
-        customForm: {
-          title: '水设施河道-内涝',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '水设施河道', secondType: '内涝' },
+          commonForm
+        )
       }
     ]
   },
@@ -72,33 +70,27 @@ const tabConfigList = [
     children: [
       {
         title: '开关箱',
-        code: 'event/list',
-        customForm: {
-          title: '市容景观-开关箱',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '市容景观', secondType: '开关箱' },
+          commonForm
+        )
       },
       {
         title: '户外广告',
-        code: 'event/list',
-        customForm: {
-          title: '市容景观-户外广告',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '市容景观', secondType: '户外广告' },
+          commonForm
+        )
       },
       {
         title: '户外电子屏',
-        code: 'event/list',
-        customForm: {
-          title: '市容景观-户外电子屏',
-          sortTimeFiled: 'latestCheckTime',
-          latestCheckEndTime: `${nextDate} 00:00:00`,
-          latestCheckStartTime: `${curDate} 00:00:00`
-        }
+        ...commonConfig,
+        customForm: Object.assign(
+          { originType: '市容景观', secondType: '户外电子屏' },
+          commonForm
+        )
       }
     ]
   },
@@ -142,6 +134,15 @@ const searchForm = reactive({
 })
 
 const customListRef = ref()
+
+const thirdTypeChange = (type) => {
+  if (searchForm.thirdType === type) {
+    searchForm.thirdType = undefined
+  } else {
+    searchForm.thirdType = type
+  }
+  customListRef.value.getDataList(searchForm)
+}
 </script>
 
 <template>
@@ -162,14 +163,22 @@ const customListRef = ref()
       <div class="ctx-wrap">
         <div class="ctx-inner">
           <custom-list
-            ref="customListRef"
             v-if="tabConfigList[activeIndex].children?.length"
+            ref="customListRef"
+            :key="activeIndex"
             :tab-config-list="tabConfigList[activeIndex].children"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
-            <template #card-item="{ data }">
+            <template #card-item="{ data, index }">
               <div class="card-wrap">
-                <water-card :data="data"></water-card>
+                <water-card
+                  :data="data"
+                  :origin-type="tabConfigList[activeIndex].title"
+                  :second-type="
+                    tabConfigList[activeIndex].children[index].title
+                  "
+                >
+                </water-card>
               </div>
             </template>
             <template #search>
@@ -182,7 +191,7 @@ const customListRef = ref()
                       'third-item',
                       searchForm.thirdType === item.type ? 'item-active' : '',
                     ]"
-                    @click="() => (searchForm.thirdType = item.type)"
+                    @click="() => thirdTypeChange(item.type)"
                   >
                     {{ item.type }}
                   </div>
@@ -190,8 +199,7 @@ const customListRef = ref()
                 <common-input
                   v-model="searchForm.factoryName"
                   placeholder="请输入名称"
-                >
-                </common-input>
+                ></common-input>
               </div>
             </template>
           </custom-list>
@@ -250,9 +258,10 @@ const customListRef = ref()
       box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
 
       .ctx-inner {
-        min-height: calc(100vh - 199px);
+        position: relative;
         border-radius: 12px;
         background-color: #ffffff;
+        min-height: calc(100vh - 199px);
 
         .card-wrap {
           padding: 0 16px;

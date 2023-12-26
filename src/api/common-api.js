@@ -29,7 +29,7 @@ export const commonGatewayApi = (code, searchForm = {}, method = 'get') =>
   http({
     method: method,
     params: searchForm,
-    url: `${gatewayServer}/share-api/data/admin/${code || ''}`
+    url: `${gatewayServer}/share-api/data/admin/${code}`
   })
 
 /**
@@ -39,10 +39,8 @@ export const commonGatewayApi = (code, searchForm = {}, method = 'get') =>
  * @param config
  */
 export const commonApi = (url, searchForm, config) => {
-  const { isGateway = false, method = 'get' } = config
-  if (isGateway) {
-    return commonGatewayApi(url, searchForm, method)
-  } else {
-    return commonBackEndApi(url, searchForm, method)
-  }
+  const { isIndexServer = false, method = 'get' } = config
+  return isIndexServer
+    ? commonGatewayApi(url, searchForm, method)
+    : commonBackEndApi(url, searchForm, method)
 }

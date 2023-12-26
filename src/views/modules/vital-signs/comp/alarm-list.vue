@@ -1,15 +1,27 @@
 <script setup>
+import dayjs from 'dayjs'
+import { useRoute } from 'vue-router'
+
 import CommonList from '@/views/common/common-list.vue'
 import CommonTitle from '@/views/common/common-title.vue'
 import CommonInput from '@/views/common/common-input.vue'
+
+const route = useRoute()
+
+const curDate = dayjs().format('YYYY-MM-DD')
+const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
 const listConfig = {
   code: 'event/listAlarms',
   prefix: '',
   method: 'post',
-  isGateway: false,
+  isIndexServer: false,
   customForm: {
-    sortTimeFiled: 'latestCheckTime'
+    sortTimeFiled: 'latestCheckTime',
+    originType: route.query.originType,
+    secondType: route.query.secondType,
+    latestCheckEndTime: `${nextDate} 00:00:00`,
+    latestCheckStartTime: `${curDate} 00:00:00`
   }
 }
 </script>

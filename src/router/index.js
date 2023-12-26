@@ -93,7 +93,7 @@ const routes = [
 
 const router = createRouter({
   routes: routes,
-  history: createWebHistory('/city-vital'),
+  history: createWebHistory('/vital-h5'),
   scrollBehavior: () => ({ top: 0 })
 })
 
@@ -111,8 +111,9 @@ router.beforeEach((to, from, next) => {
       next()
     } else {
       if (tempEnv !== 'h5') {
-        getUserDataHandler('')
-        next()
+        getUserDataHandler('').then(() => {
+          next()
+        })
       }
     }
   }

@@ -110,8 +110,8 @@ defineExpose({
       :index="activeIndex"
       :config="tabConfigList[activeIndex]"
     >
-      <template #card-item="{ data, activeIndex }">
-        <slot name="card-item" :data="data" :active-index="activeIndex" />
+      <template #card-item="{ data }">
+        <slot name="card-item" :data="data" :index="activeIndex" />
       </template>
     </common-list>
   </div>

@@ -4,7 +4,6 @@ import { commonGatewayApi, commonBackEndApi } from '@/api/common-api'
 
 import CommonTitle from '@/views/common/common-title.vue'
 import AlarmList from '@/views/modules/vital-signs/comp/alarm-list.vue'
-import HandleList from '@/views/modules/vital-signs/comp/handle-list.vue'
 import MonitorInfo from '@/views/modules/vital-signs/comp/monitor-info.vue'
 
 const props = defineProps({
@@ -13,6 +12,14 @@ const props = defineProps({
     required: true
   },
   name: {
+    type: String,
+    required: true
+  },
+  originType: {
+    type: String,
+    required: true
+  },
+  secondType: {
     type: String,
     required: true
   }
@@ -67,11 +74,7 @@ const getHandleList = async () => {
   })
 }
 
-const tabList = [
-  { text: '监测信息' },
-  { text: '报警信息' },
-  { text: '处置信息' }
-]
+const tabList = [{ text: '监测信息' }, { text: '报警信息' }]
 
 const activeTabIndex = ref(0)
 
@@ -97,12 +100,12 @@ const changeTabHandler = (index) => {
           <common-title :text="name"></common-title>
           <div class="header-inner">
             <div class="inner-item">
-              <div class="item-label">关联水厂：</div>
-              <div class="item-text">{{ detailData.company }}</div>
+              <div class="item-label">地址：</div>
+              <div class="item-text">{{ detailData.address }}</div>
             </div>
             <div class="inner-item">
-              <div class="item-label">供水企业名称：</div>
-              <div class="item-text">{{ detailData.company }}</div>
+              <div class="item-label">设备类型：</div>
+              <div class="item-text">{{ detailData.type }}</div>
             </div>
           </div>
         </div>
@@ -126,7 +129,6 @@ const changeTabHandler = (index) => {
               :detail="detailData"
             ></monitor-info>
             <alarm-list v-if="activeTabIndex === 1"></alarm-list>
-            <handle-list v-if="activeTabIndex === 2"></handle-list>
           </template>
         </div>
       </div>
@@ -159,6 +161,11 @@ const changeTabHandler = (index) => {
             line-height: 22px;
             color: #666666;
             margin-bottom: 8px;
+
+            .item-text {
+              flex: 1;
+              @include ellipsis(1);
+            }
           }
         }
 
@@ -179,7 +186,7 @@ const changeTabHandler = (index) => {
         display: grid;
         padding-top: 12px;
         align-items: center;
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(2, 1fr);
 
         .tab-item {
           height: 32px;
@@ -190,16 +197,13 @@ const changeTabHandler = (index) => {
           border: 0.5px solid #d9d9d9;
           background-color: #ffffff;
 
-          &:nth-child(2) {
-            border-left: 0;
-            border-right: 0;
-          }
-
           &:nth-child(1) {
+            border-right: 0;
             border-radius: 8px 0 0 8px;
           }
 
-          &:nth-child(3) {
+          &:nth-child(2) {
+            border-left: 0;
             border-radius: 0 8px 8px 0;
           }
         }

@@ -3,6 +3,14 @@ const props = defineProps({
   data: {
     type: Object,
     required: true
+  },
+  originType: {
+    type: String,
+    required: true
+  },
+  secondType: {
+    type: String,
+    required: true
   }
 })
 
@@ -24,6 +32,8 @@ const alarmLevelMap = new Map([
             query: {
               id: data.extraMap?.factoryId,
               name: data.extraMap?.factoryName,
+              originType: originType,
+              secondType: secondType,
             },
           })
         "
@@ -52,9 +62,9 @@ const alarmLevelMap = new Map([
           name: 'alarm-detail',
           query: {
             eventId: data.eventId,
+            status: data.eventStatus,
             name: data.extraMap.factoryName,
             level: data.extraMap.latestAlarmLevel,
-            status: data.eventStatus,
           },
         })
       "

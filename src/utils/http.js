@@ -3,7 +3,7 @@ import { showFailToast } from 'vant'
 
 export function createHttp() {
   const http = axios.create({
-    timeout: 1000 * 60,
+    timeout: 1000 * 20,
     withCredentials: true,
     headers: {
       'Content-Type': 'application/json'
@@ -54,4 +54,4 @@ export const oauth2Server = '/oauth-server/oauth2'
 export const backEndServer = '/back-server/cv_data/api/v1'
 
 // 指标数据统一前缀
-export const gatewayServer = '/gateway-server/gateway-web/cv_data/api/v1'
+export const gatewayServer = '/gateway-server/cv_data/api/v1'

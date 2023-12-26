@@ -9,7 +9,7 @@ import Components from 'unplugin-vue-components/vite'
 import { VantResolver } from '@vant/auto-import-resolver'
 
 export default defineConfig({
-  base: '/city-vital',
+  base: '/vital-h5',
   server: {
     open: false,
     host: true,
@@ -18,7 +18,7 @@ export default defineConfig({
       '/water-img': {
         secure: false,
         changeOrigin: true,
-        target: 'https://ywtg.citybrain.hangzhou.gov.cn/cv_res/img/zscqj',
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/water-img/, '')
       },
       '/oauth-server': {
