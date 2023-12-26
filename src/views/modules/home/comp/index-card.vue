@@ -9,26 +9,36 @@ const props = defineProps({
 })
 
 const getImgUrl = getImgUrlFn('../views/modules/home/img')
-
 </script>
 
 <template>
-  <div class="core-item">
+  <div :class="['core-item', itemData.isAlarm ? 'core-alarm' : '']">
     <div class="card-inner">
       <div class="item-header">
-        <img class="header-icon" :src="getImgUrl(itemData.iconName)" alt=""/>
+        <img
+          class="header-icon"
+          :src="
+            getImgUrl(itemData.iconName + (itemData.isAlarm ? '-alarm' : ''))
+          "
+          alt=""
+        />
         <div class="header-text">{{ itemData.text }}</div>
       </div>
       <div class="index-wrap">
-        <div class="index-item" v-for="(item, index) in itemData.list" :key="index">
+        <div
+          class="index-item"
+          v-for="(item, index) in itemData.list"
+          :key="index"
+        >
           <div class="item-text">{{ item.text }}</div>
           <div class="item-num">
-            <div class="num-text">{{ item.num === '-' ? 0 : item.num }}</div>
+            <div class="num-text">{{ item.num === "-" ? 0 : item.num }}</div>
             <div class="num-unit">{{ item.unit }}</div>
           </div>
         </div>
       </div>
     </div>
+    <div class="core-status">{{ itemData.isAlarm ? "报警" : "正常" }}</div>
   </div>
 </template>
 
@@ -37,9 +47,10 @@ const getImgUrl = getImgUrlFn('../views/modules/home/img')
   position: relative;
   width: 154px;
   height: 160px;
+  border-radius: 4px;
   background-size: contain;
   background-repeat: no-repeat;
-  background-image: url("@/views/modules/home/img/img-index-bg.webp");
+  background-image: linear-gradient(180deg, #ecfbf9 0%, #f9fefd 100%);
 
   .card-inner {
     padding: 12px;
@@ -84,7 +95,7 @@ const getImgUrl = getImgUrlFn('../views/modules/home/img')
 
         .item-num {
           display: flex;
-          color: #00c1a2;
+          color: #333333;
           align-items: flex-end;
 
           .num-text {
@@ -110,6 +121,28 @@ const getImgUrl = getImgUrlFn('../views/modules/home/img')
         }
       }
     }
+  }
+
+  .core-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 18px;
+    font-size: 12px;
+    padding: 0 8px;
+    line-height: 18px;
+    color: #ffffff;
+    border-radius: 0 4px;
+    background-color: #00c1a2;
+    font-family: YouSheBiaoTiHei;
+  }
+}
+
+.core-alarm {
+  background-image: linear-gradient(180deg, #fff3f3 0%, #fffcfb 100%);
+
+  .core-status {
+    background-color: #ff4c63;
   }
 }
 </style>

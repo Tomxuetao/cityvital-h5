@@ -33,9 +33,15 @@ export function createHttp() {
   http.interceptors.response.use(
     (response) => {
       const { data: responseData } = response
-      const { status, msg, success, message } = responseData
-      if (status === 200 || success) {
-        return responseData.data
+      const { status, msg, success, message, hasError } = responseData
+      if (status === 200 || success || !hasError) {
+        if (hasError !== undefined) {
+          // 政通接口（后端转发）
+          const { result, totalCount } = responseData
+          return { total: totalCount || 0, list: result }
+        } else {
+          return responseData.data
+        }
       } else {
         showFailToast(msg || message)
         return Promise.reject(new Error(msg || message))

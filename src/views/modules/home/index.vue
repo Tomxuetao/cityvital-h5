@@ -71,6 +71,7 @@ const coreIndexList = ref([
     text: '水设施河道',
     alias: '水设施河道',
     alarmNum: 0,
+    isAlarm: false,
     iconName: 'icon-4',
     list: [
       { text: '供水总量', code: 'wscll_num', num: '', unit: '' },
@@ -81,6 +82,7 @@ const coreIndexList = ref([
     text: '固废处置',
     alias: '固废处置',
     alarmNum: 0,
+    isAlarm: false,
     iconName: 'icon-5',
     list: [
       { text: '垃圾处理量', code: 'ljcll_num', num: '', unit: '' },
@@ -91,6 +93,7 @@ const coreIndexList = ref([
     text: '市容景观',
     alias: '市容景观',
     alarmNum: 0,
+    isAlarm: false,
     iconName: 'icon-6',
     list: [
       { text: '昨日道路亮灯率', code: 'sgldldl_num', num: '', unit: '' },
@@ -101,6 +104,7 @@ const coreIndexList = ref([
     text: '市政设施',
     alias: '市政设施',
     alarmNum: 0,
+    isAlarm: false,
     iconName: 'icon-7',
     list: [
       { text: '平路指数', code: 'pjzs_num', num: '', unit: '' },
@@ -111,6 +115,7 @@ const coreIndexList = ref([
     text: '城镇燃气',
     alias: '城镇燃气',
     alarmNum: 0,
+    isAlarm: false,
     iconName: 'icon-9',
     list: [
       { text: '管道燃气销售量', code: null, num: '', unit: '' },
@@ -140,8 +145,8 @@ const otherIndexList = ref([
     alarmNum: 0,
     iconName: 'icon-10',
     list: [
-      { text: '高危及重点用户', num: '658', unit: '个' },
-      { text: '用电量', num: '658', unit: '个' }
+      { text: '高危及重点用户', num: '0', unit: '个' },
+      { text: '用电量', num: '0', unit: '个' }
     ]
   },
   {
@@ -149,8 +154,8 @@ const otherIndexList = ref([
     alarmNum: 0,
     iconName: 'icon-11',
     list: [
-      { text: '已监控地铁出口', num: '658', unit: '个' },
-      { text: '地铁运行情况', num: '658', unit: '个' }
+      { text: '已监控地铁出口', num: '0', unit: '个' },
+      { text: '地铁运行情况', num: '0', unit: '个' }
     ]
   }
 ])
@@ -175,10 +180,13 @@ const getCoreIndex = async () => {
   const dataList = await commonGatewayApi('2180e0fc83', { org_name: '全市' })
   if (Array.isArray(dataList)) {
     coreIndexList.value.forEach((item) => {
-      const tempList = dataList.filter(
-        (temp) => temp.sys_code === item.alias && temp.para_value !== '异常'
-      )
-      if (tempList) {
+      const tempList = dataList.filter((temp) => temp.sys_code === item.alias)
+      console.log(tempList)
+      if (tempList.length) {
+        const alarmData = tempList.find((item) => item.para_value === '异常')
+        if (alarmData) {
+          item.isAlarm = true
+        }
         item.list.forEach((data) => {
           const tempData = tempList.find(
             (temp) => data.code === temp.para_code

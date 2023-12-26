@@ -7,7 +7,7 @@ import { backEndServer, gatewayServer, http } from '@/utils/http'
  * @param method
  * @returns {Promise<axios.AxiosResponse<any>>}
  */
-export const commonBackEndApi = (url, searchForm, method = 'get') =>
+export const commonBackEndApi = (url, searchForm = {}, method = 'get') =>
   http(
     Object.assign(
       {
