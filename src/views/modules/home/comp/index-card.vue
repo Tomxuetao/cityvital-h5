@@ -120,11 +120,13 @@ const computeClass = (num) => {
 
           .status-0 {
             color: #ff4c63;
+            font-size: 18px;
             font-family: YouSheBiaoTiHei;
           }
 
           .status-1 {
             color: #00c1a2;
+            font-size: 18px;
             font-family: YouSheBiaoTiHei;
           }
 

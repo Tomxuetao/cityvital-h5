@@ -145,8 +145,8 @@ const otherIndexList = ref([
     alarmNum: 0,
     iconName: 'icon-10',
     list: [
-      { text: '高危及重点用户', num: '0', unit: '个' },
-      { text: '用电量', num: '0', unit: '个' }
+      { text: '高危及重点用户', num: '0', unit: '个', code: 'P01-R01-001' },
+      { text: '用电量', num: '332659', unit: '千kWh' }
     ]
   },
   {
@@ -159,6 +159,26 @@ const otherIndexList = ref([
     ]
   }
 ])
+
+/**
+ * 用电安全
+ * @returns {Promise<void>}
+ */
+const getOtherIndex = async () => {
+  // 高危及重点用户
+  const dataList = await commonGatewayApi('218b575c65', { ID: 'P01-R01-001' })
+  if (Array.isArray(dataList)) {
+    const [data] = dataList
+    const { NUM: num } = data || {}
+    const tempList = otherIndexList.value.map((item) => item.list).flat(2)
+    const tempData = tempList.find((item) => item.code === 'P01-R01-001')
+    if (tempData) {
+      Object.assign(tempData, { num: num })
+    }
+  }
+}
+
+getOtherIndex()
 
 const signNum = ref('0')
 /**
@@ -181,7 +201,6 @@ const getCoreIndex = async () => {
   if (Array.isArray(dataList)) {
     coreIndexList.value.forEach((item) => {
       const tempList = dataList.filter((temp) => temp.sys_code === item.alias)
-      console.log(tempList)
       if (tempList.length) {
         const alarmData = tempList.find((item) => item.para_value === '异常')
         if (alarmData) {
