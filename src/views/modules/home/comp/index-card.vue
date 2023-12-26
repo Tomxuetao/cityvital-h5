@@ -9,6 +9,17 @@ const props = defineProps({
 })
 
 const getImgUrl = getImgUrlFn('../views/modules/home/img')
+
+const computeClass = (num) => {
+  const tempList = ['num-text']
+  if (num === '正常') {
+    tempList.push('status-1')
+  }
+  if (num === '异常') {
+    tempList.push('status-0')
+  }
+  return tempList
+}
 </script>
 
 <template>
@@ -32,7 +43,9 @@ const getImgUrl = getImgUrlFn('../views/modules/home/img')
         >
           <div class="item-text">{{ item.text }}</div>
           <div class="item-num">
-            <div class="num-text">{{ item.num === "-" ? 0 : item.num }}</div>
+            <div :class="computeClass(item.num)">
+              {{ item.num === "-" ? 0 : item.num }}
+            </div>
             <div class="num-unit">{{ item.unit }}</div>
           </div>
         </div>
@@ -103,6 +116,16 @@ const getImgUrl = getImgUrlFn('../views/modules/home/img')
             font-size: 24px;
             line-height: 32px;
             font-family: Alternate-Bold;
+          }
+
+          .status-0 {
+            color: #ff4c63;
+            font-family: YouSheBiaoTiHei;
+          }
+
+          .status-1 {
+            color: #00c1a2;
+            font-family: YouSheBiaoTiHei;
           }
 
           .num-unit {

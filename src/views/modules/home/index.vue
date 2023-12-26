@@ -154,8 +154,8 @@ const otherIndexList = ref([
     alarmNum: 0,
     iconName: 'icon-11',
     list: [
-      { text: '已监控地铁出口', num: '0', unit: '个' },
-      { text: '地铁运行情况', num: '0', unit: '个' }
+      { text: '已监控地铁出口', num: '1407', unit: '个' },
+      { text: '地铁运行情况', num: '正常', unit: '' }
     ]
   }
 ])
