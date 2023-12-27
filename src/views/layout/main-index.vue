@@ -2,7 +2,7 @@
   <div class="site-wrapper">
     <main-header></main-header>
     <div class="route-wrap">
-      <router-view/>
+      <router-view></router-view>
     </div>
   </div>
 </template>
@@ -25,7 +25,7 @@ import MainHeader from '@/views/layout/main-header.vue'
 
   &:before {
     position: absolute;
-    content: '';
+    content: "";
     z-index: 1;
     top: 0;
     left: 0;

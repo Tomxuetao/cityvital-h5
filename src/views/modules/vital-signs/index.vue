@@ -1,112 +1,24 @@
 <script setup>
-import dayjs from 'dayjs'
 import { reactive, ref } from 'vue'
+import { vitalSignsTabs } from '@/config'
 
 import { useCommonStore } from '@/store'
 import EmptyPage from '@/views/common/empty-page.vue'
 import CustomList from '@/views/common/custom-list.vue'
 import CommonTabs from '@/views/common/common-tabs.vue'
 import CommonInput from '@/views/common/common-input.vue'
+import ThirdFilter from '@/views/common/third-filter.vue'
+import CityCard from '@/views/modules/vital-signs/comp/city-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
+
+const cardCompsMap = new Map([
+  [2, CityCard],
+  [0, WaterCard]
+])
 
 const commonState = useCommonStore()
 
-const curDate = dayjs().format('YYYY-MM-DD')
-const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
-const commonForm = {
-  sortTimeFiled: 'latestCheckTime',
-  latestCheckEndTime: `${nextDate} 00:00:00`,
-  latestCheckStartTime: `${curDate} 00:00:00`
-}
-const commonConfig = {
-  method: 'post',
-  isIndexServer: false,
-  code: 'event/listAlarms'
-}
-const tabConfigList = [
-  {
-    title: '水设施河道',
-    children: [
-      {
-        title: '供水',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '供水' },
-          commonForm
-        )
-      },
-      {
-        title: '污水',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '污水' },
-          commonForm
-        )
-      },
-      {
-        title: '河道',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '河道' },
-          commonForm
-        )
-      },
-      {
-        title: '内涝',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '内涝' },
-          commonForm
-        )
-      }
-    ]
-  },
-  {
-    title: '固废处置',
-    children: []
-  },
-  {
-    title: '市容景观',
-    children: [
-      {
-        title: '开关箱',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '开关箱' },
-          commonForm
-        )
-      },
-      {
-        title: '户外广告',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '户外广告' },
-          commonForm
-        )
-      },
-      {
-        title: '户外电子屏',
-        ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '户外电子屏' },
-          commonForm
-        )
-      }
-    ]
-  },
-  {
-    title: '市政设施',
-    children: []
-  },
-  {
-    title: '城镇燃气',
-    children: []
-  },
-  {
-    title: '地铁保护区',
-    children: []
-  }
-]
+const tabConfigList = vitalSignsTabs
 
 const activeIndex = ref(0)
 const areaDataList = ref([])
@@ -136,11 +48,7 @@ const searchForm = reactive({
 const customListRef = ref()
 
 const thirdTypeChange = (type) => {
-  if (searchForm.thirdType === type) {
-    searchForm.thirdType = undefined
-  } else {
-    searchForm.thirdType = type
-  }
+  searchForm.thirdType = type
   customListRef.value.getDataList(searchForm)
 }
 </script>
@@ -170,31 +78,24 @@ const thirdTypeChange = (type) => {
           >
             <template #card-item="{ data, index }">
               <div class="card-wrap">
-                <water-card
+                <component
+                  :is="cardCompsMap.get(activeIndex)"
                   :data="data"
                   :origin-type="tabConfigList[activeIndex].title"
                   :second-type="
                     tabConfigList[activeIndex].children[index].title
                   "
                 >
-                </water-card>
+                </component>
               </div>
             </template>
             <template #search>
               <div class="search-wrap">
-                <div class="third-wrap">
-                  <div
-                    v-for="(item, index) in thirdTypeList"
-                    :key="index"
-                    :class="[
-                      'third-item',
-                      searchForm.thirdType === item.type ? 'item-active' : '',
-                    ]"
-                    @click="() => thirdTypeChange(item.type)"
-                  >
-                    {{ item.type }}
-                  </div>
-                </div>
+                <third-filter
+                  v-model="searchForm.thirdType"
+                  :type-list="thirdTypeList"
+                  @change="thirdTypeChange"
+                ></third-filter>
                 <common-input
                   v-model="searchForm.factoryName"
                   placeholder="请输入名称"

@@ -4,7 +4,7 @@ import { commonGatewayApi } from '@/api/common-api'
 
 import CommonTitle from '@/views/common/common-title.vue'
 import AlarmList from '@/views/modules/vital-signs/comp/alarm-list.vue'
-import MonitorInfo from '@/views/modules/vital-signs/comp/monitor-info.vue'
+import WaterMonitor from '@/views/modules/vital-signs/comp/water-monitor.vue'
 
 const props = defineProps({
   id: {
@@ -98,10 +98,10 @@ const changeTabHandler = (index) => {
             加载中...
           </van-loading>
           <template v-else>
-            <monitor-info
+            <water-monitor
               v-if="activeTabIndex === 0"
               :detail="detailData"
-            ></monitor-info>
+            ></water-monitor>
             <alarm-list
               v-if="activeTabIndex === 1"
               :detail="detailData"

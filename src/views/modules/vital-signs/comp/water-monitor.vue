@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import dayjs from 'dayjs'
 import { useRoute } from 'vue-router'
 
+import { monitorTypeMap, sewageMonitorTypeMap } from '@/config'
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
 import LineChart from '@/views/modules/vital-signs/comp/line-chart.vue'
@@ -17,48 +18,35 @@ const props = defineProps({
 const route = useRoute()
 
 const dataMap = ref(new Map())
-const getDataList = async () => {
+
+const getApiConfig = (secondType) => {
   const { factory_id: id, type } = props.detail
+  const tempSearch =
+    type === '河道'
+      ? { type: type, river_id: id }
+      : { type: type, factory_id: id }
+  const tempSearch2 =
+    type === '积水监测点'
+      ? { type: type, river_id: id }
+      : { type: type, factory_id: id }
   const configMap = new Map([
     [
       '供水',
-      {
-        code: '210537c440',
-        searchForm: { factory_id: id, type_name: type }
-      }
+      { code: '210537c440', searchForm: { factory_id: id, type_name: type } }
     ],
     [
       '污水',
-      {
-        code: '210537c440',
-        searchForm: { factory_id: id, type_name: type }
-      }
+      { code: '210537c440', searchForm: { factory_id: id, type_name: type } }
     ],
-    [
-      '河道',
-      {
-        code: '2120332085',
-        searchForm: Object.assign(
-          { type: type },
-          type === '河道' ? { river_id: id } : { factory_id: id }
-        )
-      }
-    ],
-    [
-      '内涝',
-      {
-        code: '2120332085',
-        searchForm: Object.assign(
-          { type: type },
-          type === '积水监测点' ? { river_id: id } : { factory_id: id }
-        )
-      }
-    ]
+    ['河道', { code: '2120332085', searchForm: tempSearch }],
+    ['内涝', { code: '2120332085', searchForm: tempSearch2 }]
   ])
-  const { code, searchForm } = configMap.get(route.query.secondType)
-  const dataList = await commonGatewayApi(code, searchForm)
-  if (Array.isArray(dataList)) {
-    const tempDataMap = new Map()
+  return configMap.get(secondType)
+}
+
+const reduceDataListByType = (dataList, type) => {
+  const tempDataMap = new Map()
+  if (['河道', '取水水源地'].includes(type)) {
     dataList.reduce((acc, cur) => {
       const { factory_name: name, alarm_flag: flag } = cur
       const tempData = acc.get(name)
@@ -75,8 +63,55 @@ const getDataList = async () => {
       }
       return acc
     }, tempDataMap)
+  } else {
+    if (['污水处理厂'].includes(type)) {
+      dataList.reduce((acc, cur) => {
+        const { item_type, check_item, alarm_flag: flag } = cur
+        const tempList = sewageMonitorTypeMap.get(item_type)
+        const { title } =
+          tempList.find((item) => item.keys.includes(check_item)) || {}
+        const tempData = acc.get(title)
+        if (tempData) {
+          tempData.list.push(cur)
+          if (tempData.status !== '0') {
+            tempData.status = !['-', '0'].includes(flag) ? '0' : '1'
+          }
+        } else {
+          acc.set(title, {
+            list: [cur],
+            status: !['-', '0'].includes(flag) ? '0' : '1'
+          })
+        }
+        return acc
+      }, tempDataMap)
+    } else {
+      dataList.reduce((acc, cur) => {
+        const { check_item, alarm_flag: flag } = cur
+        const name = monitorTypeMap.get(check_item)
+        const tempData = acc.get(name)
+        if (tempData) {
+          tempData.list.push(cur)
+          if (tempData.status !== '0') {
+            tempData.status = !['-', '0'].includes(flag) ? '0' : '1'
+          }
+        } else {
+          acc.set(name, {
+            list: [cur],
+            status: !['-', '0'].includes(flag) ? '0' : '1'
+          })
+        }
+        return acc
+      }, tempDataMap)
+    }
+  }
+  return tempDataMap
+}
 
-    dataMap.value = tempDataMap
+const getDataList = async () => {
+  const { code, searchForm } = getApiConfig(route.query.secondType)
+  const dataList = await commonGatewayApi(code, searchForm)
+  if (Array.isArray(dataList)) {
+    dataMap.value = reduceDataListByType(dataList, props.detail.type)
   }
 }
 
@@ -176,8 +211,8 @@ const changeTab = (index, data) => {
 
 const expandId = ref()
 const expandItem = (data) => {
-  const { factory_id, item_name } = data
-  expandId.value = factory_id + item_name
+  const { factory_id, item_name, item_type } = data
+  expandId.value = factory_id + item_name + item_type
   activeIndex.value = 0
   getChartData(tabConfigList[0], data)
 }
@@ -198,7 +233,9 @@ const expandItem = (data) => {
         </div>
       </div>
     </div>
-    <div class="monitor-type">{{ detail.type_2 }}</div>
+    <div class="monitor-type" v-if="detail.type_2 === '取水口'">
+      {{ detail.type_2 }}
+    </div>
     <div class="info-ctx">
       <div class="ctx-item" v-for="(key, index) in dataMap.keys()" :key="index">
         <div class="item-header">
@@ -232,7 +269,9 @@ const expandItem = (data) => {
           </div>
           <div
             class="inner-ctx"
-            v-if="expandId === item.factory_id + item.item_name"
+            v-if="
+              expandId === item.factory_id + item.item_name + item.item_type
+            "
           >
             <div class="value-wrap">
               <div class="value-item">

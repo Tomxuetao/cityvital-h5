@@ -58,6 +58,13 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/water-detail.vue')
   },
   {
+    path: '/city-detail',
+    name: 'city-detail',
+    meta: { title: '市容景观详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/city-detail.vue')
+  },
+  {
     path: '/synergy',
     name: 'synergy',
     meta: { title: '城市治理多跨协同' },
