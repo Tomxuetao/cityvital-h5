@@ -159,7 +159,6 @@ const thirdTypeChange = (type) => {
         >
         </common-tabs>
       </div>
-
       <div class="ctx-wrap">
         <div class="ctx-inner">
           <custom-list

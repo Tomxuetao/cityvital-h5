@@ -73,7 +73,7 @@ export const getUserDataHandler = (corpId) => {
     return new Promise((resolve, reject) => {
       getAuthCodeApi(corpId)
         .then(async (code) => {
-          const token = await getCenterTokenApi({ authCode: code })
+          const { token } = await getCenterTokenApi({ authCode: code })
           alert(token)
           if (token) {
             const accessToken = await getUserTokenApi({ access_token: token })

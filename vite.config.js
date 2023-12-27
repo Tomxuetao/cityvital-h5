@@ -14,18 +14,17 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
+      '/oauth2': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.116'
+      },
       // 水设施河道下的设施图片
       '/water-img': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/water-img/, '')
-      },
-      '/oauth-server': {
-        secure: false,
-        changOrigin: true,
-        target: 'http://10.54.38.116',
-        rewrite: (path) => path.replace(/^\/oauth-server/, '')
       },
       '/back-server': {
         secure: false,

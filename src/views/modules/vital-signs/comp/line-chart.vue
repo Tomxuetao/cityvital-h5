@@ -1,6 +1,27 @@
 <script setup>
 import { ref, watch } from 'vue'
-import * as echarts from 'echarts'
+import * as echarts from 'echarts/core'
+import { LineChart } from 'echarts/charts'
+import { CanvasRenderer } from 'echarts/renderers'
+import {GridComponent,
+  LegendComponent,
+  TooltipComponent,
+  DatasetComponent,
+  TransformComponent} from 'echarts/components'
+
+import { LabelLayout, UniversalTransition } from 'echarts/features'
+
+echarts.use([
+  LineChart,
+  GridComponent,
+  CanvasRenderer,
+  LegendComponent,
+  TooltipComponent,
+  DatasetComponent,
+  TransformComponent,
+  LabelLayout,
+  UniversalTransition
+])
 
 const props = defineProps({
   dataList: {

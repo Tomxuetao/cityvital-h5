@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from 'vue'
 import dayjs from 'dayjs'
+import { useRoute } from 'vue-router'
 
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
@@ -13,13 +14,49 @@ const props = defineProps({
   }
 })
 
+const route = useRoute()
+
 const dataMap = ref(new Map())
 const getDataList = async () => {
-  const { factory_id, type } = props.detail
-  const dataList = await commonGatewayApi('210537c440', {
-    factory_id: factory_id,
-    type_name: type
-  })
+  const { factory_id: id, type } = props.detail
+  const configMap = new Map([
+    [
+      '供水',
+      {
+        code: '210537c440',
+        searchForm: { factory_id: id, type_name: type }
+      }
+    ],
+    [
+      '污水',
+      {
+        code: '210537c440',
+        searchForm: { factory_id: id, type_name: type }
+      }
+    ],
+    [
+      '河道',
+      {
+        code: '2120332085',
+        searchForm: Object.assign(
+          { type: type },
+          type === '河道' ? { river_id: id } : { factory_id: id }
+        )
+      }
+    ],
+    [
+      '内涝',
+      {
+        code: '2120332085',
+        searchForm: Object.assign(
+          { type: type },
+          type === '积水监测点' ? { river_id: id } : { factory_id: id }
+        )
+      }
+    ]
+  ])
+  const { code, searchForm } = configMap.get(route.query.secondType)
+  const dataList = await commonGatewayApi(code, searchForm)
   if (Array.isArray(dataList)) {
     const tempDataMap = new Map()
     dataList.reduce((acc, cur) => {

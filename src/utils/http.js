@@ -55,7 +55,7 @@ export function createHttp() {
 
 export const http = createHttp()
 
-export const oauth2Server = '/oauth-server/oauth2'
+export const oauth2Server = '/oauth2'
 
 export const backEndServer = '/back-server/cv_data/api/v1'
 
