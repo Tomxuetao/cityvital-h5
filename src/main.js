@@ -15,9 +15,7 @@ import '@/assets/scss/index.scss'
 
 import VConsole from 'vconsole'
 
-if (import.meta.env.MODE !== 'production') {
-  new VConsole({ theme: 'dark' })
-}
+new VConsole({ theme: 'dark' })
 
 const app = createApp(App)
 

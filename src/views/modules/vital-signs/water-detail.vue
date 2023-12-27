@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { commonGatewayApi, commonBackEndApi } from '@/api/common-api'
+import { commonGatewayApi } from '@/api/common-api'
 
 import CommonTitle from '@/views/common/common-title.vue'
 import AlarmList from '@/views/modules/vital-signs/comp/alarm-list.vue'
@@ -47,32 +47,6 @@ const getDetailData = async () => {
     })
 }
 getDetailData()
-
-const getAlarmList = async () => {
-  await commonBackEndApi('event/listAlarms', {}, 'post')
-}
-
-/**
- * 获取监测信息
- * @returns {Promise<void>}
- */
-const getMonitorList = async () => {
-  await commonGatewayApi('210537c440', {
-    factory_id: props.id,
-    type_name: props.name
-  })
-}
-
-/**
- * 获取处置信息
- * @returns {Promise<void>}
- */
-const getHandleList = async () => {
-  await commonGatewayApi('210537c440', {
-    factory_id: props.id,
-    type_name: props.name
-  })
-}
 
 const tabList = [{ text: '监测信息' }, { text: '报警信息' }]
 
@@ -128,7 +102,10 @@ const changeTabHandler = (index) => {
               v-if="activeTabIndex === 0"
               :detail="detailData"
             ></monitor-info>
-            <alarm-list v-if="activeTabIndex === 1"></alarm-list>
+            <alarm-list
+              v-if="activeTabIndex === 1"
+              :detail="detailData"
+            ></alarm-list>
           </template>
         </div>
       </div>
