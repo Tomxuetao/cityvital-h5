@@ -13,7 +13,15 @@ const props = defineProps({
   <div class="alarm-card">
     <div class="card-title">{{ itemData.title }}</div>
     <div class="card-inner">
-      <div class="inner-item">
+      <div
+        class="inner-item"
+        @click="
+          $router.push({
+            name: 'handle-list',
+            query: { eventId: itemData.eventId },
+          })
+        "
+      >
         <div class="item-label">监测超阈值：</div>
         <div class="item-text">
           <span

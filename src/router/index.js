@@ -65,6 +65,13 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/city-detail.vue')
   },
   {
+    path: '/handle-list',
+    name: 'handle-list',
+    meta: { title: '报警处置' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/handle-list.vue')
+  },
+  {
     path: '/synergy',
     name: 'synergy',
     meta: { title: '城市治理多跨协同' },

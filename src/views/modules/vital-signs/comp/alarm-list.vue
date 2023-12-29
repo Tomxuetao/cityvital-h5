@@ -1,5 +1,4 @@
 <script setup>
-import dayjs from 'dayjs'
 import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -33,9 +32,6 @@ const listConfig = {
     secondType: route.query.secondType
   }
 }
-
-const curDate = dayjs().format('YYYY-MM-DD')
-const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
 let searchForm = reactive({
   alarming: undefined,
