@@ -74,7 +74,7 @@ watch(
     <div class="trigger-wrap" @click.stop="show = true">
       <div class="trigger-text">{{ selectName }}</div>
       <img
-        class="trigger-img"
+        :class="['trigger-img', show ? 'trigger-active' : '']"
         src="@/views/common/img/icon-arrow.webp"
         alt=""
       />
@@ -114,6 +114,10 @@ watch(
       width: 12px;
       height: 12px;
       object-fit: cover;
+    }
+
+    .trigger-active {
+      transform: rotate(180deg);
     }
   }
 }

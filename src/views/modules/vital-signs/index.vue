@@ -34,7 +34,7 @@ const curDate = dayjs().format('YYYY-MM-DD')
 const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
 let searchForm = reactive({
-  alarming: undefined,
+  alarming: 'true',
   thirdType: undefined,
   eventStatus: undefined,
   sortTimeFiled: 'latestCheckTime',
@@ -52,7 +52,7 @@ const isTabChange = ref(false)
 const tabChangeHandler = (index, level) => {
   isTabChange.value = true
   searchForm = Object.assign(searchForm, {
-    alarming: undefined,
+    alarming: 'true',
     thirdType: undefined,
     eventStatus: undefined,
     latestCheckEndTime: `${nextDate} 00:00:00`,

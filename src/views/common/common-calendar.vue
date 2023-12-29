@@ -23,7 +23,8 @@ const formatDate = (date) => `${date.getMonth() + 1}-${date.getDate()}`
 const show = ref(false)
 
 const [start, end] = props.modelValue
-const tempLabel = ref(
+
+const selectName = ref(
   props.modelValue.length > 1
     ? `${formatDate(start)} - ${formatDate(end)}`
     : props.label
@@ -32,7 +33,7 @@ const tempLabel = ref(
 const onConfirm = (values) => {
   show.value = false
   const [start, end] = values
-  tempLabel.value = `${formatDate(start)} - ${formatDate(end)}`
+  selectName.value = `${formatDate(start)} - ${formatDate(end)}`
   emit('update:modelValue', values)
 }
 </script>
@@ -40,9 +41,9 @@ const onConfirm = (values) => {
 <template>
   <div class="common-calendar">
     <div class="trigger-wrap" @click.stop="show = true">
-      <div class="trigger-text">{{ tempLabel }}</div>
+      <div class="trigger-text">{{ selectName }}</div>
       <img
-        class="trigger-img"
+        :class="['trigger-img', show ? 'trigger-active' : '']"
         src="@/views/common/img/icon-arrow.webp"
         alt=""
       />
@@ -82,6 +83,10 @@ const onConfirm = (values) => {
       width: 12px;
       height: 12px;
       object-fit: cover;
+    }
+
+    .trigger-active {
+      transform: rotate(180deg);
     }
   }
 }

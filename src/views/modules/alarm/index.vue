@@ -1,5 +1,6 @@
 <script setup>
 import CustomList from '@/views/common/custom-list.vue'
+import CommonCascader from '@/views/common/common-cascader.vue'
 import AlarmCard from '@/views/modules/alarm/comp/alarm-card.vue'
 
 import { reactive, ref } from 'vue'
@@ -150,13 +151,13 @@ const cascaderChange = (list) => {
       </template>
     </custom-list>
   </div>
-  <custom-cascader
+  <common-cascader
     :list="treeList"
     :show="showPopup"
     @clear="cascaderChange"
     @confirm="cascaderChange"
   >
-  </custom-cascader>
+  </common-cascader>
 </template>
 
 <style scoped lang="scss">
