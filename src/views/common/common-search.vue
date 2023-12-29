@@ -1,21 +1,27 @@
 <script setup>
-
-const showAction = () => {
-  console.log(123)
-}
+const props = defineProps({
+  showInput: {
+    type: Boolean,
+    default: false
+  }
+})
 </script>
 
 <template>
   <form class="common-input" action>
-    <van-search v-bind="$attrs">
+    <van-search
+      v-bind="$attrs"
+      :class="showInput ? 'input-show' : 'input-hide'"
+    >
       <template #left-icon>
-        <div class="trigger-wrap" @click.stop="showAction">
-          <div class="trigger-text">报警等级</div>
-          <img class="trigger-img" src="@/views/common/img/icon-arrow.webp" alt=""/>
-        </div>
+        <slot name="custom-select"></slot>
       </template>
       <template #right-icon>
-        <img class="search-img" src="@/views/common/img/icon-search.webp" alt=""/>
+        <img
+          class="search-img"
+          src="@/views/common/img/icon-search.webp"
+          alt=""
+        />
       </template>
     </van-search>
   </form>
@@ -26,10 +32,10 @@ const showAction = () => {
   :deep(.van-search) {
     padding: 0;
     border-radius: 6px;
-    background: #F5F7FA;
+    background: #f5f7fa;
 
     .van-search__content {
-      background: #F5F7FA;
+      background: #f5f7fa;
       border-radius: 6px;
       padding-left: 14px;
 
@@ -51,9 +57,8 @@ const showAction = () => {
           .trigger-img {
             width: 12px;
             height: 12px;
-            margin-left: 6px;
             object-fit: cover;
-            margin-right: 12px;
+            margin: 0 6px;
           }
         }
       }
@@ -64,6 +69,14 @@ const showAction = () => {
           height: 16px;
           object-fit: cover;
         }
+      }
+    }
+  }
+
+  .input-hide {
+    :deep(.van-search__content) {
+      input {
+        visibility: hidden;
       }
     }
   }

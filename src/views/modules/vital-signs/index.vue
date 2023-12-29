@@ -1,15 +1,22 @@
 <script setup>
-import { reactive, ref } from 'vue'
-import { vitalSignsTabs } from '@/config'
+import dayjs from 'dayjs'
+import { nextTick, reactive, ref, watch } from 'vue'
 
 import { useCommonStore } from '@/store'
 import EmptyPage from '@/views/common/empty-page.vue'
 import CustomList from '@/views/common/custom-list.vue'
 import CommonTabs from '@/views/common/common-tabs.vue'
-import CommonInput from '@/views/common/common-input.vue'
+import CommonSheet from '@/views/common/common-sheet.vue'
 import ThirdFilter from '@/views/common/third-filter.vue'
+import CommonSearch from '@/views/common/common-search.vue'
+import CommonCalendar from '@/views/common/common-calendar.vue'
 import CityCard from '@/views/modules/vital-signs/comp/city-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
+
+import {mapToList,
+  eventStatusMap,
+  deviceStatusMap,
+  vitalSignsTabs} from '@/config'
 
 const cardCompsMap = new Map([
   [2, CityCard],
@@ -17,13 +24,40 @@ const cardCompsMap = new Map([
 ])
 
 const commonState = useCommonStore()
-
 const tabConfigList = vitalSignsTabs
 
 const activeIndex = ref(0)
 const areaDataList = ref([])
 const thirdTypeList = ref([])
+
+const curDate = dayjs().format('YYYY-MM-DD')
+const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
+
+let searchForm = reactive({
+  alarming: undefined,
+  thirdType: undefined,
+  eventStatus: undefined,
+  sortTimeFiled: 'latestCheckTime',
+  latestCheckEndTime: `${nextDate} 00:00:00`,
+  latestCheckStartTime: `${curDate} 00:00:00`
+})
+
+const defaultDateRange = ref([
+  new Date(searchForm.latestCheckStartTime),
+  new Date(searchForm.latestCheckEndTime)
+])
+
+const customListRef = ref()
+const isTabChange = ref(false)
 const tabChangeHandler = (index, level) => {
+  isTabChange.value = true
+  searchForm = Object.assign(searchForm, {
+    alarming: undefined,
+    thirdType: undefined,
+    eventStatus: undefined,
+    latestCheckEndTime: `${nextDate} 00:00:00`,
+    latestCheckStartTime: `${curDate} 00:00:00`
+  })
   const tempList =
     tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
@@ -32,6 +66,9 @@ const tabChangeHandler = (index, level) => {
       (item) => item.model === title
     )
   }
+  nextTick(() => {
+    isTabChange.value = false
+  })
 }
 
 const getAreaDataList = async () => {
@@ -40,17 +77,28 @@ const getAreaDataList = async () => {
 }
 getAreaDataList()
 
-const searchForm = reactive({
-  thirdType: undefined,
-  factoryName: undefined
-})
+watch(
+  () => defaultDateRange.value,
+  (dateRange) => {
+    const [start, end] = dateRange
+    searchForm.latestCheckStartTime = `${dayjs(start).format(
+      'YYYY-MM-DD'
+    )} 00:00:00`
+    searchForm.latestCheckEndTime = `${dayjs(end).format(
+      'YYYY-MM-DD'
+    )} 00:00:00`
+  }
+)
 
-const customListRef = ref()
-
-const thirdTypeChange = (type) => {
-  searchForm.thirdType = type
-  customListRef.value.getDataList(searchForm)
-}
+watch(
+  () => searchForm,
+  () => {
+    if (!isTabChange.value) {
+      customListRef.value.getDataList(searchForm)
+    }
+  },
+  { deep: true, immediate: false }
+)
 </script>
 
 <template>
@@ -73,6 +121,7 @@ const thirdTypeChange = (type) => {
             v-if="tabConfigList[activeIndex].children?.length"
             ref="customListRef"
             :key="activeIndex"
+            :default-search-form="searchForm"
             :tab-config-list="tabConfigList[activeIndex].children"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
@@ -93,13 +142,32 @@ const thirdTypeChange = (type) => {
               <div class="search-wrap">
                 <third-filter
                   v-model="searchForm.thirdType"
-                  :type-list="thirdTypeList"
-                  @change="thirdTypeChange"
+                  :list="thirdTypeList"
                 ></third-filter>
-                <common-input
-                  v-model="searchForm.factoryName"
-                  placeholder="请输入名称"
-                ></common-input>
+                <common-search>
+                  <template #custom-select>
+                    <div class="select-wrap">
+                      <common-calendar
+                        v-model="defaultDateRange"
+                        label="时间选择"
+                        :default-date="defaultDateRange"
+                      >
+                      </common-calendar>
+                      <common-sheet
+                        v-model="searchForm.alarming"
+                        :list="mapToList(deviceStatusMap)"
+                        label="设施状态"
+                      >
+                      </common-sheet>
+                      <common-sheet
+                        v-model="searchForm.eventStatus"
+                        :list="mapToList(eventStatusMap)"
+                        label="处置状态"
+                      >
+                      </common-sheet>
+                    </div>
+                  </template>
+                </common-search>
               </div>
             </template>
           </custom-list>
@@ -170,10 +238,13 @@ const thirdTypeChange = (type) => {
         .search-wrap {
           padding: 12px 16px 0 16px;
 
+          .select-wrap {
+            display: flex;
+          }
+
           .third-wrap {
             display: flex;
             gap: 6px;
-            padding-bottom: 12px;
 
             .third-item {
               height: 32px;

@@ -1,10 +1,15 @@
 <script setup>
+import dayjs from 'dayjs'
+import { reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
+
+import { deviceStatusMap, eventStatusMap, mapToList } from '@/config'
 
 import CommonList from '@/views/common/common-list.vue'
 import CommonTitle from '@/views/common/common-title.vue'
-import CommonInput from '@/views/common/common-input.vue'
-
+import CommonSheet from '@/views/common/common-sheet.vue'
+import CommonSearch from '@/views/common/common-search.vue'
+import CommonCalendar from '@/views/common/common-calendar.vue'
 import AlarmCard from '@/views/modules/vital-signs/comp/alarm-card.vue'
 
 const props = defineProps({
@@ -28,6 +33,20 @@ const listConfig = {
     secondType: route.query.secondType
   }
 }
+
+const curDate = dayjs().format('YYYY-MM-DD')
+const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
+
+let searchForm = reactive({
+  alarming: undefined,
+  thirdType: undefined,
+  eventStatus: undefined,
+  sortTimeFiled: 'latestCheckTime',
+  latestCheckEndTime: undefined,
+  latestCheckStartTime: undefined
+})
+
+const defaultDateRange = ref([])
 </script>
 
 <template>
@@ -35,11 +54,34 @@ const listConfig = {
     <div class="header-wrap">
       <common-title text="报警信息"></common-title>
       <div class="header-inner">
-        <common-input></common-input>
+        <common-search>
+          <template #custom-select>
+            <div class="select-wrap">
+              <common-calendar
+                v-model="defaultDateRange"
+                label="时间选择"
+                :default-date="defaultDateRange"
+              >
+              </common-calendar>
+              <common-sheet
+                v-model="searchForm.alarming"
+                :list="mapToList(deviceStatusMap)"
+                label="设施状态"
+              >
+              </common-sheet>
+              <common-sheet
+                v-model="searchForm.eventStatus"
+                :list="mapToList(eventStatusMap)"
+                label="处置状态"
+              >
+              </common-sheet>
+            </div>
+          </template>
+        </common-search>
       </div>
     </div>
     <div class="alarm-ctx">
-      <common-list :config="listConfig">
+      <common-list :config="listConfig" :default-search-form="searchForm">
         <template #card-item="{ data }">
           <alarm-card :item-data="data"></alarm-card>
         </template>
@@ -53,6 +95,10 @@ const listConfig = {
   .header-wrap {
     .header-inner {
       padding: 0 16px;
+
+      .select-wrap {
+        display: flex;
+      }
     }
   }
 

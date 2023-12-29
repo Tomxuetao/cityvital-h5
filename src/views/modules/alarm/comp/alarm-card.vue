@@ -1,13 +1,11 @@
 <script setup>
 import CommonTitle from '@/views/common/common-title.vue'
-import { useRouter } from 'vue-router'
 
 const props = defineProps({
   item: {
     type: Object,
     required: true,
-    default: () => {
-    }
+    default: () => {}
   }
 })
 
@@ -21,18 +19,14 @@ const alarmLevelMap = new Map([
 <template>
   <div
     class="card-wrap"
-    @click="$router.push({
-       name: 'alarm-detail',
-       query: {
-         eventId: item.event_id,
-         name: item.factory_name,
-         level: item.alarm_level,
-         status: item.alarm_status
-       }
-    })"
+    @click="
+      $router.push({ name: 'alarm-detail', query: { eventId: item.event_id } })
+    "
   >
     <common-title :text="item.factory_name">
-      <div :class="['alarm-level', 'level-' + item.alarm_level]">{{ alarmLevelMap.get(item.alarm_level) }}</div>
+      <div :class="['alarm-level', 'level-' + item.alarm_level]">
+        {{ alarmLevelMap.get(item.alarm_level) }}
+      </div>
     </common-title>
     <div class="card-inner">
       <div class="inner-item">
@@ -67,15 +61,15 @@ const alarmLevelMap = new Map([
   }
 
   .level-1 {
-    background-color: #FF5167;
+    background-color: #ff5167;
   }
 
   .level-2 {
-    background-color: #FF6837;
+    background-color: #ff6837;
   }
 
   .level-3 {
-    background-color: #FFB251;
+    background-color: #ffb251;
   }
 
   .card-inner {

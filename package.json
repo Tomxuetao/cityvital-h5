@@ -11,7 +11,7 @@
     "commit": "git add . && git-cz",
     "version": "changeset version",
     "preinstall": "npx only-allow pnpm",
-    "fix": "eslint --ext .js,.vue src --fix"
+    "fix": "eslint --ext .js,.ts,.vue src --fix"
   },
   "repository": {
     "type": "git",

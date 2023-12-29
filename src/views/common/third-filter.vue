@@ -2,32 +2,34 @@
 import { ref } from 'vue'
 
 const props = defineProps({
-  typeList: {
+  modelValue: {},
+  list: {
     type: Array,
     required: true
   }
 })
 
-const emit = defineEmits(['change'])
+const emit = defineEmits(['update:modelValue'])
 
-const activeType = ref(undefined)
-const thirdTypeChange = (type) => {
-  if (activeType.value === type) {
-    activeType.value = undefined
+const active = ref(undefined)
+const typeChange = (type) => {
+  if (type === active.value) {
+    emit('update:modelValue', undefined)
+    active.value = undefined
   } else {
-    activeType.value = type
+    emit('update:modelValue', type)
+    active.value = type
   }
-  emit('change', activeType.value)
 }
 </script>
 
 <template>
   <div class="third-wrap">
     <div
-      v-for="(item, index) in typeList"
+      v-for="(item, index) in list"
       :key="index"
-      :class="['third-item', activeType === item.type ? 'item-active' : '']"
-      @click="() => thirdTypeChange(item.type)"
+      :class="['third-item', modelValue === item.type ? 'item-active' : '']"
+      @click="() => typeChange(item.type)"
     >
       {{ item.type }}
     </div>

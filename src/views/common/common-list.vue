@@ -1,5 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { useCommonStore } from '@/store'
 
 import { commonApi } from '@/api/common-api'
 import EmptyPage from '@/views/common/empty-page.vue'
@@ -13,8 +14,14 @@ const props = defineProps({
     type: Number,
     required: false,
     default: () => 0
+  },
+  defaultSearchForm: {
+    type: Object,
+    required: false,
+    default: () => {}
   }
 })
+const commonState = useCommonStore()
 
 const dataList = ref([])
 const dataLoading = ref(true)
@@ -26,7 +33,37 @@ let searchForm = reactive({
   pageSize: 10
 })
 
-const getDataListHandler = (dataForm = {}) => {
+/**
+ * 构建搜素条件
+ * @param defaultSearch
+ * @param customForm
+ * @param dataForm
+ * @returns {Promise<unknown>}
+ */
+const buildSearchForm = async (defaultSearch, customForm, dataForm) => {
+  const tempSearchForm = Object.assign(
+    {},
+    defaultSearch,
+    customForm,
+    dataForm || {}
+  )
+  const { alarming, originType, secondType, thirdType } = tempSearchForm
+  if (alarming !== undefined) {
+    const alarmList = await commonState.initAlarmListAction()
+    let tempList = alarmList.filter(
+      (item) =>
+        item.page === originType &&
+        item.model === secondType &&
+        (thirdType ? item.type === thirdType : true)
+    )
+    tempSearchForm.alarmingFactoryIds = tempList.map((item) => item.factory_id)
+  } else {
+    tempSearchForm.alarmingFactoryIds = undefined
+  }
+  return tempSearchForm
+}
+
+const getDataListHandler = async (dataForm = {}) => {
   dataLoading.value = true
   const {
     code,
@@ -34,19 +71,24 @@ const getDataListHandler = (dataForm = {}) => {
     isIndexServer = true,
     customForm = {}
   } = props.config
-  commonApi(code, Object.assign(searchForm, customForm, dataForm || {}), {
+  const tempSearchForm = await buildSearchForm(
+    props.defaultSearchForm,
+    customForm,
+    dataForm
+  )
+  commonApi(code, Object.assign(searchForm, tempSearchForm), {
     method: method,
     isIndexServer: isIndexServer
   })
     .then(({ list, total }) => {
-      vanLoadingRef.value = false
       dataLoading.value = false
+      vanLoadingRef.value = false
       dataList.value =
         searchForm.pageNum === 1 ? list : [...dataList.value, ...list]
       loadFinished.value = Number(total) <= dataList.value.length
       searchForm.pageNum += 1
     })
-    .finally(() => {
+    .catch(() => {
       vanLoadingRef.value = false
       dataLoading.value = false
       loadFinished.value = true

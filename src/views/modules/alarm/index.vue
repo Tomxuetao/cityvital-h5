@@ -131,7 +131,8 @@ const cascaderChange = (list) => {
               '监测领域'
             "
             @open="showPopup = true"
-          />
+          >
+          </van-dropdown-item>
           <van-dropdown-item
             v-model="searchForm.alarm_level"
             :options="alarmLevelList"

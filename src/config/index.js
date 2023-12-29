@@ -1,5 +1,3 @@
-import dayjs from 'dayjs'
-
 /**
  * 水河道设施监测类型
  * @type {Map<string, string>}
@@ -86,15 +84,6 @@ export const sewageMonitorTypeMap = new Map([
   ]
 ])
 
-const curDate = dayjs().format('YYYY-MM-DD')
-const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
-
-const commonForm = {
-  sortTimeFiled: 'latestCheckTime',
-  latestCheckEndTime: `${nextDate} 00:00:00`,
-  latestCheckStartTime: `${curDate} 00:00:00`
-}
-
 const commonConfig = {
   method: 'post',
   isIndexServer: false,
@@ -105,41 +94,29 @@ const commonConfig = {
  * 生命体征Tabs配置
  * @type {Array<{ title: string, children: Array<{ title: string, customForm: {}}>}>}
  */
-export const vitalSignsTabs = [
+export const vitalSignsTabs = Object.freeze([
   {
     title: '水设施河道',
     children: [
       {
         title: '供水',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '供水' },
-          commonForm
-        )
+        customForm: { originType: '水设施河道', secondType: '供水' }
       },
       {
         title: '污水',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '污水' },
-          commonForm
-        )
+        customForm: { originType: '水设施河道', secondType: '污水' }
       },
       {
         title: '河道',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '河道' },
-          commonForm
-        )
+        customForm: { originType: '水设施河道', secondType: '河道' }
       },
       {
         title: '内涝',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '水设施河道', secondType: '内涝' },
-          commonForm
-        )
+        customForm: { originType: '水设施河道', secondType: '内涝' }
       }
     ]
   },
@@ -153,26 +130,17 @@ export const vitalSignsTabs = [
       {
         title: '开关箱',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '开关箱' },
-          commonForm
-        )
+        customForm: { originType: '市容景观', secondType: '开关箱' }
       },
       {
         title: '户外广告',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '户外广告' },
-          commonForm
-        )
+        customForm: { originType: '市容景观', secondType: '户外广告' }
       },
       {
         title: '户外电子屏',
         ...commonConfig,
-        customForm: Object.assign(
-          { originType: '市容景观', secondType: '户外电子屏' },
-          commonForm
-        )
+        customForm: { originType: '市容景观', secondType: '户外电子屏' }
       }
     ]
   },
@@ -188,4 +156,61 @@ export const vitalSignsTabs = [
     title: '地铁保护区',
     children: []
   }
-]
+])
+
+/**
+ * 设施状态
+ * @type {Map<string, string>}
+ */
+export const deviceStatusMap = new Map([
+  ['false', '正常'],
+  ['true', '异常']
+])
+
+/**
+ * 处置状态
+ * @type {Map<string, string>}
+ */
+export const eventStatusMap = new Map([
+  ['0', '未处置'],
+  ['10', '已派遣'],
+  ['11', '已反馈'],
+  ['12', '已办结']
+])
+
+/**
+ * 报警等级
+ * @type {Map<number, string>}
+ */
+export const alarmLevelMap = new Map([
+  [1, '一级报警'],
+  [2, '二级报警'],
+  [2, '三级报警']
+])
+
+/**
+ * 事件处置状态
+ * @type {Map<null, string>}
+ */
+export const dealStatusMap = new Map([
+  [null, '未处置'],
+  ['distribute', '已派遣'],
+  ['handle', '已反馈'],
+  ['settle', '已办结']
+])
+/**
+ * 将Map转换成数组
+ * @param map
+ * @returns {*[]}
+ */
+export const mapToList = (map = new Map()) => {
+  const list = []
+  map.forEach((value, key) => {
+    list.push({
+      text: value,
+      value: key,
+      name: value
+    })
+  })
+  return list
+}

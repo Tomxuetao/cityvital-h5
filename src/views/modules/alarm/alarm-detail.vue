@@ -1,48 +1,42 @@
 <script setup>
+import { reactive, ref } from 'vue'
+import { alarmLevelMap, dealStatusMap } from '@/config'
+import { commonBackEndApi } from '@/api/common-api'
+
 import CommonTitle from '@/views/common/common-title.vue'
 
-import { commonBackEndApi } from '@/api/common-api'
-import { reactive, ref } from 'vue'
-
 const props = defineProps({
-  name: {
-    type: String,
-    required: true
-  },
-  level: {
-    type: String,
-    required: true
-  },
-  status: {
-    type: String,
-    required: true
-  },
   eventId: {
     type: String,
     required: true
   }
 })
 
-const alarmLevelMap = new Map([
-  ['1', '一级报警'],
-  ['2', '二级报警'],
-  ['3', '三级报警']
-])
+const processList = ref([])
 
 let detailData = reactive({})
 
 const dataLoading = ref(true)
 
-const getDetailHandler = async () => {
-  const { list } = await commonBackEndApi('event_process_logs/list', {
-    eventId: props.eventId,
-    pageSize: 999
-  })
-  if (Array.isArray(list) && list.length) {
-    const [data] = list
-    detailData = Object.assign({}, data || {})
-  }
-  dataLoading.value = false
+const getDetailHandler = () => {
+  Promise.all([
+    commonBackEndApi('event/getEvent', { eventId: props.eventId }),
+    commonBackEndApi('event_process_logs/list', {
+      eventId: props.eventId,
+      pageSize: 999
+    })
+  ])
+    .then((dataList) => {
+      const [detail, { list }] = dataList
+      detailData = Object.assign({}, detail)
+      if (Array.isArray(list)) {
+        processList.value = list
+      }
+      dataLoading.value = false
+    })
+    .catch(() => {
+      dataLoading.value = false
+    })
 }
 
 getDetailHandler()
@@ -55,7 +49,7 @@ getDetailHandler()
         加载中...
       </van-loading>
       <template v-else>
-        <common-title :text="name"></common-title>
+        <common-title :text="detailData.title"></common-title>
         <div class="card-wrap">
           <div class="card-title">基本信息</div>
           <div class="card-inner">
@@ -65,19 +59,23 @@ getDetailHandler()
             </div>
             <div class="inner-item">
               <div class="item-label">事件状态：</div>
-              <div class="item-text">{{ status }}</div>
+              <div class="item-text">
+                {{ dealStatusMap.get(detailData.handleType) }}
+              </div>
             </div>
             <div class="inner-item">
               <div class="item-label">生成时间：</div>
-              <div class="item-text">{{ detailData.createTime }}</div>
+              <div class="item-text">{{ detailData.eventTime }}</div>
             </div>
             <div class="inner-item">
               <div class="item-label">报警等级：</div>
-              <div class="item-text">{{ alarmLevelMap.get(level) }}</div>
+              <div class="item-text">
+                {{ alarmLevelMap.get(detailData.extraMap.latestAlarmLevel) }}
+              </div>
             </div>
             <div class="inner-item">
               <div class="item-label">事件描述：</div>
-              <div class="item-text">{{ detailData.eventRemark }}</div>
+              <div class="item-text">{{ detailData.content }}</div>
             </div>
           </div>
         </div>

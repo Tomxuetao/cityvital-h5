@@ -1,23 +1,12 @@
 <script setup>
+import { dealStatusMap, alarmLevelMap } from '@/config'
+
 const props = defineProps({
   itemData: {
     type: Object,
     required: true
   }
 })
-
-const dealStatusMap = new Map([
-  [null, '未处置'],
-  ['distribute', '已派遣'],
-  ['handle', '已反馈'],
-  ['settle', '已办结']
-])
-
-const alarmLevelMap = new Map([
-  [1, '一级报警'],
-  [2, '二级报警'],
-  [3, '三级报警']
-])
 </script>
 
 <template>
@@ -49,7 +38,15 @@ const alarmLevelMap = new Map([
           {{ alarmLevelMap.get(itemData.extraMap.latestAlarmLevel) }}
         </div>
       </div>
-      <div class="inner-item">
+      <div
+        class="inner-item"
+        @click="
+          $router.push({
+            name: 'alarm-detail',
+            query: { eventId: itemData.eventId },
+          })
+        "
+      >
         <div class="item-label">处置状态：</div>
         <div class="item-text text-line text-color">
           {{ dealStatusMap.get(itemData.handleType) }}

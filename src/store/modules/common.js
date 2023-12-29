@@ -5,10 +5,15 @@ import { commonGatewayApi } from '@/api/common-api'
 export const useCommonStore = defineStore('common', {
   state: () => ({
     // 领域分类
-    areaListState: []
+    areaListState: [],
+    // 告警设施
+    alarmListState: []
   }),
-  getters: {},
   actions: {
+    /**
+     * 获取领域分类
+     * @returns {Promise<unknown>}
+     */
     initAreaListAction() {
       return new Promise((resolve) => {
         if (!this.areaListState.length) {
@@ -26,6 +31,30 @@ export const useCommonStore = defineStore('common', {
             })
         } else {
           resolve(this.areaListState)
+        }
+      })
+    },
+    /**
+     * 获取异常设施
+     * @returns {Promise<unknown>}
+     */
+    initAlarmListAction() {
+      return new Promise((resolve) => {
+        if (!this.alarmListState.length) {
+          commonGatewayApi('24810089d7')
+            .then((dataList) => {
+              if (Array.isArray(dataList)) {
+                this.alarmListState = dataList
+                resolve(dataList)
+              } else {
+                resolve([])
+              }
+            })
+            .catch(() => {
+              resolve([])
+            })
+        } else {
+          resolve(this.alarmListState)
         }
       })
     }

@@ -5,9 +5,12 @@ import IndexCard from '@/views/modules/home/comp/index-card.vue'
 import { ref } from 'vue'
 import { getImgUrlFn } from '@/utils'
 import { useRouter } from 'vue-router'
+import { useCommonStore } from '@/store'
 
 import { getSignNumApi } from '@/api/home-api'
 import { commonGatewayApi } from '@/api/common-api'
+
+const commonState = useCommonStore()
 
 const getImgUrl = getImgUrlFn('../views/modules/home/img')
 
@@ -235,6 +238,9 @@ const gotoOther = (routeName, num) => {
     })
   }
 }
+
+commonState.initAreaListAction()
+commonState.initAlarmListAction()
 </script>
 
 <template>

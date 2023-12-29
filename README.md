@@ -192,7 +192,7 @@ Git: [https://git.citycloud.com.cn:3000/project_cityvital/cityvital-h5](https://
 ```
 1、项目上用到的图片都采用webp的格式
 2、小的Icon使用`icon-`的前缀命名
-3、Icon意外的背景图以及其他形式的图片使用`img-`的前缀命名
+3、Icon以外的背景图以及其他形式的图片使用`img-`的前缀命名
 4、针对Icon依据从上到下、从左到右的索引来确定其名称
 5、针对每个模块的图片请放在模块下的img文件夹下
 6、多个Icon在页面上使用时，请调用utils/index.js下的getImgUrlFn的方法去加载

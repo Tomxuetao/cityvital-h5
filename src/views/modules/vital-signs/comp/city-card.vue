@@ -58,15 +58,7 @@ const alarmLevelMap = new Map([
       src="@/views/modules/vital-signs/img/icon-arrow.webp"
       alt=""
       @click="
-        $router.push({
-          name: 'alarm-detail',
-          query: {
-            eventId: data.eventId,
-            status: data.eventStatus,
-            name: data.extraMap.factoryName,
-            level: data.extraMap.latestAlarmLevel,
-          },
-        })
+        $router.push({ name: 'alarm-detail', query: { eventId: data.eventId } })
       "
     />
   </div>
@@ -97,7 +89,7 @@ const alarmLevelMap = new Map([
     .card-title {
       height: 24px;
       font-size: 16px;
-      color: #0482ff;
+      color: #333333;
       line-height: 24px;
       margin-bottom: 4px;
       @include ellipsis(1);

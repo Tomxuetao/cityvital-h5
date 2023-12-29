@@ -13,6 +13,11 @@ const props = defineProps({
   extendConfig: {
     type: Object,
     required: false
+  },
+  defaultSearchForm: {
+    type: Object,
+    required: false,
+    default: () => {}
   }
 })
 
@@ -109,7 +114,9 @@ defineExpose({
       :key="activeIndex"
       :index="activeIndex"
       :config="tabConfigList[activeIndex]"
+      :default-search-form="defaultSearchForm"
     >
+      {{ tabConfigList[activeIndex] }}
       <template #card-item="{ data }">
         <slot name="card-item" :data="data" :index="activeIndex" />
       </template>
