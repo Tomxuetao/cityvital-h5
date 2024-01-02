@@ -3,7 +3,7 @@ import { getEnvByUa } from '@/utils'
 import ready from 'gdt-jsapi/ready'
 import getAuthCode from 'gdt-jsapi/getAuthCode'
 
-import { http, backEndServer, oauth2Server, gatewayServer } from '@/utils/http'
+import { http, backEndServer, oauth2Server } from '@/utils/http'
 
 /**
  * 获取三中心Token通过浙政钉code

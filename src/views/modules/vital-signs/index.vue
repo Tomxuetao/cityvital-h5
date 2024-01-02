@@ -241,26 +241,6 @@ watch(
           .select-wrap {
             display: flex;
           }
-
-          .third-wrap {
-            display: flex;
-            gap: 6px;
-
-            .third-item {
-              height: 32px;
-              color: #333333;
-              padding: 0 12px;
-              font-size: 12px;
-              line-height: 32px;
-              border-radius: 6px;
-              background-color: #f5f7fa;
-            }
-
-            .item-active {
-              color: #0482ff;
-              background-color: rgba(4, 130, 255, 0.1);
-            }
-          }
         }
       }
     }

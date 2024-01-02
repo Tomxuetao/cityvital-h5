@@ -10,7 +10,9 @@ const props = defineProps({
 <template>
   <div class="item-wrap">
     <div class="item-text">{{ data.NUM }}</div>
-    <div class="item-title">{{ (data.DEFINE || '').replace('设备数', '') }}</div>
+    <div class="item-title">
+      {{ (data.DEFINE || "").replace("设备数", "") }}
+    </div>
   </div>
 </template>
 
@@ -18,8 +20,8 @@ const props = defineProps({
 .item-wrap {
   min-width: 72px;
   padding: 2px 12px;
-  background: #f5f7fa;
   border-radius: 6px;
+  background: #f5f7fa;
 
   .item-text {
     height: 24px;

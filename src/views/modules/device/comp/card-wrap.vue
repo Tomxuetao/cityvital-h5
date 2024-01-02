@@ -14,7 +14,11 @@ const activeIndex = ref(0)
 
 const secondaryActiveIndex = ref(0)
 
-const secondaryList = ref((props.list && props.list.length) > 0 ? props.list[activeIndex.value]?.children : [])
+const secondaryList = ref(
+  (props.list && props.list.length) > 0
+    ? props.list[activeIndex.value]?.children
+    : []
+)
 
 const changeIndex = (index, level) => {
   if (level === 1) {
@@ -30,16 +34,21 @@ const changeIndex = (index, level) => {
   }
 }
 
-watch(() => props.list, () => {
-  activeIndex.value = 0
-  secondaryActiveIndex.value = 0
-})
+watch(
+  () => props.list,
+  () => {
+    activeIndex.value = 0
+    secondaryActiveIndex.value = 0
+  }
+)
 </script>
 
 <template>
   <div class="card-wrap">
     <card-item
-      v-for="(item, index) in list" :data="item" :key="index"
+      v-for="(item, index) in list"
+      :data="item"
+      :key="index"
       :class="[index === activeIndex ? 'card-active' : '']"
       @click="changeIndex(index, 1)"
     >
@@ -47,7 +56,9 @@ watch(() => props.list, () => {
   </div>
   <div class="card-wrap">
     <card-item
-      v-for="(item, index) in secondaryList" :data="item" :key="index"
+      v-for="(item, index) in secondaryList"
+      :data="item"
+      :key="index"
       :class="[index === secondaryActiveIndex ? 'card-active' : '']"
       @click="changeIndex(index, 2)"
     >
@@ -56,7 +67,8 @@ watch(() => props.list, () => {
   <div class="card-wrap">
     <template v-if="secondaryList[secondaryActiveIndex]">
       <card-item
-        v-for="(item, index) in secondaryList[secondaryActiveIndex]?.children" :data="item"
+        v-for="(item, index) in secondaryList[secondaryActiveIndex]?.children"
+        :data="item"
         :key="index"
       >
       </card-item>
@@ -67,39 +79,42 @@ watch(() => props.list, () => {
 <style scoped lang="scss">
 .card-wrap {
   position: relative;
-  width: 327px;
   display: flex;
-  grid-gap: 8px;
   flex-wrap: wrap;
   padding: 12px 0;
+  margin: 0 -8px -8px 0;
+
+  .item-wrap {
+    margin: 0 8px 8px 0;
+  }
 
   .card-active {
     :deep(.item-text) {
-      color: #0482FF;
+      color: #0482ff;
     }
 
     :deep(.item-title) {
-      color: #0482FF;
+      color: #0482ff;
     }
   }
 
   &:nth-child(2n) {
     &:before {
       position: absolute;
-      content: '';
+      content: "";
       top: 0;
       width: 100%;
       height: 0.5px;
-      background-color: #EEEEEE;
+      background-color: #eeeeee;
     }
 
     &:after {
       position: absolute;
-      content: '';
-      bottom: 0;
+      content: "";
+      bottom: 8px;
       width: 100%;
       height: 0.5px;
-      background-color: #EEEEEE;
+      background-color: #eeeeee;
     }
   }
 }

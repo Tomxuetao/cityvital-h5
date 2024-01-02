@@ -8,8 +8,8 @@
     "changeset": "changeset",
     "preview": "vite preview",
     "prepare": "husky install",
-    "commit": "git add . && git-cz",
     "version": "changeset version",
+    "commit": "git add . && git-cz",
     "preinstall": "npx only-allow pnpm",
     "fix": "eslint --ext .js,.ts,.vue src --fix"
   },

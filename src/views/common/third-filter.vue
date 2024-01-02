@@ -39,8 +39,8 @@ const typeChange = (type) => {
 <style scoped lang="scss">
 .third-wrap {
   display: flex;
-  gap: 6px;
   padding-bottom: 12px;
+  margin: 0 -6px -6px 0;
 
   .third-item {
     height: 32px;
@@ -49,6 +49,7 @@ const typeChange = (type) => {
     font-size: 12px;
     line-height: 18px;
     border-radius: 6px;
+    margin: 0 6px 6px 0;
     background-color: #f5f7fa;
   }
 

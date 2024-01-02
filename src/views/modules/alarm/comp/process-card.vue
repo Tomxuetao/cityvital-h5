@@ -11,6 +11,14 @@ const props = defineProps({
   }
 })
 
+/**
+ * 组装处置、监管数据
+ * @param data
+ * @param title
+ * @param handleDept
+ * @param index
+ * @returns {{isRead: (string|string), time: string, title, content: (string|string)}|{isRead: undefined, time: *, title, content: string}}
+ */
 const assembleData = (data, title, handleDept = '', index = 0) => {
   const { operateTime, operatorOrg, operator, eventRemark, extraMap } = data
   if (operateTime) {
@@ -32,6 +40,12 @@ const assembleData = (data, title, handleDept = '', index = 0) => {
   }
 }
 
+/**
+ * 组装列表数据 - [派遣、处置\监管、结案]
+ * @param list
+ * @param emergencyDegree
+ * @returns {[{list: [{title: string}]},{list: *[]},{list: [{title: string}]}]}
+ */
 const assembleList = (list, emergencyDegree) => {
   const tempList = [...list]
   const resList = [
@@ -75,7 +89,9 @@ const assembleList = (list, emergencyDegree) => {
   // 节点2 - 处置、监管数据处理
   if (emergencyDegree === 3) {
     const tempData = tempList.find((item) => item.procedure === '处理中') || {}
-    resList[1].list.push(assembleData(tempData, '处置', partNames[tempIndex]))
+    resList[1].list.push(
+      assembleData(tempData, '处置', partNames[tempIndex], tempIndex)
+    )
   } else {
     // 处置数据
     const tempDisposeData =
@@ -150,14 +166,16 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
             :key="index2"
           >
             <div class="item-header">
-              <div class="header-title">{{ ctx.title }}</div>
-              <div class="header-time">{{ ctx.time }}</div>
+              <div class="header-ctx">
+                <div class="header-title">{{ ctx.title }}</div>
+                <div class="header-time">{{ ctx.time }}</div>
+              </div>
+              <div class="header-status" v-if="ctx.isRead === 'false'">
+                未读
+              </div>
             </div>
             <div class="item-text">
-              <div class="text-ctx">{{ ctx.content }}</div>
-              <div class="text-read" v-if="ctx.isRead !== undefined">
-                {{ ctx.isRead === "true" ? "已读" : "未读" }}
-              </div>
+              {{ ctx.content }}
             </div>
           </div>
         </div>
@@ -213,20 +231,33 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
             display: flex;
             margin-bottom: 4px;
             align-items: center;
+            justify-content: space-between;
 
-            .header-title {
-              height: 24px;
-              color: #333333;
-              font-weight: 600;
-              line-height: 24px;
-              margin-right: 12px;
+            .header-ctx {
+              display: flex;
+              align-items: center;
+              .header-title {
+                height: 24px;
+                color: #333333;
+                font-weight: 600;
+                line-height: 24px;
+                margin-right: 12px;
+              }
+
+              .header-time {
+                height: 22px;
+                font-size: 14px;
+                color: #999999;
+                line-height: 22px;
+              }
             }
 
-            .header-time {
+            .header-status {
+              padding: 5px 6px;
               height: 22px;
-              font-size: 14px;
-              color: #999999;
-              line-height: 22px;
+              font-size: 12px;
+              border-radius: 4px;
+              background-color: rgba(255, 240, 243, 1);
             }
           }
 
@@ -234,9 +265,6 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
             font-size: 14px;
             color: #666666;
             line-height: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
           }
         }
       }

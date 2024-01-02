@@ -116,7 +116,7 @@ getDetailHandler()
       }
 
       .card-inner {
-        display: flex;
+        display: grid;
         grid-gap: 8px 0;
         flex-direction: column;
 
