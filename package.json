@@ -41,7 +41,6 @@
     "husky": "^8.0.3",
     "git-cz": "^4.9.0",
     "postcss": "^8.4.31",
-    "prettier": "^3.1.0",
     "nano-staged": "^0.8.0",
     "eslint": "^8.54.0",
     "vconsole": "^3.15.1",
@@ -71,8 +70,6 @@
     "pnpm": ">= 8.8.0"
   },
   "nano-staged": {
-    "*.md": "prettier --write",
-    "*.{ts,tsx,js,vue}": "eslint --fix",
-    "*.{ts,tsx,js,vue,scss}": "prettier --write"
+    "*.{ts,tsx,js,vue}": "eslint --fix"
   }
 }
