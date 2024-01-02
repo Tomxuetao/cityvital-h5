@@ -33,6 +33,39 @@ const props = defineProps({
 const chartRef = ref()
 let chartInstance
 
+const areaStyleArray = [
+  new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    {
+      offset: 0,
+      color: 'rgba(49, 150, 250, 1)'
+    },
+    {
+      offset: 1,
+      color: 'rgba(49, 150, 250, 0)'
+    }
+  ]),
+  new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    {
+      offset: 0,
+      color: 'rgba(0, 193, 162, 1)'
+    },
+    {
+      offset: 1,
+      color: 'rgba(0, 193, 162, 0)'
+    }
+  ]),
+  new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    {
+      offset: 0,
+      color: 'rgba(255, 178, 81, 1)'
+    },
+    {
+      offset: 1,
+      color: 'rgba(255, 178, 81, 0)'
+    }
+  ])
+]
+
 watch(
   () => props.dataList,
   () => {
@@ -49,11 +82,16 @@ const setChartConfig = (dataList) => {
 }
 
 const assembleData = (dataList = []) => {
-  const tempSeries = dataList.map((item) => {
+  const tempSeries = dataList.map((item, index) => {
     return {
-      name: item.name,
       type: 'line',
-      data: item.list
+      name: item.name,
+      data: item.list,
+      showSymbol: false,
+      areaStyle: {
+        opacity: 0.4,
+        color: areaStyleArray[index % 3]
+      }
     }
   })
   const xAxisLabels = dataList.length

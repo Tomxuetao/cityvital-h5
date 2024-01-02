@@ -1,9 +1,10 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { alarmLevelMap, dealStatusMap } from '@/config'
 import { commonBackEndApi } from '@/api/common-api'
+import { alarmLevelMap, dealStatusMap } from '@/config'
 
 import CommonTitle from '@/views/common/common-title.vue'
+import ProcessCard from '@/views/modules/alarm/comp/process-card.vue'
 
 const props = defineProps({
   eventId: {
@@ -20,8 +21,8 @@ const dataLoading = ref(true)
 
 const getDetailHandler = () => {
   Promise.all([
-    commonBackEndApi('event/getEvent', { eventId: props.eventId }),
-    commonBackEndApi('event_process_logs/list', {
+    commonBackEndApi('api/v1/event/getEvent', { eventId: props.eventId }),
+    commonBackEndApi('api/v1/event_process_logs/list', {
       eventId: props.eventId,
       pageSize: 999
     })
@@ -81,6 +82,10 @@ getDetailHandler()
         </div>
         <div class="card-wrap">
           <div class="card-title">处置流程</div>
+          <process-card
+            :list="processList"
+            :emergency-degree="detailData.emergencyDegree"
+          ></process-card>
         </div>
       </template>
     </div>

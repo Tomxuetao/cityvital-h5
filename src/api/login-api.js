@@ -1,8 +1,9 @@
 import { getEnvByUa } from '@/utils'
-import { http, oauth2Server, gatewayServer } from '@/utils/http'
 
 import ready from 'gdt-jsapi/ready'
 import getAuthCode from 'gdt-jsapi/getAuthCode'
+
+import { http, backEndServer, oauth2Server, gatewayServer } from '@/utils/http'
 
 /**
  * 获取三中心Token通过浙政钉code
@@ -25,7 +26,7 @@ export const getUserTokenApi = (dataForm = {}) =>
   http({
     method: 'get',
     params: dataForm,
-    url: `${gatewayServer}/oauth/tc/project_token`
+    url: `${backEndServer}/oauth/tc/project_token`
   })
 
 /**
@@ -37,7 +38,7 @@ export const getUserDataByTokenAPi = (dataForm = {}) =>
   http({
     method: 'get',
     params: dataForm,
-    url: `${gatewayServer}/login`
+    url: `${backEndServer}/login`
   })
 
 /**
@@ -76,7 +77,10 @@ export const getUserDataHandler = (corpId) => {
           const { token } = await getCenterTokenApi({ authCode: code })
           alert(token)
           if (token) {
-            const accessToken = await getUserTokenApi({ access_token: token })
+            const accessToken = await getUserTokenApi({
+              access_token: token,
+              projectId: 16
+            })
             sessionStorage.setItem('accessToken', accessToken)
             getUserDataByTokenAPi()
               .then(() => {

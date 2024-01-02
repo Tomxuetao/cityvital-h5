@@ -123,7 +123,9 @@ const getDataHandler = async () => {
     })
   }
   // 车辆备案率、车辆超载率（政通提供，根据数值的大小来确定-数值小的是超载率，数值大的是备案率；真他妈奇葩）
-  const { list: carDataList } = await commonBackEndApi('/cityvital_sign/db')
+  const { list: carDataList } = await commonBackEndApi(
+    'api/v1/cityvital_sign/db'
+  )
   if (Array.isArray(carDataList)) {
     const carList = carDataList
       .map((item) => Object.values(item))

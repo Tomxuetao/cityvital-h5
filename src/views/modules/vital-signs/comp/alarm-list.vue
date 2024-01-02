@@ -21,7 +21,7 @@ const props = defineProps({
 const route = useRoute()
 
 const listConfig = {
-  code: 'event/listAlarms',
+  code: 'api/v1/event/listAlarms',
   prefix: '',
   method: 'post',
   isIndexServer: false,

@@ -57,7 +57,7 @@ export const http = createHttp()
 
 export const oauth2Server = '/oauth2'
 
-export const backEndServer = '/back-server/cv_data/api/v1'
+export const backEndServer = '/back-server/cv_data'
 
 // 指标数据统一前缀
 export const gatewayServer = '/gateway-server/cv_data/api/v1'

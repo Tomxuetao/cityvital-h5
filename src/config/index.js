@@ -87,7 +87,7 @@ export const sewageMonitorTypeMap = new Map([
 const commonConfig = {
   method: 'post',
   isIndexServer: false,
-  code: 'event/listAlarms'
+  code: 'api/v1/event/listAlarms'
 }
 
 /**
