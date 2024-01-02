@@ -91,6 +91,13 @@ const devRoutes = [
     meta: { title: '管理在线' },
     props: (route) => ({ ...route.query }),
     component: () => import('@/views/modules/manage/index.vue')
+  },
+  {
+    path: '/no-access',
+    name: 'no-access',
+    meta: { title: '无访问权限' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/no-access/index.vue')
   }
 ]
 const routes = [
@@ -100,8 +107,7 @@ const routes = [
     meta: { title: '动态路由' },
     component: () => import('@/views/layout/main-index.vue'),
     children: devRoutes,
-    beforeEnter: async ({ name }) =>
-      name !== 'main-dynamic' ? true : { replace: true, name: 'home' }
+    beforeEnter: async ({ name }) => name !== 'main-dynamic' ? true : { replace: true, name: 'home' }
   }
 ]
 

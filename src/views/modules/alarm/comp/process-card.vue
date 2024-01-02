@@ -50,8 +50,8 @@ const assembleData = (data, title, handleDept = '', index = 0) => {
     return {
       title: title,
       time: '',
-      isRead: nextUnitRead ? nextUnitReadArray[index] : 'false',
-      content: handleDept ? `【${handleDept}】${title.replace('中', '')}` : ''
+      content: handleDept ? `【${handleDept}】${title.replace('中', '')}` : '',
+      isRead: handleDept ? (nextUnitRead ? nextUnitReadArray[index] : 'false') : undefined
     }
   }
 }
@@ -182,6 +182,9 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
         position: relative;
 
         .round-inner {
+          width: 14px;
+          height: 14px;
+
           &:after {
             position: absolute;
             content: "";
@@ -195,6 +198,9 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
         }
 
         .inner-active {
+          display: flex;
+          align-items: center;
+
           &:before {
             position: absolute;
             content: "";
@@ -209,10 +215,11 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
             position: absolute;
             content: "";
             top: 3px;
-            left: 3px;
+            left: 50%;
             width: 8px;
             height: 8px;
             border-radius: 50%;
+            transform: translate(-50%, 0);
             background-color: rgba(4, 130, 255, 1);
           }
         }
