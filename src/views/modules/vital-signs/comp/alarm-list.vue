@@ -1,5 +1,6 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import dayjs from 'dayjs'
+import { reactive, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 
 import { deviceStatusMap, eventStatusMap, mapToList } from '@/config'
@@ -26,23 +27,42 @@ const listConfig = {
   method: 'post',
   isIndexServer: false,
   customForm: {
-    extraList: props.detail.factory_name + '%',
     sortTimeFiled: 'latestCheckTime',
     originType: route.query.originType,
-    secondType: route.query.secondType
+    secondType: route.query.secondType,
+    extraList: props.detail.factory_name + '%'
   }
 }
 
 let searchForm = reactive({
   alarming: undefined,
-  thirdType: undefined,
   eventStatus: undefined,
-  sortTimeFiled: 'latestCheckTime',
   latestCheckEndTime: undefined,
-  latestCheckStartTime: undefined
+  latestCheckStartTime: undefined,
+  sortTimeFiled: 'latestCheckTime'
 })
 
+const formatDate = (date, format = 'YYYY-MM-DD HH:mm:ss') => dayjs(date).format(format)
+
+const commonListRef = ref()
 const defaultDateRange = ref([])
+
+watch(() => defaultDateRange.value, (dateRange) => {
+  const tempDate = {
+    latestCheckEndTime: undefined,
+    latestCheckStartTime: undefined
+  }
+  if (dateRange.length > 1) {
+    const [start, end] = dateRange
+    tempDate.latestCheckEndTime = formatDate(end)
+    tempDate.latestCheckStartTime = formatDate(start)
+  }
+  searchForm = Object.assign(searchForm, tempDate)
+})
+
+watch(() => searchForm, () => {
+  commonListRef.value.getDataList(searchForm)
+}, { deep: true })
 </script>
 
 <template>
@@ -56,7 +76,6 @@ const defaultDateRange = ref([])
               <common-calendar
                 v-model="defaultDateRange"
                 label="时间选择"
-                :default-date="defaultDateRange"
               >
               </common-calendar>
               <common-sheet
@@ -77,7 +96,7 @@ const defaultDateRange = ref([])
       </div>
     </div>
     <div class="alarm-ctx">
-      <common-list :config="listConfig" :default-search-form="searchForm">
+      <common-list ref="commonListRef" :config="listConfig" :default-search-form="searchForm">
         <template #card-item="{ data }">
           <alarm-card :item-data="data"></alarm-card>
         </template>
@@ -99,7 +118,9 @@ const defaultDateRange = ref([])
   }
 
   .alarm-ctx {
+    position: relative;
     padding: 0 16px;
+    min-height: 320px;
   }
 }
 </style>

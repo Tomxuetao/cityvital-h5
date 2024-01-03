@@ -98,14 +98,8 @@ const changeTabHandler = (index) => {
             加载中...
           </van-loading>
           <template v-else>
-            <water-monitor
-              v-if="activeTabIndex === 0"
-              :detail="detailData"
-            ></water-monitor>
-            <alarm-list
-              v-if="activeTabIndex === 1"
-              :detail="detailData"
-            ></alarm-list>
+            <water-monitor v-if="activeTabIndex === 0" :detail="detailData"></water-monitor>
+            <alarm-list v-if="activeTabIndex === 1" :detail="detailData"></alarm-list>
           </template>
         </div>
       </div>

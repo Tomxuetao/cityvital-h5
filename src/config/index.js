@@ -185,7 +185,7 @@ export const eventStatusMap = new Map([
 export const alarmLevelMap = new Map([
   [1, '一级报警'],
   [2, '二级报警'],
-  [2, '三级报警']
+  [3, '三级报警']
 ])
 
 /**

@@ -3,9 +3,9 @@ import { ref } from 'vue'
 import dayjs from 'dayjs'
 import { useRoute } from 'vue-router'
 
-import { monitorTypeMap, sewageMonitorTypeMap } from '@/config'
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
+import { monitorTypeMap, sewageMonitorTypeMap } from '@/config'
 import LineChart from '@/views/modules/vital-signs/comp/line-chart.vue'
 
 const props = defineProps({
@@ -30,16 +30,10 @@ const getApiConfig = (secondType) => {
       ? { type: type, river_id: id }
       : { type: type, factory_id: id }
   const configMap = new Map([
-    [
-      '供水',
-      { code: '210537c440', searchForm: { factory_id: id, type_name: type } }
-    ],
-    [
-      '污水',
-      { code: '210537c440', searchForm: { factory_id: id, type_name: type } }
-    ],
     ['河道', { code: '2120332085', searchForm: tempSearch }],
-    ['内涝', { code: '2120332085', searchForm: tempSearch2 }]
+    ['内涝', { code: '2120332085', searchForm: tempSearch2 }],
+    ['供水', { code: '210537c440', searchForm: { factory_id: id, type_name: type } }],
+    ['污水', { code: '210537c440', searchForm: { factory_id: id, type_name: type } }]
   ])
   return configMap.get(secondType)
 }
@@ -69,7 +63,7 @@ const reduceDataListByType = (dataList, type) => {
         const { item_type, check_item, alarm_flag: flag } = cur
         const tempList = sewageMonitorTypeMap.get(item_type)
         const { title } =
-          tempList.find((item) => item.keys.includes(check_item)) || {}
+        tempList.find((item) => item.keys.includes(check_item)) || {}
         const tempData = acc.get(title)
         if (tempData) {
           tempData.list.push(cur)
@@ -120,85 +114,75 @@ getDataList()
 const activeIndex = ref(0)
 
 const tabConfigList = [
-  { text: '今日', code: '211b0a81c2' },
-  { text: '近7日', code: '211ae2f909', customForm: { date_flag: '1' } },
-  { text: '近30日', code: '211ae2f909' }
+  { key: '_todayData', text: '今日', code: '211b0a81c2' },
+  { key: '_weekData', text: '近7日', code: '211ae2f909', customForm: { date_flag: '1' } },
+  { key: '_monthData', text: '近30日', code: '211ae2f909' }
 ]
 
 const chartDataList = ref([])
+
 const getChartData = async (config, data) => {
   chartDataList.value = []
-  const { code, customForm } = config
+  const { key, code, customForm } = config
   const { factory_id, check_item } = data
-  const dataList = await commonGatewayApi(
-    code,
-    Object.assign(customForm || {}, {
-      factory_id: factory_id,
-      check_item: check_item,
-      type: props.detail.type
-    })
-  )
-  if (Array.isArray(dataList) && dataList.length) {
-    const len = dataList.length
-    const {
-      value_max_1,
-      value_max_2,
-      value_max_3,
-      value_min_1,
-      value_min_2,
-      value_min_3
-    } = data
-    if (value_max_1) {
-      chartDataList.value.push({
-        name: '一级报警阀值(max)',
-        list: new Array(len).fill(value_max_1, 0, len)
-      })
-    }
-    if (value_max_2) {
-      chartDataList.value.push({
-        name: '二级报警阀值(max)',
-        list: new Array(len).fill(value_max_2, 0, len)
-      })
-    }
-    if (value_max_3) {
-      chartDataList.value.push({
-        name: '三级报警阀值(max)',
-        list: new Array(len).fill(value_max_3, 0, len)
-      })
-    }
-    if (value_min_1) {
-      chartDataList.value.push({
-        name: '一级报警阀值(min)',
-        list: new Array(len).fill(value_min_1, 0, len)
-      })
-    }
-    if (value_min_2) {
-      chartDataList.value.push({
-        name: '二级报警阀值(min)',
-        list: new Array(len).fill(value_min_2, 0, len)
-      })
-    }
-    if (value_min_3) {
-      chartDataList.value.push({
-        name: '三级报警阀值(min)',
-        list: new Array(len).fill(value_min_3, 0, len)
-      })
-    }
-    chartDataList.value.unshift({
-      name: '监测值',
-      list: dataList.map((item) => {
-        const tempDate =
-          activeIndex.value === 0
-            ? dayjs(item.create_time).format('HH:MM')
-            : dayjs(item.create_date).format('MM-DD')
-        return {
-          name: tempDate,
-          value: item.check_result
-        }
-      })
-    })
+
+  if (data[key]) {
+    chartDataList.value = data[key]
   } else {
-    chartDataList.value = []
+    const dataList = await commonGatewayApi(code, Object.assign(customForm || {}, { factory_id: factory_id, check_item: check_item, type: props.detail.type }))
+    if (Array.isArray(dataList) && dataList.length) {
+      const len = dataList.length
+      const { value_max_1, value_max_2, value_max_3, value_min_1, value_min_2, value_min_3 } = data
+      if (value_max_1) {
+        chartDataList.value.push({
+          name: '一级报警阀值(max)',
+          list: new Array(len).fill(value_max_1, 0, len)
+        })
+      }
+      if (value_max_2) {
+        chartDataList.value.push({
+          name: '二级报警阀值(max)',
+          list: new Array(len).fill(value_max_2, 0, len)
+        })
+      }
+      if (value_max_3) {
+        chartDataList.value.push({
+          name: '三级报警阀值(max)',
+          list: new Array(len).fill(value_max_3, 0, len)
+        })
+      }
+      if (value_min_1) {
+        chartDataList.value.push({
+          name: '一级报警阀值(min)',
+          list: new Array(len).fill(value_min_1, 0, len)
+        })
+      }
+      if (value_min_2) {
+        chartDataList.value.push({
+          name: '二级报警阀值(min)',
+          list: new Array(len).fill(value_min_2, 0, len)
+        })
+      }
+      if (value_min_3) {
+        chartDataList.value.push({
+          name: '三级报警阀值(min)',
+          list: new Array(len).fill(value_min_3, 0, len)
+        })
+      }
+      chartDataList.value.unshift({
+        name: '监测值',
+        list: dataList.map((item) => {
+          const tempDate = activeIndex.value === 0 ? dayjs(item.create_time).format('HH:MM') : dayjs(item.create_date).format('MM-DD')
+          return {
+            name: tempDate,
+            value: item.check_result
+          }
+        })
+      })
+      data[key] = chartDataList.value
+    } else {
+      chartDataList.value = []
+    }
   }
 }
 
@@ -211,10 +195,14 @@ const changeTab = (index, data) => {
 
 const expandId = ref()
 const expandItem = (data) => {
-  const { factory_id, item_name, item_type } = data
-  expandId.value = factory_id + item_name + item_type
   activeIndex.value = 0
-  getChartData(tabConfigList[0], data)
+  const { factory_id, item_name, item_type } = data
+  if (expandId.value !== factory_id + item_name + item_type) {
+    expandId.value = factory_id + item_name + item_type
+    getChartData(tabConfigList[0], data)
+  } else {
+    expandId.value = undefined
+  }
 }
 </script>
 
@@ -248,7 +236,7 @@ const expandItem = (data) => {
             <div class="text-text">{{ key }}</div>
           </div>
           <div :class="['header-status', 'status-' + dataMap.get(key).status]">
-            {{ dataMap.get(key).status === "0" ? "异常" : "正常" }}
+            {{ dataMap.get(key).status === '0' ? '异常' : '正常' }}
           </div>
         </div>
         <div
@@ -261,18 +249,13 @@ const expandItem = (data) => {
             <div class="header-num">
               <div class="num-text">{{ item.check_result }}</div>
               <img
-                class="num-img"
+                :class="['num-img', expandId === item.factory_id + item.item_name + item.item_type ? 'img-active' : '' ]"
                 src="@/views/modules/vital-signs/img/icon-arrow.webp"
                 alt=""
               />
             </div>
           </div>
-          <div
-            class="inner-ctx"
-            v-if="
-              expandId === item.factory_id + item.item_name + item.item_type
-            "
-          >
+          <div class="inner-ctx" v-if="expandId === item.factory_id + item.item_name + item.item_type">
             <div class="value-wrap">
               <div class="value-item">
                 <div class="item-label">一级阈值</div>
@@ -289,7 +272,7 @@ const expandItem = (data) => {
             </div>
             <div class="chart-wrap">
               <div class="chart-title">
-                <div class="title-text">{{ item.item_name + "趋势分析" }}</div>
+                <div class="title-text">{{ item.item_name + '趋势分析' }}</div>
                 <div class="title-tabs">
                   <div
                     v-for="(tab, index) in tabConfigList"
@@ -304,10 +287,7 @@ const expandItem = (data) => {
                   </div>
                 </div>
               </div>
-              <line-chart
-                class="chart-inner"
-                :data-list="chartDataList"
-              ></line-chart>
+              <line-chart class="chart-inner" :data-list="chartDataList"></line-chart>
             </div>
           </div>
         </div>
@@ -429,6 +409,10 @@ const expandItem = (data) => {
               height: 14px;
               object-fit: cover;
               transform: rotate(90deg);
+            }
+
+            .img-active {
+              transform: rotate(270deg);
             }
           }
         }

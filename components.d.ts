@@ -12,6 +12,7 @@ declare module 'vue' {
     VanActionSheet: typeof import('vant/es')['ActionSheet']
     VanCalendar: typeof import('vant/es')['Calendar']
     VanCascader: typeof import('vant/es')['Cascader']
+    VanCell: typeof import('vant/es')['Cell']
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
     VanDropdownItem: typeof import('vant/es')['DropdownItem']
     VanDropdownMenu: typeof import('vant/es')['DropdownMenu']
