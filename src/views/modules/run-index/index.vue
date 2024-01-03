@@ -123,18 +123,14 @@ const getDataHandler = async () => {
     })
   }
   // 车辆备案率、车辆超载率（政通提供，根据数值的大小来确定-数值小的是超载率，数值大的是备案率；真他妈奇葩）
-  const { list: carDataList } = await commonBackEndApi(
-    'api/v1/cityvital_sign/db'
-  )
+  const { list: carDataList } = await commonBackEndApi('api/v1/cityvital_sign/db')
   if (Array.isArray(carDataList)) {
     const carList = carDataList
       .map((item) => Object.values(item))
       .flat()
       .sort((a, b) => a - b)
     const [min, max] = carList
-    const tempData = runIndexList.value.find(
-      (item) => item.title === '固废处置'
-    )
+    const tempData = runIndexList.value.find((item) => item.title === '固废处置')
     const { list } = tempData || { list: [] }
     const tempList = list.filter((item) => ['min', 'max'].includes(item.key))
     tempList.forEach((item) => {
@@ -151,14 +147,10 @@ const getDataHandler = async () => {
    * zhjczgl: 综合检查整改率-%
    * snjcsbazl: 室内监测设备安装率-%
    */
-  const { list: gasDataList } = await commonBackEndApi(
-    '/cityvital_sign/sdbl_rq'
-  )
+  const { list: gasDataList } = await commonBackEndApi('api/v1/cityvital_sign/sdbl_rq')
   if (Array.isArray(gasDataList)) {
     const [gasData] = gasDataList
-    const tempData = runIndexList.value.find(
-      (item) => item.title === '城镇燃气'
-    )
+    const tempData = runIndexList.value.find((item) => item.title === '城镇燃气')
     const { list } = tempData || { list: [] }
     list.forEach((item) => {
       Object.assign(item, { num: gasData[item.key] || 0 })
@@ -166,11 +158,9 @@ const getDataHandler = async () => {
   }
 
   // 公益广告占比
-  const rateList = await commonGatewayApi('221b807569', { areaName: '' })
+  const rateList = await commonGatewayApi('221b807569')
   if (Array.isArray(rateList) && rateList.length) {
-    const total =
-      rateList.reduce((acc, cur) => acc + Number(cur.percent), 0) /
-      rateList.length
+    const total = rateList.reduce((acc, cur) => acc + Number(cur.percent), 0) / rateList.length
     const tempData = indexList.find((item) => item.key === 'rate')
     Object.assign(tempData, { num: total })
   }
