@@ -182,6 +182,7 @@ const getChartData = async (config, data) => {
       data[key] = chartDataList.value
     } else {
       chartDataList.value = []
+      data[key] = chartDataList.value
     }
   }
 }
