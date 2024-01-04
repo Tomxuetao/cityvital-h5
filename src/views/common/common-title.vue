@@ -57,7 +57,7 @@ const props = defineProps({
       }
 
       .left-text {
-        font-size: 16px;
+        font-size: 18px;
         color: #333333;
         line-height: 24px;
         @include ellipsis(1);

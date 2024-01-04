@@ -119,21 +119,25 @@ const router = createRouter({
 
 const tempEnv = getEnvByUa()
 router.beforeEach((to, from, next) => {
-  const { token } = to.query
-  if (token) {
-    sessionStorage.setItem('accessToken', token)
-    next({
-      replace: true,
-      name: to.name
-    })
+  if (['no-access'].includes(to.name)) {
+    next()
   } else {
-    if (sessionStorage.getItem('accessToken')) {
-      next()
+    const { token } = to.query
+    if (token) {
+      sessionStorage.setItem('accessToken', token)
+      next({
+        replace: true,
+        name: to.name
+      })
     } else {
-      if (tempEnv !== 'h5') {
-        getUserDataHandler('').then(() => {
-          next()
-        })
+      if (sessionStorage.getItem('accessToken')) {
+        next()
+      } else {
+        if (tempEnv !== 'h5') {
+          getUserDataHandler('').then(() => {
+            next()
+          })
+        }
       }
     }
   }

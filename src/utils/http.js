@@ -1,4 +1,5 @@
 import axios from 'axios'
+import router from '@/router'
 import { showFailToast } from 'vant'
 
 export function createHttp() {
@@ -9,7 +10,7 @@ export function createHttp() {
       'Content-Type': 'application/json'
     }
   })
-
+  
   /**
    * 请求拦截
    */
@@ -26,30 +27,35 @@ export function createHttp() {
     },
     (error) => Promise.reject(error)
   )
-
+  
   /**
    * 响应拦截
    */
   http.interceptors.response.use(
-    (response) => {
+    async (response) => {
       const { data: responseData } = response
-      const { status, msg, success, message, hasError } = responseData
-      if (status === 200 || success || !hasError) {
-        if (hasError !== undefined) {
-          // 政通接口（后端转发）
+      const { status, msg, success, message, code } = responseData
+      // 政通接口（后端转发）
+      const isEgova = 'hasError' in responseData
+      if (status === 200 || success || isEgova) {
+        if (isEgova) {
           const { result, totalCount } = responseData
           return { total: totalCount || 0, list: result }
         } else {
           return responseData.data
         }
       } else {
-        showFailToast(msg || message)
-        return Promise.reject(new Error(msg || message))
+        if ([1028, 401, 403].includes(code)) {
+          await router.push({ name: 'no-access' })
+        } else {
+          showFailToast(msg || message)
+          return Promise.reject(new Error(msg || message))
+        }
       }
     },
     (error) => Promise.reject(error)
   )
-
+  
   return http
 }
 
