@@ -39,7 +39,7 @@ UI: [https://app.mockplus.cn/app/f1LfFs4kLA/develop/design/XDVFvrodN](https://ap
 
 Git: [https://git.citycloud.com.cn:3000/project_cityvital/cityvital-h5](https://git.citycloud.com.cn:3000/project_cityvital/cityvital-h5)
 
-测试环境(需要在浙政钉环境下才能打开、也可以通过拼接token的方式在浏览器环境打开): [https://ywtg.citybrain.hangzhou.gov.cn/vital-h5/](https://ywtg.citybrain.hangzhou.gov.cn/vital-h5/)
+测试环境(需要在浙政钉环境下才能打开、也可以通过拼接token的方式在浏览器环境打开): [https://zf.cgw.hangzhou.gov.cn:9443/cityvital-app/vital-h5/](https://zf.cgw.hangzhou.gov.cn:9443/cityvital-app/vital-h5/)
 
 # 项目主体目录
 

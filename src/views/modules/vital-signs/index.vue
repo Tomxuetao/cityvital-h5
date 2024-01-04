@@ -63,8 +63,8 @@ const tabChangeHandler = (index, level) => {
     latestCheckEndTime: `${nextDate} 00:00:00`,
     latestCheckStartTime: `${curDate} 00:00:00`
   })
-  const tempList =
-    tabConfigList[level === 1 ? index : activeIndex.value].children
+  defaultDateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
+  const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
     const { title } = tempList[level === 1 ? 0 : index]
     thirdTypeList.value = areaDataList.value.filter(

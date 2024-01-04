@@ -1,6 +1,6 @@
 <script setup>
 import dayjs from 'dayjs'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
@@ -57,6 +57,11 @@ const onConfirm = (values) => {
   onClose()
   emit('update:modelValue', values)
 }
+
+watch(() => props.modelValue, (list) => {
+  const [start, end] = list
+  selectName.value = list.length > 1 ? `${formatDate(start)} - ${formatDate(end)}` : props.label
+}, { deep: true })
 </script>
 
 <template>
