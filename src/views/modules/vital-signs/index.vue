@@ -13,10 +13,14 @@ import CommonCalendar from '@/views/common/common-calendar.vue'
 import CityCard from '@/views/modules/vital-signs/comp/city-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
 
-import {mapToList,
-  eventStatusMap,
-  deviceStatusMap,
-  vitalSignsTabs} from '@/config'
+import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs } from '@/config'
+
+const props = defineProps({
+  index: {
+    type: String,
+    required: false
+  }
+})
 
 const cardCompsMap = new Map([
   [2, CityCard],
@@ -26,7 +30,8 @@ const cardCompsMap = new Map([
 const commonState = useCommonStore()
 const tabConfigList = vitalSignsTabs
 
-const activeIndex = ref(0)
+const activeIndex = ref(props.index ? Number(props.index) : 0)
+
 const areaDataList = ref([])
 const thirdTypeList = ref([])
 

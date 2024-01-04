@@ -279,6 +279,7 @@ commonState.initAlarmListAction()
             v-for="(item, index) in coreIndexList"
             :item-data="item"
             :key="index"
+            @click="router.push({ name: 'vital-signs', query: { index: index }})"
           >
           </index-card>
         </div>
