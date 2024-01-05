@@ -11,9 +11,11 @@ import ThirdFilter from '@/views/common/third-filter.vue'
 import CommonSearch from '@/views/common/common-search.vue'
 import CommonCalendar from '@/views/common/common-calendar.vue'
 import CityCard from '@/views/modules/vital-signs/comp/city-card.vue'
+import RoadCard from '@/views/modules/vital-signs/comp/road-card.vue'
+import MetroCard from '@/views/modules/vital-signs/comp/metro-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
 
-import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs } from '@/config'
+import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs, reserveStatusMap } from '@/config'
 
 const props = defineProps({
   index: {
@@ -23,7 +25,9 @@ const props = defineProps({
 })
 
 const cardCompsMap = new Map([
+  [3, RoadCard],
   [2, CityCard],
+  [5, MetroCard],
   [0, WaterCard]
 ])
 
@@ -31,6 +35,7 @@ const commonState = useCommonStore()
 const tabConfigList = vitalSignsTabs
 
 const activeIndex = ref(props.index ? Number(props.index) : 0)
+const activeSecondIndex = ref(0)
 
 const areaDataList = ref([])
 const thirdTypeList = ref([])
@@ -47,30 +52,32 @@ let searchForm = reactive({
   latestCheckStartTime: `${curDate} 00:00:00`
 })
 
-const defaultDateRange = ref([
-  new Date(searchForm.latestCheckStartTime),
-  new Date(searchForm.latestCheckEndTime)
-])
+const defaultDateRange = ref([new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)])
 
 const customListRef = ref()
 const isTabChange = ref(false)
 const tabChangeHandler = (index, level) => {
+  activeSecondIndex.value = level === 2 ? index : 0
+
   isTabChange.value = true
+
   searchForm = Object.assign(searchForm, {
     alarming: 'true',
     thirdType: undefined,
     eventStatus: undefined,
+    sortTimeFiled: 'latestCheckTime',
     latestCheckEndTime: `${nextDate} 00:00:00`,
     latestCheckStartTime: `${curDate} 00:00:00`
   })
+
   defaultDateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
+
   const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
     const { title } = tempList[level === 1 ? 0 : index]
-    thirdTypeList.value = areaDataList.value.filter(
-      (item) => item.model === title
-    )
+    thirdTypeList.value = areaDataList.value.filter((item) => item.model === title)
   }
+
   nextTick(() => {
     isTabChange.value = false
   })
@@ -86,12 +93,8 @@ watch(
   () => defaultDateRange.value,
   (dateRange) => {
     const [start, end] = dateRange
-    searchForm.latestCheckStartTime = `${dayjs(start).format(
-      'YYYY-MM-DD'
-    )} 00:00:00`
-    searchForm.latestCheckEndTime = `${dayjs(end).format(
-      'YYYY-MM-DD'
-    )} 00:00:00`
+    searchForm.latestCheckEndTime = end ? `${dayjs(end).format('YYYY-MM-DD')} 00:00:00` : undefined
+    searchForm.latestCheckStartTime = start ? `${dayjs(start).format('YYYY-MM-DD')} 00:00:00` : undefined
   }
 )
 
@@ -99,7 +102,14 @@ watch(
   () => searchForm,
   () => {
     if (!isTabChange.value) {
-      customListRef.value.getDataList(searchForm)
+      const { eventStatus, latestCheckEndTime, latestCheckStartTime } = searchForm
+      customListRef.value.getDataList(activeIndex.value === 5 ?
+        {
+          alarm_status: eventStatus,
+          end_time: latestCheckEndTime,
+          start_time: latestCheckStartTime
+        } : searchForm
+      )
     }
   },
   { deep: true, immediate: false }
@@ -126,29 +136,13 @@ watch(
             v-if="tabConfigList[activeIndex].children?.length"
             ref="customListRef"
             :key="activeIndex"
-            :default-search-form="searchForm"
             :tab-config-list="tabConfigList[activeIndex].children"
+            :default-search-form="activeIndex !== 5 ? searchForm : { end_time: searchForm.latestCheckEndTime, start_time: searchForm.latestCheckStartTime}"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
-            <template #card-item="{ data, index }">
-              <div class="card-wrap">
-                <component
-                  :is="cardCompsMap.get(activeIndex)"
-                  :data="data"
-                  :origin-type="tabConfigList[activeIndex].title"
-                  :second-type="
-                    tabConfigList[activeIndex].children[index].title
-                  "
-                >
-                </component>
-              </div>
-            </template>
             <template #search>
               <div class="search-wrap">
-                <third-filter
-                  v-model="searchForm.thirdType"
-                  :list="thirdTypeList"
-                ></third-filter>
+                <third-filter v-model="searchForm.thirdType" :list="thirdTypeList"></third-filter>
                 <common-search>
                   <template #custom-select>
                     <div class="select-wrap">
@@ -159,6 +153,7 @@ watch(
                       >
                       </common-calendar>
                       <common-sheet
+                        v-if="activeIndex !== 5"
                         v-model="searchForm.alarming"
                         :list="mapToList(deviceStatusMap)"
                         label="设施状态"
@@ -166,13 +161,25 @@ watch(
                       </common-sheet>
                       <common-sheet
                         v-model="searchForm.eventStatus"
-                        :list="mapToList(eventStatusMap)"
+                        :list="mapToList( activeIndex === 5 ? reserveStatusMap: eventStatusMap)"
                         label="处置状态"
                       >
                       </common-sheet>
                     </div>
                   </template>
                 </common-search>
+              </div>
+            </template>
+            <template #card-item="{ data, index }">
+              <div class="card-wrap">
+                <component
+                  :is="cardCompsMap.get(activeIndex)"
+                  :data="data"
+                  :second-index="activeSecondIndex"
+                  :origin-type="tabConfigList[activeIndex].title"
+                  :second-type="tabConfigList[activeIndex].children[index].title"
+                >
+                </component>
               </div>
             </template>
           </custom-list>

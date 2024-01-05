@@ -3,6 +3,7 @@
 ```
 启动命令：pnpm run dev
 打包命令：pnpm run build
+代码提交：pnpm run commit
 ```
 
 # 本地开发调试

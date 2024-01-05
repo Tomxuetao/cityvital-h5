@@ -1,4 +1,6 @@
 <script setup>
+import { alarmLevelMap } from '@/config'
+
 const props = defineProps({
   data: {
     type: Object,
@@ -13,12 +15,6 @@ const props = defineProps({
     required: true
   }
 })
-
-const alarmLevelMap = new Map([
-  [1, '一级报警'],
-  [2, '二级报警'],
-  [3, '三级报警']
-])
 </script>
 
 <template>

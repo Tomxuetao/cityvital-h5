@@ -34,6 +34,8 @@ const show = ref(false)
 
 const [start, end] = props.modelValue
 
+const startYear = new Date().getFullYear() - 1
+
 
 const formatDate = (date) => dayjs(date).format(props.format)
 
@@ -84,7 +86,7 @@ watch(() => props.modelValue, (list) => {
       :show-mark="false"
       :lazy-render="true"
       :max-date="new Date(nextDate)"
-      :min-date="new Date(2020, 0, 0)"
+      :min-date="new Date(startYear, 0, 0)"
       v-bind="$attrs"
       @confirm="onConfirm"
     >

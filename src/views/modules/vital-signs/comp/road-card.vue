@@ -1,6 +1,5 @@
 <script setup>
 import { alarmLevelMap } from '@/config'
-
 const props = defineProps({
   data: {
     type: Object,
@@ -25,7 +24,7 @@ const props = defineProps({
         class="card-title"
         @click="
           $router.push({
-            name: 'city-detail',
+            name: 'road-detail',
             query: {
               id: data.extraMap?.factoryId,
               name: data.extraMap?.factoryName,

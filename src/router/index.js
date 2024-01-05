@@ -65,6 +65,27 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/city-detail.vue')
   },
   {
+    path: '/road-detail',
+    name: 'road-detail',
+    meta: { title: '市政设施详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/road-detail.vue')
+  },
+  {
+    path: '/item-detail',
+    name: 'item-detail',
+    meta: { title: '作业项目详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/item-detail.vue')
+  },
+  {
+    path: '/reserve-detail',
+    name: 'reserve-detail',
+    meta: { title: '保护区详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/reserve-detail.vue')
+  },
+  {
     path: '/handle-list',
     name: 'handle-list',
     meta: { title: '报警处置' },

@@ -146,7 +146,28 @@ export const vitalSignsTabs = Object.freeze([
   },
   {
     title: '市政设施',
-    children: []
+    children: [
+      {
+        title: '桥梁',
+        ...commonConfig,
+        customForm: { originType: '市政设施', secondType: '桥梁' }
+      },
+      {
+        title: '隧道',
+        ...commonConfig,
+        customForm: { originType: '市政设施', secondType: '隧道' }
+      },
+      {
+        title: '道路',
+        ...commonConfig,
+        customForm: { originType: '市政设施', secondType: '道路' }
+      },
+      {
+        title: '地下管廊',
+        ...commonConfig,
+        customForm: { originType: '市政设施', secondType: '地下管廊' }
+      }
+    ]
   },
   {
     title: '城镇燃气',
@@ -154,7 +175,35 @@ export const vitalSignsTabs = Object.freeze([
   },
   {
     title: '地铁保护区',
-    children: []
+    children: [
+      {
+        title: '保护区',
+        method: 'get',
+        isIndexServer: true,
+        code: '21b5953733',
+        customForm: {
+          alarming: undefined,
+          eventStatus: undefined,
+          sortTimeFiled: undefined,
+          latestCheckEndTime: undefined,
+          latestCheckStartTime: undefined
+        }
+      },
+      {
+        title: '作业项目',
+        method: 'get',
+        isIndexServer: true,
+        code: '21b583ff2a',
+        customForm: {
+          is_bj: '1',
+          alarming: undefined,
+          eventStatus: undefined,
+          sortTimeFiled: undefined,
+          latestCheckEndTime: undefined,
+          latestCheckStartTime: undefined
+        }
+      }
+    ]
   }
 ])
 
@@ -176,6 +225,15 @@ export const eventStatusMap = new Map([
   ['10', '已派遣'],
   ['11', '已反馈'],
   ['12', '已办结']
+])
+
+/**
+ * 地铁保护区处置状态
+ * @type {Map<string, string>}
+ */
+export const reserveStatusMap = new Map([
+  ['未办结', '未办结'],
+  ['已办结', '已办结']
 ])
 
 /**
