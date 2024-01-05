@@ -32,11 +32,15 @@ export default defineConfig({
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/back-server/, '')
       },
-      '/gateway-server': {
+      '/gateway-server/cv_data': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/gateway-server/, '')
+      },
+      '/cv_data': {
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn', // 测试
+        changOrigin: true
       }
     }
   },

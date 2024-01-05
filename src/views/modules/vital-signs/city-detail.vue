@@ -28,27 +28,86 @@ const props = defineProps({
 const hasImg = ref(true)
 const dataLoading = ref(true)
 let detailData = reactive({})
+let images = ref([])
+let tabList = ref([])
 const activeTabIndex = ref(0)
-const innerCloums = [
-  { label:'使用状态：', value: '' }, 
-  { label:'类型：', value: '' }, 
-  { label:'所属区域：', value: '' }, 
-  { label:'一把闸刀控制状态：', value: '' }, 
-  { label:'安装地址：', value: '', width:'100%'}]
-      
-const tabList = [{ text: '监测信息' }, { text: '报警信息' }, { text: '关联灯杆' }]
+let innerCloums = []
 
+const setInnerCloums = (item) => {
+  if(props.secondType === '开关箱') {
+    innerCloums = [
+      { label:'使用状态：', value: item?.box_status }, 
+      { label:'类型：', value: item.remark }, 
+      { label:'所属区域：', value: item.district_name }, 
+      { label:'一把闸刀控制状态：', value: item.is_knife }, 
+      { label:'安装地址：', value: item.address, width:'100%'}
+    ]
+    hasImg 
+  }
+  if(props.secondType === '户外广告') {
+    innerCloums = [
+      { label:'广告面积：', value: item.area }, 
+      { label:'广告性质：', value: item.ggxz }, 
+      { label:'广告形式：', value: item.is_knife }, 
+      { label:'审批日期：', value: item.sprq }, 
+      { label:'安全检测有效期：', value: item.setup_time, width:'100%'},
+      { label:'安全检测报告：', value: item.is_on, width:'100%'},
+      { label:'地址：', value: item.address, width:'100%'},
+      { label:'设置单位：', value: item.szdw, width:'100%'},
+      { label:'联系人：', value: item.contacts },
+      { label:'联系电话：', value: item.phone }
+    ]
+  }
+  if(props.secondType === '户外电子屏') {
+    innerCloums = [
+      { label:'大屏面积：', value: item.area }, 
+      { label:'广告厂商：', value: item.dept }, 
+      { label:'所属区划：', value: item.district_name }, 
+      { label:'地址：', value: item.address, width:'100%'}
+    ]
+  }
+}
+const setTabLists = () => {
+  switch(props.secondType) {
+    case '开关箱': tabList.value = [{ text: '监测信息' }, { text: '报警信息' }, { text: '关联灯杆' }];break
+    case '户外广告': tabList.value = [ { text: '报警信息' }, { text: '处置信息' } ];break
+    case '户外广告': tabList.value = [{ text: '监测信息' }, { text: '报警信息' }];break
+  }
+  if(props.secondType === '开关箱') {
+    innerCloums = [
+      { label:'使用状态：', value: '' }, 
+      { label:'类型：', value: '' }, 
+      { label:'所属区域：', value: '' }, 
+      { label:'一把闸刀控制状态：', value: '' }, 
+      { label:'安装地址：', value: '', width:'100%'}
+    ]
+  }
+}
+     
+setTabLists()
 /**
  * 获取设施的详情信息
  * @returns {Promise<void>}
  */
 const getDetailData = async () => {
   dataLoading.value = true
-  commonGatewayApi('20f1be3f1d', { factory_id: props.id })
+  commonGatewayApi('21f3d137dd', { factory_id: props.id })
     .then((dataList) => {
       if (Array.isArray(dataList)) {
         const [data] = dataList
         detailData = Object.assign({}, data || {})
+        let PIC_URLS = ''
+        try {
+          PIC_URLS = detailData.PIC_URL
+          ? JSON.parse(detailData.PIC_URL)
+          : []
+        }catch {
+          PIC_URLS = detailData.PIC_URL ? [detailData.PIC_URL] : []
+        }
+        images.value = PIC_URLS.map(img => {
+          return 'https://ywtg.citybrain.hangzhou.gov.cn/cv_data/api/v1/img/cityAppearance?path=' + img.replaceAll('http://172.18.6.65:8090/pic', '') + '&accessToken=' + sessionStorage.getItem('accessToken')
+        })
+        setInnerCloums(dataList[0])
       }
     })
     .finally(() => {
@@ -67,27 +126,30 @@ getDetailData()
 <template>
   <div class="switchbox-detail">
     <div :class="['detail-inner', hasImg ? 'has-img' : '']">
-      <img
-        class="inner-img"
-        :src="`/water-img/cv_res/img/zscqj/${name}.jpg`"
+      <img class="inner-img"
+        :src="images[0]"
         alt=""
-        @error.once="() => (hasImg = false)"
       />
+      <!-- <van-swipe class="inner-img" :autoplay="3000">
+        <van-swipe-item v-for="image in images" :key="image">
+          1
+        </van-swipe-item>
+      </van-swipe> -->
       <div class="inner-ctx">
         <div class="ctx-header">
           <common-title :text="name"></common-title>
-          <div class="header-tags">
+          <div class="header-tags" v-if="secondType==='开关箱'">
             <div class="tag-item warn-level">报警</div>
             <div class="tag-item status">断电</div>
           </div>
           <div class="header-inner">
-            <div class="inner-item" v-for="(item, index) in innerCloums" :key="index">
+            <div class="inner-item" v-for="(item, index) in innerCloums" :key="index" :style="{'width': item.width || '' }">
               <div class="item-label">{{ item.label }}</div>
               <div class="item-text">{{ item.value }}</div>
             </div>
           </div>
         </div>
-        <div class="ctx-tabs">
+        <div class="ctx-tabs" :style="`grid-template-columns: repeat(${tabList.length}, 1fr);`">
           <div
             v-for="(item, index) in tabList"
             :key="index"
@@ -102,8 +164,8 @@ getDetailData()
             加载中...
           </van-loading>
           <template v-else>
-            <switchbox-monitor v-if="activeTabIndex === 0" :detail="detailData"></switchbox-monitor>
-            <alarm-list v-if="activeTabIndex === 1" :detail="detailData"></alarm-list>
+            <switchbox-monitor v-if="secondType==='开关箱' && activeTabIndex===0" :detail="detailData"></switchbox-monitor>
+            <alarm-list v-if="tabList[activeTabIndex]?.text === '报警信息'" :detail="detailData"></alarm-list>
           </template>
         </div>
       </div>
@@ -179,10 +241,10 @@ getDetailData()
 
       .ctx-tabs {
         display: grid;
-        padding-top: 12px;
+        margin-top: 12px;
         align-items: center;
-        grid-template-columns: repeat(3, 1fr);
-
+        border-radius: 8px;
+        overflow: hidden;
         .tab-item {
           height: 32px;
           color: #666666;
@@ -191,21 +253,6 @@ getDetailData()
           text-align: center;
           border: 0.5px solid #d9d9d9;
           background-color: #ffffff;
-
-          &:nth-child(1) {
-            border-right: 0;
-            border-radius: 8px 0 0 8px;
-          }
-
-          &:nth-child(2) {
-            border-left: 0;
-            border-radius: 0 0px 0px 0;
-          }
-
-          &:nth-child(3) {
-            border-left: 0;
-            border-radius: 0 8px 8px 0;
-          }
         }
 
         .tab-active {
