@@ -33,7 +33,7 @@ const hasImg = ref(true)
  */
 const dataLoading = ref(true)
 let detailData = reactive({})
-const getDetailData = async () => {
+const getDetailData = () => {
   dataLoading.value = true
   commonGatewayApi('20f1be3f1d', { factory_id: props.id })
     .then((dataList) => {
