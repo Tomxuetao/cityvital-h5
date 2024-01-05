@@ -43,7 +43,6 @@
     "postcss": "^8.4.31",
     "nano-staged": "^0.8.0",
     "eslint": "^8.54.0",
-    "vconsole": "^3.15.1",
     "commitizen": "^4.3.0",
     "autoprefixer": "^10.4.14",
     "eslint-plugin-vue": "^9.18.1",

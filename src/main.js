@@ -13,10 +13,6 @@ import 'vant/es/image-preview/style'
 import '@/assets/font/index.css'
 import '@/assets/scss/index.scss'
 
-import VConsole from 'vconsole'
-
-new VConsole({ theme: 'dark' })
-
 const app = createApp(App)
 
 app.use(router).use(pinia).mount('#app')

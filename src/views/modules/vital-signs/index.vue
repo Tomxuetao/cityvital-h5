@@ -15,7 +15,7 @@ import RoadCard from '@/views/modules/vital-signs/comp/road-card.vue'
 import MetroCard from '@/views/modules/vital-signs/comp/metro-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
 
-import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs } from '@/config'
+import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs, reserveStatusMap } from '@/config'
 
 const props = defineProps({
   index: {
@@ -65,9 +65,11 @@ const tabChangeHandler = (index, level) => {
     alarming: 'true',
     thirdType: undefined,
     eventStatus: undefined,
+    sortTimeFiled: 'latestCheckTime',
     latestCheckEndTime: `${nextDate} 00:00:00`,
     latestCheckStartTime: `${curDate} 00:00:00`
   })
+
   defaultDateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
 
   const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
@@ -91,8 +93,8 @@ watch(
   () => defaultDateRange.value,
   (dateRange) => {
     const [start, end] = dateRange
-    searchForm.latestCheckEndTime = `${dayjs(end).format('YYYY-MM-DD HH:mm:ss')}`
-    searchForm.latestCheckStartTime = `${dayjs(start).format('YYYY-MM-DD HH:mm:ss')}`
+    searchForm.latestCheckEndTime = end ? `${dayjs(end).format('YYYY-MM-DD')} 00:00:00` : undefined
+    searchForm.latestCheckStartTime = start ? `${dayjs(start).format('YYYY-MM-DD')} 00:00:00` : undefined
   }
 )
 
@@ -100,7 +102,14 @@ watch(
   () => searchForm,
   () => {
     if (!isTabChange.value) {
-      customListRef.value.getDataList(searchForm)
+      const { eventStatus, latestCheckEndTime, latestCheckStartTime } = searchForm
+      customListRef.value.getDataList(activeIndex.value === 5 ?
+        {
+          alarm_status: eventStatus,
+          end_time: latestCheckEndTime,
+          start_time: latestCheckStartTime
+        } : searchForm
+      )
     }
   },
   { deep: true, immediate: false }
@@ -127,8 +136,8 @@ watch(
             v-if="tabConfigList[activeIndex].children?.length"
             ref="customListRef"
             :key="activeIndex"
-            :default-search-form="searchForm"
             :tab-config-list="tabConfigList[activeIndex].children"
+            :default-search-form="activeIndex !== 5 ? searchForm : { end_time: searchForm.latestCheckEndTime, start_time: searchForm.latestCheckStartTime}"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
             <template #search>
@@ -144,6 +153,7 @@ watch(
                       >
                       </common-calendar>
                       <common-sheet
+                        v-if="activeIndex !== 5"
                         v-model="searchForm.alarming"
                         :list="mapToList(deviceStatusMap)"
                         label="设施状态"
@@ -151,7 +161,7 @@ watch(
                       </common-sheet>
                       <common-sheet
                         v-model="searchForm.eventStatus"
-                        :list="mapToList(eventStatusMap)"
+                        :list="mapToList( activeIndex === 5 ? reserveStatusMap: eventStatusMap)"
                         label="处置状态"
                       >
                       </common-sheet>

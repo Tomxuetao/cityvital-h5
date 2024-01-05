@@ -183,6 +183,7 @@ export const vitalSignsTabs = Object.freeze([
         code: '21b5953733',
         customForm: {
           alarming: undefined,
+          eventStatus: undefined,
           sortTimeFiled: undefined,
           latestCheckEndTime: undefined,
           latestCheckStartTime: undefined
@@ -196,6 +197,7 @@ export const vitalSignsTabs = Object.freeze([
         customForm: {
           is_bj: '1',
           alarming: undefined,
+          eventStatus: undefined,
           sortTimeFiled: undefined,
           latestCheckEndTime: undefined,
           latestCheckStartTime: undefined
@@ -223,6 +225,15 @@ export const eventStatusMap = new Map([
   ['10', '已派遣'],
   ['11', '已反馈'],
   ['12', '已办结']
+])
+
+/**
+ * 地铁保护区处置状态
+ * @type {Map<string, string>}
+ */
+export const reserveStatusMap = new Map([
+  ['未办结', '未办结'],
+  ['已办结', '已办结']
 ])
 
 /**
