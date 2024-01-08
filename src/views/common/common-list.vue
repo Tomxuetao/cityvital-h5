@@ -18,11 +18,16 @@ const props = defineProps({
   defaultSearchForm: {
     type: Object,
     required: false,
-    default: () => {}
+    default: () => {
+    }
   }
 })
+
+const emit = defineEmits(['count-change'])
+
 const commonState = useCommonStore()
 
+const count = ref(0)
 const dataList = ref([])
 const dataLoading = ref(true)
 const loadFinished = ref(false)
@@ -81,10 +86,13 @@ const getDataListHandler = async (dataForm = {}) => {
     isIndexServer: isIndexServer
   })
     .then(({ list, total }) => {
+      if (count.value !== total) {
+        emit('count-change', total)
+        count.value = total
+      }
       dataLoading.value = false
       vanLoadingRef.value = false
-      dataList.value =
-        searchForm.pageNum === 1 ? list : [...dataList.value, ...list]
+      dataList.value = searchForm.pageNum === 1 ? list : [...dataList.value, ...list]
       loadFinished.value = Number(total) <= dataList.value.length
       searchForm.pageNum += 1
     })
@@ -123,10 +131,10 @@ defineExpose({
       @load="getDataListHandler()"
     >
       <div class="list-item" v-for="(item, index) in dataList" :key="index">
-        <slot name="card-item" :data="item" />
+        <slot name="card-item" :data="item"/>
       </div>
     </van-list>
-    <empty-page v-if="dataList.length === 0 && !dataLoading" />
+    <empty-page v-if="dataList.length === 0 && !dataLoading"/>
   </template>
 </template>
 

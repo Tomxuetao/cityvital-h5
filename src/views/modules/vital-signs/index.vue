@@ -52,6 +52,30 @@ let searchForm = reactive({
   latestCheckStartTime: `${curDate} 00:00:00`
 })
 
+const computeSearchForm = (index = activeIndex.value, secondIndex = activeSecondIndex.value) => {
+  let tempSearch
+  if (index === 5) {
+    if (secondIndex === 0) {
+      tempSearch = {
+        item_name: undefined,
+        alarm_status: undefined,
+        end_time: `${nextDate} 00:00:00`,
+        start_time: `${curDate} 00:00:00`
+      }
+    }
+  } else {
+    tempSearch = {
+      alarming: 'true',
+      thirdType: undefined,
+      eventStatus: undefined,
+      sortTimeFiled: 'latestCheckTime',
+      latestCheckEndTime: `${nextDate} 00:00:00`,
+      latestCheckStartTime: `${curDate} 00:00:00`
+    }
+  }
+  return tempSearch
+}
+
 const defaultDateRange = ref([new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)])
 
 const customListRef = ref()
@@ -137,11 +161,11 @@ watch(
             ref="customListRef"
             :key="activeIndex"
             :tab-config-list="tabConfigList[activeIndex].children"
-            :default-search-form="activeIndex !== 5 ? searchForm : { end_time: searchForm.latestCheckEndTime, start_time: searchForm.latestCheckStartTime}"
+            :default-search-form="computeSearchForm(activeIndex, activeSecondIndex)"
             @inner-tab-change="(index) => tabChangeHandler(index, 2)"
           >
             <template #search>
-              <div class="search-wrap">
+              <div v-if="activeIndex !== 5" class="search-wrap">
                 <third-filter v-model="searchForm.thirdType" :list="thirdTypeList"></third-filter>
                 <common-search>
                   <template #custom-select>
@@ -153,7 +177,6 @@ watch(
                       >
                       </common-calendar>
                       <common-sheet
-                        v-if="activeIndex !== 5"
                         v-model="searchForm.alarming"
                         :list="mapToList(deviceStatusMap)"
                         label="设施状态"
@@ -161,13 +184,16 @@ watch(
                       </common-sheet>
                       <common-sheet
                         v-model="searchForm.eventStatus"
-                        :list="mapToList( activeIndex === 5 ? reserveStatusMap: eventStatusMap)"
+                        :list="mapToList( eventStatusMap)"
                         label="处置状态"
                       >
                       </common-sheet>
                     </div>
                   </template>
                 </common-search>
+              </div>
+              <div v-else class="search-wrap">
+
               </div>
             </template>
             <template #card-item="{ data, index }">

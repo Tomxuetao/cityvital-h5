@@ -93,7 +93,6 @@ const props = defineProps({
         text-align: center;
         line-height: 24px;
         border-radius: 4px;
-
       }
 
       .item-1 {

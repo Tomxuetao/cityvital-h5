@@ -14,6 +14,17 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
+      //
+      '/uploads': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.113:8990/'
+      },
+      '/taiyuan_rongliangfugai': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.113:8990/'
+      },
       '/oauth2': {
         secure: false,
         changOrigin: true,
@@ -37,10 +48,6 @@ export default defineConfig({
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/gateway-server/, '')
-      },
-      '/cv_data': {
-        target: 'https://ywtg.citybrain.hangzhou.gov.cn', // 测试
-        changOrigin: true
       }
     }
   },
