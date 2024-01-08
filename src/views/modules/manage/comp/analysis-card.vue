@@ -23,6 +23,10 @@ const props = defineProps({
         <div class="tag-item item-3">{{ data.event_status }}</div>
       </div>
       <div class="inner-ctx">
+        <div class="ctx-item">
+          <div class="item-label">研判时间：</div>
+          <div class="item-text">{{ data.gmt_create }}</div>
+        </div>
         <template v-if="index === '0'">
           <div class="ctx-item">
             <div class="item-label">{{ data.class_key_1 }}：</div>
@@ -42,16 +46,12 @@ const props = defineProps({
         <template v-if="index === '2'">
 
         </template>
-        <div class="ctx-item">
-          <div class="item-label">研判时间：</div>
-          <div class="item-text">{{ data.gmt_create }}</div>
-        </div>
       </div>
     </div>
     <img
       class="card-img"
       src="@/views/common/img/icon-arrow.webp"
-      @click="$router.push({ name: 'analysis-detail', query: { id: data.analyze_event_id, index: index } })"
+      @click="$router.push({ name: 'analysis-detail', query: { id: data.analyze_event_id || data.id, index: index } })"
       alt=""
     />
   </div>

@@ -1,12 +1,12 @@
 <script setup>
-import CommonList from '@/views/common/common-list.vue'
-import RelatedCard from '@/views/modules/manage/comp/related-card.vue'
-import { nextTick, onMounted, reactive, ref } from 'vue'
 import { commonGatewayApi } from '@/api/common-api'
+import { nextTick, onMounted, reactive, ref } from 'vue'
 import { createInstance, createMarker } from '@/utils/amap-util'
-
-import CommonTitle from '@/views/common/common-title.vue'
 import markerImg from '@/views/modules/manage/img/img-marker.webp'
+
+import CommonList from '@/views/common/common-list.vue'
+import CommonTitle from '@/views/common/common-title.vue'
+import RelatedCard from '@/views/modules/manage/comp/related-card.vue'
 
 const props = defineProps({
   id: {
@@ -24,12 +24,34 @@ let mapInstance
 let data = reactive({})
 const dataLoading = ref(true)
 
+const apiConfigMap = new Map([
+  ['0', {
+    code: '212a8a32cf',
+    searchForm: {
+      analyze_event_id: props.id
+    }
+  }],
+  ['1', {
+    code: '2269860892',
+    searchForm: {
+      id: props.id
+    }
+  }],
+  ['2', {
+    code: '212a8a32cf',
+    searchForm: {
+      analyze_event_id: props.id
+    }
+  }]
+])
+
 /**
  * 获取详情信息
  */
 const getDataDetail = () => {
   dataLoading.value = true
-  commonGatewayApi('212a8a32cf', { analyze_event_id: props.id })
+  const { code, searchForm } = apiConfigMap.get(props.index)
+  commonGatewayApi(code, searchForm)
     .then(dataList => {
       if (Array.isArray(dataList)) {
         data = Object.assign(data, dataList[0] || {})
@@ -48,13 +70,26 @@ const getDataDetail = () => {
     })
 }
 
-const commonListConfig = {
-  code: '212a885708',
-  isIndexServer: true,
-  customForm: {
-    analyze_event_id: props.id
-  }
-}
+const listConfigMap = new Map([
+  ['0', {
+    code: '212a885708',
+    customForm: {
+      analyze_event_id: props.id
+    }
+  }],
+  ['1', {
+    code: '2269a4b92e',
+    customForm: {
+      id: props.id
+    }
+  }],
+  ['2', {
+    code: '212a8a32cf',
+    customForm: {
+      analyze_event_id: props.id
+    }
+  }]
+])
 
 onMounted(() => {
   nextTick(async () => {
@@ -116,7 +151,7 @@ onMounted(() => {
         <div class="related-wrap">
           <common-title text="关联事件"></common-title>
           <div class="related-list">
-            <common-list :config="commonListConfig">
+            <common-list :config="listConfigMap.get(index)">
               <template #card-item="{data}">
                 <related-card :data="data" :index="index"></related-card>
               </template>
@@ -223,8 +258,9 @@ onMounted(() => {
         box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.50);
 
         .related-list {
+          margin-top: -12px;
           position: relative;
-          padding: 4px 12px;
+          padding: 4px 16px;
           min-height: calc(100vh - 470px);
         }
       }
