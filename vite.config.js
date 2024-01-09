@@ -14,6 +14,7 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
+      // 数字城管图片
       '/szcg': {
         secure: false,
         changOrigin: true,
