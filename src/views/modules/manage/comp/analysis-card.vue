@@ -1,4 +1,6 @@
 <script setup>
+import { manageEventStatusMap as eventStatusMap } from '@/config'
+
 const props = defineProps({
   index: {
     type: String,
@@ -19,8 +21,8 @@ const props = defineProps({
         <div class="tag-item item-1" v-if="data.data_source || data.analyze_title">
           {{ data.data_source || data.analyze_title }}
         </div>
-        <div class="tag-item item-2" v-if="data.data_source">{{ data.data_source }}</div>
-        <div class="tag-item item-3">{{ data.event_status }}</div>
+        <div class="tag-item item-2" v-if="data.top">变</div>
+        <div class="tag-item item-3">{{ eventStatusMap.get(data.event_status) }}</div>
       </div>
       <div class="inner-ctx">
         <div class="ctx-item">

@@ -265,16 +265,16 @@ export const regionList = [
 ]
 
 /**
- *
- * @type {*[]}
+ * 管理在线事件状态
+ * @type {Map<string, string>}
  */
-export const eventStatusList = [
-  { text: '未分发', value: '新建', name: '未分发' },
-  { text: '已分发', value: '已分发', name: '已分发' },
-  { text: '处理中', value: '处理中', name: '处理中' },
-  { text: '已办结', value: '已办结', name: '已办结' },
-  { text: '已终止', value: '已终止', name: '已终止' }
-]
+export const manageEventStatusMap = new Map([
+  ['新建', '未分发'],
+  ['已分发', '已分发'],
+  ['处理中', '处理中'],
+  ['已办结', '已办结'],
+  ['已终止', '已终止']
+])
 
 
 /**

@@ -2,6 +2,7 @@
 import { commonGatewayApi } from '@/api/common-api'
 import { nextTick, onMounted, reactive, ref } from 'vue'
 import { createInstance, createMarker } from '@/utils/amap-util'
+import { manageEventStatusMap as eventStatusMap } from '@/config'
 import markerImg from '@/views/modules/manage/img/img-marker.webp'
 
 import CommonList from '@/views/common/common-list.vue'
@@ -114,8 +115,8 @@ onMounted(() => {
               <div class="tag-item item-1" v-if="data.data_source || data.analyze_title">
                 {{ data.data_source || data.analyze_title }}
               </div>
-              <div class="tag-item item-2" v-if="data.data_source">{{ data.data_source }}</div>
-              <div class="tag-item item-3">{{ data.event_status }}</div>
+              <div class="tag-item item-2" v-if="data.top">变</div>
+              <div class="tag-item item-3">{{ eventStatusMap.get(data.event_status) }}</div>
             </div>
             <div class="card-ctx">
               <div class="ctx-item">
@@ -261,7 +262,7 @@ onMounted(() => {
           margin-top: -12px;
           position: relative;
           padding: 4px 16px;
-          min-height: calc(100vh - 470px);
+          min-height: calc(100vh - 416px);
         }
       }
     }

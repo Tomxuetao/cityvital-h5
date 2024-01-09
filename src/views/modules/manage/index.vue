@@ -88,7 +88,6 @@ const getExamineList = async () => {
       }
     })
   })
-  console.log(examineList.value)
 }
 
 getExamineList()

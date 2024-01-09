@@ -2,7 +2,7 @@
 import dayjs from 'dayjs'
 import { reactive, ref, watch } from 'vue'
 
-import { eventStatusList } from '@/config'
+import { mapToList, manageEventStatusMap } from '@/config'
 
 import CommonList from '@/views/common/common-list.vue'
 import CommonTitle from '@/views/common/common-title.vue'
@@ -104,7 +104,7 @@ watch(() => searchForm, () => {
       <div class="ctx-inner">
         <div class="inner-title">
           <common-title text="研判结果列表">
-            <common-sheet v-model="searchForm.event_status" :list="eventStatusList" label="全部"></common-sheet>
+            <common-sheet v-model="searchForm.event_status" :list="mapToList(manageEventStatusMap)" label="全部"></common-sheet>
           </common-title>
         </div>
         <div class="inner-list">
