@@ -2,7 +2,11 @@
   <div class="site-wrapper">
     <main-header></main-header>
     <div class="route-wrap">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <keep-alive :max="3">
+          <component :is="Component" :key="$route.fullPath"></component>
+        </keep-alive>
+      </router-view>
     </div>
   </div>
 </template>

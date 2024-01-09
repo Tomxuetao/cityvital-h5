@@ -14,21 +14,22 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
-      //
-      '/uploads': {
+      '/szcg': {
         secure: false,
         changOrigin: true,
-        target: 'http://10.54.38.113:8990/'
+        target: 'http://172.18.16.15'
       },
-      '/taiyuan_rongliangfugai': {
-        secure: false,
-        changOrigin: true,
-        target: 'http://10.54.38.113:8990/'
-      },
+      // 三中心服务
       '/oauth2': {
         secure: false,
         changOrigin: true,
         target: 'http://10.54.38.116'
+      },
+      // 第三方图片
+      '/taiyuan_rongliangfugai': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.113:8991/'
       },
       // 水设施河道下的设施图片
       '/water-img': {
@@ -37,12 +38,14 @@ export default defineConfig({
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/water-img/, '')
       },
+      // 后端服务
       '/back-server': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/back-server/, '')
       },
+      // 指标平台服务
       '/gateway-server/cv_data': {
         secure: false,
         changeOrigin: true,

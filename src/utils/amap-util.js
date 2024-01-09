@@ -13,7 +13,7 @@ export const createInstance = async (
   mapConfig = {
     zoom: 12,
     viewMode: '2D',
-    center: [119.12, 29.86]
+    center: [120.20, 30.24]
   }) => {
   if (recreate) {
     exposeInstance()
@@ -21,7 +21,7 @@ export const createInstance = async (
   return (mapInstance || (mapInstance = new AMap.Map(container, Object.assign({
       zoom: 12,
       viewMode: '2D',
-      center: [119.12, 29.86]
+      center: [120.20, 30.24]
     },
     mapConfig
   ))))
