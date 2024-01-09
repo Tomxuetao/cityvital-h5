@@ -34,10 +34,10 @@ export const createInstance = async (
  */
 export const createMarker = (config) => {
   return new AMap.Marker({
+    anchor: 'bottom-center',
     position: config.position,
     icon: new AMap.Icon({
       image: config.image,
-      anchor: 'bottom-center',
       size: config.size || [28, 40],
       imageSize: config.size || [28, 40]
     }),
