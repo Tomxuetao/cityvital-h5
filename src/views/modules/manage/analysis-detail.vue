@@ -85,7 +85,7 @@ const listConfigMap = new Map([
     }
   }],
   ['2', {
-    code: '212a8a32cf',
+    code: '212a885708',
     customForm: {
       analyze_event_id: props.id
     }
@@ -109,7 +109,7 @@ onMounted(() => {
       </van-loading>
       <div v-else class="inner-ctx">
         <div class="detail-card">
-          <common-title :text="data.class_value_2 || data.analyze_title "></common-title>
+          <common-title :text="data.class_value_2 || data.analyze_title"></common-title>
           <div class="card-inner">
             <div class="inner-tags">
               <div class="tag-item item-1" v-if="data.data_source || data.analyze_title">
@@ -123,7 +123,7 @@ onMounted(() => {
                 <div class="item-label">研判时间：</div>
                 <div class="item-text">{{ data.gmt_create }}</div>
               </div>
-              <template v-if="index === '0'">
+              <template v-if="['0', '2'].includes(index)">
                 <div class="ctx-item">
                   <div class="item-label">{{ data.class_key_1 }}：</div>
                   <div class="item-text">{{ data.class_value_1 }}</div>
@@ -142,9 +142,6 @@ onMounted(() => {
                   <div class="item-label">出土工地：</div>
                   <div class="item-text">{{ data.addr }}</div>
                 </div>
-              </template>
-              <template v-if="index === '2'">
-
               </template>
             </div>
           </div>

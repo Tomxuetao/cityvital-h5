@@ -1,7 +1,66 @@
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, watch } from 'vue'
 import { commonGatewayApi } from '@/api/common-api'
 
+import EmptyPage from '@/views/common/empty-page.vue'
+import CommonSheet from '@/views/common/common-sheet.vue'
+
+const props = defineProps({
+  isMonth: {
+    type: Boolean,
+    default: false,
+    required: false
+  }
+})
+
+const dateList = ref([])
+const activeDate = ref('')
+const dataLoading = ref(true)
+/**
+ * 获取周的日期列表
+ * @returns {Promise<void>}
+ */
+const getDateList = async () => {
+  dataLoading.value = true
+  if (props.isMonth) {
+    const curDate = new Date()
+    const curMonth = curDate.getMonth()
+    const curYear = curDate.getFullYear()
+    for (let i = 0; i <= curMonth; i++) {
+      const temp = `${curYear}年${i + 1}月`
+      dateList.value.push({
+        name: temp,
+        text: temp,
+        value: `${curYear}##${i + 1}`
+      })
+    }
+    activeDate.value = dateList.value[0].value
+  } else {
+    const tempDateList = await commonGatewayApi('21ba66875f')
+    if (Array.isArray(tempDateList)) {
+      dateList.value = tempDateList.map((
+        {
+          period,
+          year_id: year,
+          month_id: month,
+          week_id: week,
+          endDate,
+          beginDate
+        }) => {
+        const temp = `${period}(${beginDate.slice(0, 10)}-${endDate.slice(0, 10)})`
+        return {
+          name: temp,
+          text: temp,
+          value: `${year}##${month}##${week}`
+        }
+      })
+      activeDate.value = dateList.value[0].value
+    }
+  }
+  dataLoading.value = false
+}
+
+getDateList()
 
 let detail = reactive({
   aiScore: '0.00',
@@ -9,40 +68,50 @@ let detail = reactive({
   tidyScore: '0',
   cleanScore: '0'
 })
-const getDataHandler = async () => {
-  const dataList = await commonGatewayApi('21bb26a236', {
-    fixyear: '2024',
-    fixWeek: '2',
-    fixmonth: '1',
-    dim: 'week'
-  }) || {}
-
-  const [data] = dataList
-  detail = Object.assign(detail, data || {})
-}
-getDataHandler()
-
 const dataList = ref([])
-const getDataList = async () => {
-  const tempList = await commonGatewayApi('21bb289c9e', {
-    fixyear: '2024',
-    fixWeek: '2',
-    fixmonth: '1',
-    dim: 'week'
-  })
+/**
+ * 获取数据
+ * @param dateStr
+ * @returns {Promise<void>}
+ */
+const getDataHandler = async (dateStr) => {
+  const [year, month, week] = dateStr.split('##')
+  const searchForm = {
+    fixyear: year,
+    fixmonth: month,
+    fixWeek: props.isMonth ? undefined : week,
+    dim: props.isMonth ? 'month' : 'week'
+  }
 
+  const [data] = await commonGatewayApi('21bb26a236', searchForm)
+  detail = Object.assign(detail, data || {})
+
+  const tempList = await commonGatewayApi('21bb289c9e', searchForm)
   if (Array.isArray(tempList)) {
     dataList.value = tempList
   }
 }
 
-getDataList()
+watch(() => activeDate.value, (value) => {
+  getDataHandler(value)
+}, { immediate: true })
 </script>
 
 <template>
   <div class="week-view">
-    <div class="view-inner">
-      <div class="inner-date"></div>
+    <van-loading v-if="dataLoading" color="#0094ff" vertical>
+      加载中...
+    </van-loading>
+    <div v-else class="view-inner">
+      <div class="inner-date">
+        <common-sheet
+          v-model="activeDate"
+          :list="dateList"
+          :can-clear="false"
+          :trigger-type="1"
+        >
+        </common-sheet>
+      </div>
       <div class="inner-score">
         <div class="score-title">智能自动评价</div>
         <div class="score-ctx">
@@ -71,18 +140,21 @@ getDataList()
         </div>
       </div>
       <div class="inner-list">
-        <div
-          class="list-item"
-          v-for="(item, index) in dataList"
-          :key="index"
-          @click="$router.push({ name: 'examine-list', query: { name: item.proType, index: '1' } })"
-        >
-          <div class="item-inner">
-            <div class="item-title">{{ item.proType }}</div>
-            <div class="item-text">{{ `${item.num}件` }}</div>
-            <div class="item-text">{{ `扣${item.deductScore}分` }}</div>
+        <template v-if="dataList.length">
+          <div
+            class="list-item"
+            v-for="(item, index) in dataList"
+            :key="index"
+            @click="$router.push({ name: 'examine-list', query: { name: item.proType, index: '1' } })"
+          >
+            <div class="item-inner">
+              <div class="item-title">{{ item.proType }}</div>
+              <div class="item-text">{{ `${item.num}件` }}</div>
+              <div class="item-text">{{ `扣${item.deductScore}分` }}</div>
+            </div>
           </div>
-        </div>
+        </template>
+        <empty-page v-else></empty-page>
       </div>
     </div>
   </div>
@@ -95,7 +167,10 @@ getDataList()
   .view-inner {
 
     .inner-date {
+      display: flex;
+      align-items: center;
       padding: 14px 0 18px 0;
+      justify-content: center;
     }
 
     .inner-score {

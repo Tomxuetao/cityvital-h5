@@ -15,7 +15,7 @@ const props = defineProps({
 })
 
 const computeImgUrl = (data) => {
-  if (props.index === '0') {
+  if (['0', '2'].includes(props.index)) {
     let tempUrl = ''
     if (data.FILE_URL) {
       const tempUrlList = data.FILE_URL.split(',')

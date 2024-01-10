@@ -104,7 +104,7 @@ watch(() => searchForm, () => {
       <div class="ctx-inner">
         <div class="inner-title">
           <common-title text="研判结果列表">
-            <common-sheet v-model="searchForm.event_status" :list="mapToList(manageEventStatusMap)" label="全部"></common-sheet>
+            <common-sheet v-model="searchForm.event_status" :list="mapToList(manageEventStatusMap)" :trigger-type="1" label="全部"></common-sheet>
           </common-title>
         </div>
         <div class="inner-list">
