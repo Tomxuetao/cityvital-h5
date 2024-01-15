@@ -39,33 +39,18 @@ const computeCurActive = (dataList) => {
  * @param title
  * @param handleDept
  * @param index
- * @returns {{isRead: (string|string), time: string, title, content: (string|string)}|{isRead: undefined, time: *, title, content: string}}
+ * @returns {{unitName: string, isRead: boolean, time: string, title, taskNum: (*|string), content: (string|string)}}
  */
 const assembleData = (data, title, handleDept = '', index = 0) => {
-  const { read, operator, operateTime, operatorOrg, eventRemark, extraMap } = data
-  const { taskNum, nextUnitId, nextUnitName } = extraMap || { taskNum: '', nextUnitId: '', nextUnitName: '' }
-  const nextUnitIdArray = nextUnitId.split(',')
-  const nextUnitNameArray = nextUnitName.split(',')
-  if (operateTime) {
-    return {
-      title: title,
-      time: operateTime,
-      isRead: read,
-      taskNum: taskNum,
-      unitId: nextUnitIdArray[index],
-      unitName: nextUnitNameArray[index],
-      content: `【${operatorOrg}】${operator}进行${title}操作，处理意见: ${eventRemark}`
-    }
-  } else {
-    return {
-      title: title,
-      time: '',
-      taskNum: taskNum,
-      unitId: nextUnitIdArray[index],
-      unitName: nextUnitNameArray[index],
-      isRead: handleDept ? read : undefined,
-      content: handleDept ? `【${handleDept}】${title.replace('中', '')}` : ''
-    }
+  const { operator, operateTime, eventRemark, extraMap } = data
+  return {
+    title: title,
+    index: index,
+    time: operateTime || '',
+    unitName: handleDept,
+    taskNum: extraMap?.taskNum || '',
+    isRead: !!operateTime, // 有操作时间就已读
+    content: operateTime ? `【${handleDept}】${operator}进行${title}操作，处理意见: ${eventRemark}` : (handleDept ? `【${handleDept}】${title.replace('中', '')}` : '')
   }
 }
 
@@ -87,12 +72,22 @@ const assembleList = (list, emergencyDegree) => {
 
   // 节点1 - 派遣数据处理
   const { extraMap, operateTime } = firstStep
-  const { nextUnitName, nextActDefName } = extraMap || {
+  const { nextUnitId, nextUnitRead, nextUnitName, nextActDefName } = extraMap || {
+    nextUnitId: '',
+    nextUnitRead: '',
     nextUnitName: '',
     nextActDefName: ''
   }
-  const tempNames = nextUnitName.split(',')
+
+  const tempIds = nextUnitId?.split(',') || []
+  const unitIds = tempIds.length > 1 ? tempIds : ['', '']
+
+  const tempReads = nextUnitRead?.split(',') || []
+  const unitReads = tempReads.length > 1 ? tempReads : ['', '']
+
+  const tempNames = nextUnitName?.split(',') || []
   const unitNames = tempNames.length > 1 ? tempNames : ['', '']
+
   const tempDefNames = nextActDefName.split(',')
   const defNames = tempDefNames.length > 1 ? tempDefNames : ['', '']
   const tempIndex = defNames[0].includes('处置') ? 0 : 1
@@ -122,9 +117,17 @@ const assembleList = (list, emergencyDegree) => {
     const disposeData = processingList.find(({ extraMap }) => extraMap?.curActDefName.includes('处置')) || {}
     resList[1].list.push(assembleData(disposeData, `处置${disposeData.operateTime ? '' : '中'}`, unitNames[tempIndex], tempIndex))
     // 监管数据
-    const superviseData = processingList.find(({ extraMap }) => extraMap?.curActDefName === '行业监管') || {}
+    const superviseData = processingList.find(({ extraMap }) => extraMap?.curActDefName.includes('监管')) || {}
     resList[1].list.push(assembleData(superviseData, `监管${superviseData.operateTime ? '' : '中'}`, unitNames[1 - tempIndex], 1 - tempIndex))
   }
+
+  // 对处置、监管数据处理进行二次处理（添加isRead、unitId）
+  resList[1].list.forEach(item => {
+    Object.assign(item, {
+      unitId: unitIds[item.index],
+      isRead: item.isRead ? item.isRead : unitReads[item.index] === 'true'
+    })
+  })
 
   // 节点3 - 结案数据处理
   const thirdStep = tempList.find(({ procedure }) => procedure === '结案')
@@ -180,7 +183,7 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
                 <div class="header-title">{{ ctx.title }}</div>
                 <div class="header-time">{{ ctx.time }}</div>
               </div>
-              <div class="header-status" v-if="ctx.isRead !==undefined" @click="getReaderList(ctx)">
+              <div class="header-status" v-if="ctx.isRead !== undefined" @click="getReaderList(ctx)">
                 {{ ctx.isRead ? '已读' : '未读' }}
               </div>
             </div>
