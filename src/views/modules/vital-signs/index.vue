@@ -11,11 +11,12 @@ import ThirdFilter from '@/views/common/third-filter.vue'
 import CommonSearch from '@/views/common/common-search.vue'
 import CommonCalendar from '@/views/common/common-calendar.vue'
 import CityCard from '@/views/modules/vital-signs/comp/city-card.vue'
-import RoadCard from '@/views/modules/vital-signs/comp/road-card.vue'
 import MetroCard from '@/views/modules/vital-signs/comp/metro-card.vue'
 import WaterCard from '@/views/modules/vital-signs/comp/water-card.vue'
+import MunicipCard from '@/views/modules/vital-signs/comp/municip-card.vue'
+import ReserveCard from '@/views/modules/vital-signs/comp/reserve-card.vue'
 
-import { mapToList, eventStatusMap, deviceStatusMap, vitalSignsTabs, reserveStatusMap } from '@/config'
+import { mapToList, eventStatusMap, deviceStatusMap, reserveStatusMap, vitalSignsTabs } from '@/config'
 
 const props = defineProps({
   index: {
@@ -25,10 +26,10 @@ const props = defineProps({
 })
 
 const cardCompsMap = new Map([
-  [3, RoadCard],
   [2, CityCard],
   [5, MetroCard],
-  [0, WaterCard]
+  [0, WaterCard],
+  [3, MunicipCard]
 ])
 
 const commonState = useCommonStore()
@@ -45,6 +46,7 @@ const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
 let searchForm = reactive({
   alarming: 'true',
+  itemName: undefined,
   thirdType: undefined,
   eventStatus: undefined,
   sortTimeFiled: 'latestCheckTime',
@@ -58,7 +60,6 @@ const computeSearchForm = (index = activeIndex.value, secondIndex = activeSecond
     if (secondIndex === 0) {
       tempSearch = {
         item_name: undefined,
-        alarm_status: undefined,
         end_time: `${nextDate} 00:00:00`,
         start_time: `${curDate} 00:00:00`
       }
@@ -76,7 +77,7 @@ const computeSearchForm = (index = activeIndex.value, secondIndex = activeSecond
   return tempSearch
 }
 
-const defaultDateRange = ref([new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)])
+const dateRange = ref([new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)])
 
 const customListRef = ref()
 const isTabChange = ref(false)
@@ -87,6 +88,7 @@ const tabChangeHandler = (index, level) => {
 
   searchForm = Object.assign(searchForm, {
     alarming: 'true',
+    itemName: undefined,
     thirdType: undefined,
     eventStatus: undefined,
     sortTimeFiled: 'latestCheckTime',
@@ -94,7 +96,7 @@ const tabChangeHandler = (index, level) => {
     latestCheckStartTime: `${curDate} 00:00:00`
   })
 
-  defaultDateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
+  dateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
 
   const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
@@ -114,7 +116,7 @@ const getAreaDataList = async () => {
 getAreaDataList()
 
 watch(
-  () => defaultDateRange.value,
+  () => dateRange.value,
   (dateRange) => {
     const [start, end] = dateRange
     searchForm.latestCheckEndTime = end ? `${dayjs(end).format('YYYY-MM-DD')} 00:00:00` : undefined
@@ -126,14 +128,15 @@ watch(
   () => searchForm,
   () => {
     if (!isTabChange.value) {
-      const { eventStatus, latestCheckEndTime, latestCheckStartTime } = searchForm
-      customListRef.value.getDataList(activeIndex.value === 5 ?
+      const tempSearch = activeIndex.value === 5 ?
         {
-          alarm_status: eventStatus,
-          end_time: latestCheckEndTime,
-          start_time: latestCheckStartTime
+          item_name: searchForm.itemName,
+          alarm_status: searchForm.eventStatus,
+          end_time: searchForm.latestCheckEndTime,
+          start_time: searchForm.latestCheckStartTime
         } : searchForm
-      )
+      console.log(tempSearch)
+      customListRef.value.getDataList(tempSearch)
     }
   },
   { deep: true, immediate: false }
@@ -150,7 +153,7 @@ watch(
           color="#0482FF"
           :swipe-threshold="4"
           title-active-color="#0482FF"
-          @change="(index) => tabChangeHandler(index, 1)"
+          @change="index => tabChangeHandler(index, 1)"
         >
         </common-tabs>
       </div>
@@ -162,7 +165,7 @@ watch(
             :key="activeIndex"
             :tab-config-list="tabConfigList[activeIndex].children"
             :default-search-form="computeSearchForm(activeIndex, activeSecondIndex)"
-            @inner-tab-change="(index) => tabChangeHandler(index, 2)"
+            @inner-tab-change="index => tabChangeHandler(index, 2)"
           >
             <template #search>
               <div v-if="activeIndex !== 5" class="search-wrap">
@@ -171,9 +174,9 @@ watch(
                   <template #custom-select>
                     <div class="select-wrap">
                       <common-calendar
-                        v-model="defaultDateRange"
+                        v-model="dateRange"
                         label="时间选择"
-                        :default-date="defaultDateRange"
+                        :default-date="dateRange"
                       >
                       </common-calendar>
                       <common-sheet
@@ -193,7 +196,36 @@ watch(
                 </common-search>
               </div>
               <div v-else class="search-wrap">
-
+                <template v-if="activeSecondIndex === 0">
+                  <common-search>
+                    <template #custom-select>
+                      <div class="select-wrap">
+                        <common-calendar
+                          v-model="dateRange"
+                          label="时间选择"
+                          :default-date="dateRange"
+                        >
+                        </common-calendar>
+                        <common-sheet
+                          v-model="searchForm.eventStatus"
+                          :list="mapToList(reserveStatusMap)"
+                          label="处置状态"
+                        >
+                        </common-sheet>
+                      </div>
+                    </template>
+                  </common-search>
+                </template>
+              </div>
+            </template>
+            <template #special v-if="activeIndex === 5 && activeSecondIndex === 0">
+              <div class="reserve-wrap">
+                <reserve-card
+                  v-model="searchForm.itemName"
+                  :date-range="dateRange"
+                  :status="searchForm.eventStatus"
+                >
+                </reserve-card>
               </div>
             </template>
             <template #card-item="{ data, index }">
@@ -268,6 +300,10 @@ watch(
         border-radius: 12px;
         background-color: #ffffff;
         min-height: calc(100vh - 199px);
+
+        .reserve-wrap {
+          padding: 12px 16px 0 16px;
+        }
 
         .card-wrap {
           padding: 0 16px;

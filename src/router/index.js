@@ -65,11 +65,11 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/city-detail.vue')
   },
   {
-    path: '/road-detail',
-    name: 'road-detail',
+    path: '/municip-detail',
+    name: 'municip-detail',
     meta: { title: '市政设施详情' },
     props: (route) => ({ ...route.query }),
-    component: () => import('@/views/modules/vital-signs/road-detail.vue')
+    component: () => import('@/views/modules/vital-signs/municip-detail.vue')
   },
   {
     path: '/item-detail',

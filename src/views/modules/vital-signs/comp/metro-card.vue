@@ -16,7 +16,7 @@ const props = defineProps({
     <div v-if="secondIndex === 0" class="reserve-card">
       <div class="card-title">{{ data.alarm_type }}</div>
       <div class="card-tags">
-        <div class="tag-item item-1">{{ data.alarm_status }}</div>
+        <div :class="['tag-item', data.alarm_status === '已办结' ? 'item-1' : 'item-alarm']">{{ data.alarm_status }}</div>
         <div class="tag-item item-2">{{ data.factory_name }}</div>
         <div class="tag-item item-3">{{ data.district_name }}</div>
         <div class="tag-item item-4">{{ data.item_name }}</div>
@@ -29,6 +29,10 @@ const props = defineProps({
         <div class="ctx-item">
           <div class="item-label">报警时间：</div>
           <div class="item-text">{{ data.create_time }}</div>
+        </div>
+        <div class="ctx-item">
+          <div class="item-label">报警描述：</div>
+          <div class="item-text">{{ data.monitor_remark }}</div>
         </div>
       </div>
     </div>
@@ -53,14 +57,6 @@ const props = defineProps({
           </div>
         </div>
       </div>
-      <img
-        class="card-img"
-        src="@/views/modules/vital-signs/img/icon-arrow.webp"
-        alt=""
-        @click="
-        $router.push({ name: 'alarm-detail', query: { eventId: data.eventId } })
-      "
-      />
     </div>
   </div>
 </template>
@@ -100,6 +96,11 @@ const props = defineProps({
         background-color: #19cc96;
       }
 
+      .item-alarm {
+        color: #ffffff;
+        background-color: #FF5167;
+      }
+
       .item-2 {
         background-color: rgba(255, 81, 103, 0.08);
       }
@@ -127,10 +128,12 @@ const props = defineProps({
 
         .item-label {
           color: #666666;
+          white-space: nowrap;
         }
 
         .item-text {
           color: #333333;
+          @include ellipsis(1);
         }
       }
     }

@@ -1,5 +1,5 @@
 <template>
-  <div class="empty-wrapper">
+  <div class="empty-page">
     <img
       class="empty-img"
       :src="emptyType === 2 ? imgEmpty2 : imgSrc"
@@ -38,7 +38,7 @@ const props = defineProps({
 </script>
 
 <style scoped lang="scss">
-.empty-wrapper {
+.empty-page {
   position: absolute;
   top: 50%;
   left: 50%;

@@ -39,6 +39,27 @@ export default defineConfig({
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/water-img/, '')
       },
+      '/szys_img1': {
+        target: 'http://www.szys.ren:30065/',
+        rewrite: (path) => path.replace(/^\/szys_img1/, ''),
+        changOrigin: true
+      },
+      
+      '/szys_img2': {
+        target: 'https://www.szys.ren/',
+        rewrite: (path) => path.replace(/^\/szys_img2/, ''),
+        changOrigin: true
+      },
+      
+      '/szys_img3': {
+        target: 'http://183.134.200.102:8080/',
+        rewrite: (path) => path.replace(/^\/szys_img3/, ''),
+        changOrigin: true
+      },
+      '/szys_pdf1': {
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn/',
+        changOrigin: true
+      },
       // 后端服务
       '/back-server': {
         secure: false,
