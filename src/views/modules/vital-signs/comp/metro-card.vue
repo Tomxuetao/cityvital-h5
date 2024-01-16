@@ -16,7 +16,10 @@ const props = defineProps({
     <div v-if="secondIndex === 0" class="reserve-card">
       <div class="card-title">{{ data.alarm_type }}</div>
       <div class="card-tags">
-        <div :class="['tag-item', data.alarm_status === '已办结' ? 'item-1' : 'item-alarm']">{{ data.alarm_status }}</div>
+        <div :class="['tag-item', data.alarm_status === '已办结' ? 'item-1' : 'item-alarm']">{{
+            data.alarm_status
+          }}
+        </div>
         <div class="tag-item item-2">{{ data.factory_name }}</div>
         <div class="tag-item item-3">{{ data.district_name }}</div>
         <div class="tag-item item-4">{{ data.item_name }}</div>
@@ -98,7 +101,7 @@ const props = defineProps({
 
       .item-alarm {
         color: #ffffff;
-        background-color: #FF5167;
+        background-color: #999999;
       }
 
       .item-2 {
@@ -132,7 +135,7 @@ const props = defineProps({
         }
 
         .item-text {
-          color: #333333;
+          color: #666666;
           @include ellipsis(1);
         }
       }
@@ -189,7 +192,7 @@ const props = defineProps({
             width: 72px;
             height: 22px;
             font-size: 14px;
-            color: #333333;
+            color: #666666;
             line-height: 22px;
             @include ellipsis(1);
           }

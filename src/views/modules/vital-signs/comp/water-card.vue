@@ -111,7 +111,7 @@ const props = defineProps({
           width: 72px;
           height: 22px;
           font-size: 14px;
-          color: #333333;
+          color: #666666;
           line-height: 22px;
           @include ellipsis(1);
         }

@@ -138,6 +138,7 @@ watch(() => [props.status, props.dateRange], ([status, dateRange]) => {
 
     .item-active {
       border-radius: 2px;
+      background-repeat: no-repeat;
       border: 0.5px solid transparent;
       background-image: linear-gradient(180deg, rgba(4, 130, 255, 0.3), rgba(4, 130, 255, 0) 100%);
 

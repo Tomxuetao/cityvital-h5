@@ -123,7 +123,7 @@ const props = defineProps({
 
         .item-text {
           font-size: 14px;
-          color: #333333;
+          color: #666666;
           @include ellipsis(1);
         }
       }

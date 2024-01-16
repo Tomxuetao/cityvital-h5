@@ -42,14 +42,14 @@ const computeCurActive = (dataList) => {
  * @returns {{unitName: string, isRead: boolean, time: string, title, taskNum: (*|string), content: (string|string)}}
  */
 const assembleData = (data, title, handleDept = '', index = 0) => {
-  const { operator, operateTime, eventRemark, extraMap } = data
+  const { read, operator, operateTime, eventRemark, extraMap } = data
   return {
     title: title,
     index: index,
     time: operateTime || '',
     unitName: handleDept,
     taskNum: extraMap?.taskNum || '',
-    isRead: !!operateTime, // 有操作时间就已读
+    isRead: !!operateTime || read, // 有操作时间就已读
     content: operateTime ? `【${handleDept}】${operator}进行${title}操作，处理意见: ${eventRemark}` : (handleDept ? `【${handleDept}】${title.replace('中', '')}` : '')
   }
 }
@@ -79,15 +79,19 @@ const assembleList = (list, emergencyDegree) => {
     nextActDefName: ''
   }
 
+  // 下一阶段的部门ID处理
   const tempIds = nextUnitId?.split(',') || []
   const unitIds = tempIds.length > 1 ? tempIds : ['', '']
 
+  // 下一阶段已读未读处理
   const tempReads = nextUnitRead?.split(',') || []
   const unitReads = tempReads.length > 1 ? tempReads : ['', '']
 
+  // 下一阶段的部门名称处理
   const tempNames = nextUnitName?.split(',') || []
   const unitNames = tempNames.length > 1 ? tempNames : ['', '']
 
+  // 下一阶段激活的步骤（处置/监管）
   const tempDefNames = nextActDefName.split(',')
   const defNames = tempDefNames.length > 1 ? tempDefNames : ['', '']
   const tempIndex = defNames[0].includes('处置') ? 0 : 1
@@ -105,7 +109,7 @@ const assembleList = (list, emergencyDegree) => {
     }
   }
 
-  // 正在处理
+  // 正在处理（监管/处置）
   const processingList = tempList.filter(({ procedure }) => procedure === '处理中')
 
   // 节点2 - 处置、监管数据处理
@@ -118,7 +122,7 @@ const assembleList = (list, emergencyDegree) => {
     resList[1].list.push(assembleData(disposeData, `处置${disposeData.operateTime ? '' : '中'}`, unitNames[tempIndex], tempIndex))
     // 监管数据
     const superviseData = processingList.find(({ extraMap }) => extraMap?.curActDefName.includes('监管')) || {}
-    resList[1].list.push(assembleData(superviseData, `监管${superviseData.operateTime ? '' : '中'}`, unitNames[1 - tempIndex], 1 - tempIndex))
+    resList[1].list.push(assembleData(superviseData, `监管${superviseData?.operateTime ? '' : '中'}`, unitNames[1 - tempIndex], 1 - tempIndex))
   }
 
   // 对处置、监管数据处理进行二次处理（添加isRead、unitId）
@@ -183,7 +187,8 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
                 <div class="header-title">{{ ctx.title }}</div>
                 <div class="header-time">{{ ctx.time }}</div>
               </div>
-              <div class="header-status" v-if="ctx.isRead !== undefined" @click="getReaderList(ctx)">
+              <div :class="['header-status', ctx.isRead ? '' : 'status-read']" v-if="ctx.isRead !== undefined"
+                   @click="getReaderList(ctx)">
                 {{ ctx.isRead ? '已读' : '未读' }}
               </div>
             </div>
@@ -287,11 +292,17 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
             }
 
             .header-status {
-              padding: 5px 6px;
-              height: 22px;
+              padding: 0 8px;
+              height: 24px;
+              color: #FFFFFF;
               font-size: 12px;
               border-radius: 4px;
+              line-height: 24px;
               background-color: rgba(255, 240, 243, 1);
+            }
+
+            .status-read {
+              background-color: #ffb251;;
             }
           }
 

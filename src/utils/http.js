@@ -53,7 +53,14 @@ export function createHttp() {
         }
       }
     },
-    (error) => Promise.reject(error)
+    async (error) => {
+      const { response } = error
+      if ([1028, 401, 403].includes(response?.status)) {
+        await router.push({ name: 'no-access' })
+      } else {
+        return Promise.reject(error)
+      }
+    }
   )
   
   return http

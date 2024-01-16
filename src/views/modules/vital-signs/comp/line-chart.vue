@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
+
 import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { CanvasRenderer } from 'echarts/renderers'
@@ -65,14 +66,6 @@ const areaStyleArray = [
     }
   ])
 ]
-
-watch(
-  () => props.dataList,
-  () => {
-    setChartConfig(props.dataList)
-  },
-  { deep: true }
-)
 
 const setChartConfig = (dataList) => {
   if (!chartInstance) {
@@ -150,6 +143,18 @@ const assembleData = (dataList = []) => {
     series: tempSeries
   }
 }
+
+watch(
+  () => props.dataList,
+  () => {
+    setChartConfig(props.dataList)
+  },
+  { deep: true }
+)
+
+onMounted(() => {
+  setChartConfig(props.dataList)
+})
 </script>
 
 <template>

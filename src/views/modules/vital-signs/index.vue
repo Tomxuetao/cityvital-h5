@@ -135,7 +135,6 @@ watch(
           end_time: searchForm.latestCheckEndTime,
           start_time: searchForm.latestCheckStartTime
         } : searchForm
-      console.log(tempSearch)
       customListRef.value.getDataList(tempSearch)
     }
   },

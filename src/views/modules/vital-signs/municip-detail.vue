@@ -1,11 +1,4 @@
 <script setup>
-// ；21447146b7 - 详情信息；
-// 214ee2cf10 - 监测信息
-
-// 24541bc552 - 巡查信息 桥梁的；
-
-// 2216e11a05 -路段分析 道路有的
-
 import { reactive, ref } from 'vue'
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
@@ -46,7 +39,7 @@ const getDetailData = () => {
       if (Array.isArray(dataList)) {
         const [data] = dataList
         detailData = Object.assign({}, data || {})
-        if(detailData.pic_url) {
+        if (detailData.pic_url) {
           hasImg.value = true
         }
       }
@@ -110,7 +103,12 @@ const changeTabHandler = (index) => {
           </div>
         </div>
         <div class="ctx-cxt">
-          <municip-monitor v-if="activeTabIndex === 0" :detail="detailData"></municip-monitor>
+          <municip-monitor
+            v-if="activeTabIndex === 0"
+            :detail="detailData"
+            :second-type="secondType"
+          >
+          </municip-monitor>
           <alarm-list v-if="activeTabIndex === 1" :detail="detailData"></alarm-list>
         </div>
       </div>
