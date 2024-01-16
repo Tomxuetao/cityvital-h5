@@ -1,3 +1,5 @@
+import dayjs from 'dayjs'
+
 export const getEnvByUa = () => {
   let tempEnv = sessionStorage.getItem('curUaEnv')
   if (!tempEnv) {
@@ -67,3 +69,17 @@ export const formatDate = (data, fmt='') => {
   }
   return fmt
 }
+/**
+ * 获取本周的起始日期
+ * @param formatStr
+ * @returns {[string,string]}
+ */
+
+export const getCurWeek = (formatStr = 'YYYY-MM-DD') => [
+  dayjs()
+    .startOf('week')
+    .format(formatStr),
+  dayjs()
+    .endOf('week')
+    .format(formatStr)
+]

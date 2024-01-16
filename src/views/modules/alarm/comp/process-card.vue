@@ -1,9 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 
+import { commonBackEndApi } from '@/api/common-api'
+
 const props = defineProps({
   list: {
     type: Array,
+    required: true
+  },
+  eventId: {
+    type: String,
     required: true
   },
   emergencyDegree: {
@@ -33,26 +39,18 @@ const computeCurActive = (dataList) => {
  * @param title
  * @param handleDept
  * @param index
- * @returns {{isRead: (string|string), time: string, title, content: (string|string)}|{isRead: undefined, time: *, title, content: string}}
+ * @returns {{unitName: string, isRead: boolean, time: string, title, taskNum: (*|string), content: (string|string)}}
  */
 const assembleData = (data, title, handleDept = '', index = 0) => {
-  const { operateTime, operatorOrg, operator, eventRemark, extraMap } = data
-  if (operateTime) {
-    return {
-      title: title,
-      time: operateTime,
-      isRead: undefined,
-      content: `【${operatorOrg}】${operator}进行${title}操作，处理意见: ${eventRemark}`
-    }
-  } else {
-    const { nextUnitRead } = extraMap || { nextUnitRead: '' }
-    const nextUnitReadArray = nextUnitRead.split(',')
-    return {
-      title: title,
-      time: '',
-      content: handleDept ? `【${handleDept}】${title.replace('中', '')}` : '',
-      isRead: handleDept ? (nextUnitRead ? nextUnitReadArray[index] : 'false') : undefined
-    }
+  const { operator, operateTime, eventRemark, extraMap } = data
+  return {
+    title: title,
+    index: index,
+    time: operateTime || '',
+    unitName: handleDept,
+    taskNum: extraMap?.taskNum || '',
+    isRead: !!operateTime, // 有操作时间就已读
+    content: operateTime ? `【${handleDept}】${operator}进行${title}操作，处理意见: ${eventRemark}` : (handleDept ? `【${handleDept}】${title.replace('中', '')}` : '')
   }
 }
 
@@ -74,23 +72,34 @@ const assembleList = (list, emergencyDegree) => {
 
   // 节点1 - 派遣数据处理
   const { extraMap, operateTime } = firstStep
-  const { nextPartName, nextActDefName } = extraMap || {
-    nextPartName: '',
+  const { nextUnitId, nextUnitRead, nextUnitName, nextActDefName } = extraMap || {
+    nextUnitId: '',
+    nextUnitRead: '',
+    nextUnitName: '',
     nextActDefName: ''
   }
-  const tempNames = nextPartName.split(',')
-  const partNames = tempNames.length > 1 ? tempNames : ['', '']
+
+  const tempIds = nextUnitId?.split(',') || []
+  const unitIds = tempIds.length > 1 ? tempIds : ['', '']
+
+  const tempReads = nextUnitRead?.split(',') || []
+  const unitReads = tempReads.length > 1 ? tempReads : ['', '']
+
+  const tempNames = nextUnitName?.split(',') || []
+  const unitNames = tempNames.length > 1 ? tempNames : ['', '']
+
   const tempDefNames = nextActDefName.split(',')
   const defNames = tempDefNames.length > 1 ? tempDefNames : ['', '']
-  const tempIndex = defNames[0] === '养护处置' ? 0 : 1
+  const tempIndex = defNames[0].includes('处置') ? 0 : 1
 
   if (operateTime) {
     resList[0] = {
       list: [
         {
           title: '派遣',
+          isRead: undefined,
           time: operateTime,
-          content: `处理意见：【${partNames[tempIndex]}】进行处置${emergencyDegree !== 3 ? `，【${partNames[1 - tempIndex]}】进行监管` : ''}`
+          content: `处理意见：【${unitNames[tempIndex]}】进行处置${emergencyDegree !== 3 ? `，【${unitNames[1 - tempIndex]}】进行监管` : ''}`
         }
       ]
     }
@@ -102,15 +111,23 @@ const assembleList = (list, emergencyDegree) => {
   // 节点2 - 处置、监管数据处理
   if (emergencyDegree === 3) {
     const tempData = processingList.find(({ procedure }) => procedure === '处理中') || {}
-    resList[1].list.push(assembleData(tempData, `处置${tempData.operateTime ? '' : '中'}`, partNames[tempIndex], tempIndex))
+    resList[1].list.push(assembleData(tempData, `处置${tempData.operateTime ? '' : '中'}`, unitNames[tempIndex], tempIndex))
   } else {
     // 处置数据
-    const disposeData = processingList.find(({ extraMap }) => extraMap?.curActDefName === '养护处置') || {}
-    resList[1].list.push(assembleData(disposeData, `处置${disposeData.operateTime ? '' : '中'}`, partNames[tempIndex], tempIndex))
+    const disposeData = processingList.find(({ extraMap }) => extraMap?.curActDefName.includes('处置')) || {}
+    resList[1].list.push(assembleData(disposeData, `处置${disposeData.operateTime ? '' : '中'}`, unitNames[tempIndex], tempIndex))
     // 监管数据
-    const superviseData = processingList.find(({ extraMap }) => extraMap?.curActDefName === '行业监管') || {}
-    resList[1].list.push(assembleData(superviseData, `监管${superviseData.operateTime ? '' : '中'}`, partNames[1 - tempIndex], 1 - tempIndex))
+    const superviseData = processingList.find(({ extraMap }) => extraMap?.curActDefName.includes('监管')) || {}
+    resList[1].list.push(assembleData(superviseData, `监管${superviseData.operateTime ? '' : '中'}`, unitNames[1 - tempIndex], 1 - tempIndex))
   }
+
+  // 对处置、监管数据处理进行二次处理（添加isRead、unitId）
+  resList[1].list.forEach(item => {
+    Object.assign(item, {
+      unitId: unitIds[item.index],
+      isRead: item.isRead ? item.isRead : unitReads[item.index] === 'true'
+    })
+  })
 
   // 节点3 - 结案数据处理
   const thirdStep = tempList.find(({ procedure }) => procedure === '结案')
@@ -121,6 +138,7 @@ const assembleList = (list, emergencyDegree) => {
         list: [
           {
             title: '结案',
+            isRead: undefined,
             time: operateTime,
             content: '【自动结案】体征监测值已恢复正常，完成结案操作。'
           }
@@ -136,6 +154,15 @@ const assembleList = (list, emergencyDegree) => {
 }
 
 const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
+
+const getReaderList = ({ unitId, taskNum, unitName }) => {
+  commonBackEndApi('api/v1/event/reads', {
+    unitId,
+    taskNum,
+    unitName,
+    eventId: props.eventId
+  })
+}
 </script>
 
 <template>
@@ -156,8 +183,8 @@ const processList = ref(assembleList(props.list, props.emergencyDegree) || [])
                 <div class="header-title">{{ ctx.title }}</div>
                 <div class="header-time">{{ ctx.time }}</div>
               </div>
-              <div class="header-status" v-if="ctx.isRead === 'false'">
-                未读
+              <div class="header-status" v-if="ctx.isRead !== undefined" @click="getReaderList(ctx)">
+                {{ ctx.isRead ? '已读' : '未读' }}
               </div>
             </div>
             <div class="item-text">

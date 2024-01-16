@@ -24,7 +24,7 @@ const props = defineProps({
         class="card-title"
         @click="
           $router.push({
-            name: 'road-detail',
+            name: 'municip-detail',
             query: {
               id: data.extraMap?.factoryId,
               name: data.extraMap?.factoryName,

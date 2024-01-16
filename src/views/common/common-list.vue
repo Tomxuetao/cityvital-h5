@@ -18,11 +18,16 @@ const props = defineProps({
   defaultSearchForm: {
     type: Object,
     required: false,
-    default: () => {}
+    default: () => {
+    }
   }
 })
+
+const emit = defineEmits(['count-change'])
+
 const commonState = useCommonStore()
 
+const count = ref(0)
 const dataList = ref([])
 const dataLoading = ref(true)
 const loadFinished = ref(false)
@@ -47,6 +52,8 @@ const reflectionType = (params) => {
   thirdType[params.thirdType] && ( params.thirdType = thirdType[params.thirdType] )
   return params
 }
+
+const isExpose = ref(false)
 /**
  * 构建搜素条件
  * @param defaultSearch
@@ -57,7 +64,8 @@ const reflectionType = (params) => {
 const buildSearchForm = async (defaultSearch, customForm, dataForm) => {
   const tempSearchForm = Object.assign(
     {},
-    defaultSearch,
+    // 外部调用时不再合并默认的搜索条件
+    isExpose.value ? {} : defaultSearch,
     customForm,
     dataForm || {}
   )
@@ -109,10 +117,13 @@ const getDataListHandler = async (dataForm = {}) => {
     isIndexServer: isIndexServer
   })
     .then(({ list, total }) => {
+      if (count.value !== total) {
+        emit('count-change', total)
+        count.value = total
+      }
       dataLoading.value = false
       vanLoadingRef.value = false
-      dataList.value =
-        searchForm.pageNum === 1 ? list : [...dataList.value, ...list]
+      dataList.value = searchForm.pageNum === 1 ? list : [...dataList.value, ...list]
       loadFinished.value = Number(total) <= dataList.value.length
       searchForm.pageNum += 1
     })
@@ -156,6 +167,7 @@ const getElectronicScreens = async (params) => {
 getDataListHandler()
 
 const exposeGetDataList = (dataForm) => {
+  isExpose.value = true
   getDataListHandler(
     Object.assign({}, dataForm || {}, { pageNum: 1, pageSize: 10 })
   )
@@ -181,11 +193,18 @@ defineExpose({
       @load="getDataListHandler()"
     >
       <div class="list-item" v-for="(item, index) in dataList" :key="index">
-        <slot name="card-item" :data="item" />
+        <slot name="card-item" :data="item"/>
       </div>
     </van-list>
-    <empty-page v-if="dataList.length === 0 && !dataLoading" />
+    <div v-if="dataList.length === 0 && !dataLoading" class="empty-wrap">
+      <empty-page/>
+    </div>
   </template>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.empty-wrap {
+  position: relative;
+  min-height: 400px;
+}
+</style>

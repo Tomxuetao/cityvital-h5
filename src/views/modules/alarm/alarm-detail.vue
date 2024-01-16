@@ -83,6 +83,7 @@ getDetailHandler()
         <div class="card-wrap">
           <div class="card-title">处置流程</div>
           <process-card
+            :event-id="eventId"
             :list="processList"
             :emergency-degree="detailData.emergencyDegree"
           ></process-card>

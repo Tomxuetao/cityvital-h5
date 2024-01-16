@@ -106,6 +106,9 @@ defineExpose({
         </template>
       </div>
     </div>
+    <div class="special-slot">
+      <slot name="special"></slot>
+    </div>
     <div class="search-slot" v-show="showSearchSlot">
       <slot name="search"></slot>
     </div>

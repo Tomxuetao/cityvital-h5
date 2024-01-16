@@ -14,10 +14,23 @@ export default defineConfig({
     open: false,
     host: true,
     proxy: {
+      // 数字城管图片
+      '/szcg': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://172.18.16.15'
+      },
+      // 三中心服务
       '/oauth2': {
         secure: false,
         changOrigin: true,
         target: 'http://10.54.38.116'
+      },
+      // 第三方图片
+      '/taiyuan_rongliangfugai': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.113:8991/'
       },
       // 水设施河道下的设施图片
       '/water-img': {
@@ -26,21 +39,40 @@ export default defineConfig({
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/water-img/, '')
       },
+      '/szys_img1': {
+        target: 'http://www.szys.ren:30065/',
+        rewrite: (path) => path.replace(/^\/szys_img1/, ''),
+        changOrigin: true
+      },
+      
+      '/szys_img2': {
+        target: 'https://www.szys.ren/',
+        rewrite: (path) => path.replace(/^\/szys_img2/, ''),
+        changOrigin: true
+      },
+      
+      '/szys_img3': {
+        target: 'http://183.134.200.102:8080/',
+        rewrite: (path) => path.replace(/^\/szys_img3/, ''),
+        changOrigin: true
+      },
+      '/szys_pdf1': {
+        target: 'https://ywtg.citybrain.hangzhou.gov.cn/',
+        changOrigin: true
+      },
+      // 后端服务
       '/back-server': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/back-server/, '')
       },
+      // 指标平台服务
       '/gateway-server/cv_data': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',
         rewrite: (path) => path.replace(/^\/gateway-server/, '')
-      },
-      '/cv_data': {
-        target: 'https://ywtg.citybrain.hangzhou.gov.cn', // 测试
-        changOrigin: true
       }
     }
   },

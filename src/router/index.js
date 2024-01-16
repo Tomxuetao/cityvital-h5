@@ -79,11 +79,11 @@ const devRoutes = [
     component: () => import('@/views/modules/vital-signs/electronicScreens-detail.vue')
   },
   {
-    path: '/road-detail',
-    name: 'road-detail',
+    path: '/municip-detail',
+    name: 'municip-detail',
     meta: { title: '市政设施详情' },
     props: (route) => ({ ...route.query }),
-    component: () => import('@/views/modules/vital-signs/road-detail.vue')
+    component: () => import('@/views/modules/vital-signs/municip-detail.vue')
   },
   {
     path: '/item-detail',
@@ -126,6 +126,34 @@ const devRoutes = [
     meta: { title: '管理在线' },
     props: (route) => ({ ...route.query }),
     component: () => import('@/views/modules/manage/index.vue')
+  },
+  {
+    path: '/analysis-list',
+    name: 'analysis-list',
+    meta: { title: '分析研判列表' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/manage/analysis-list.vue')
+  },
+  {
+    path: '/analysis-detail',
+    name: 'analysis-detail',
+    meta: { title: '分析研判详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/manage/analysis-detail.vue')
+  },
+  {
+    path: '/examine-view',
+    name: 'examine-view',
+    meta: { title: '考核评价' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/manage/examine-view.vue')
+  },
+  {
+    path: '/examine-list',
+    name: 'examine-list',
+    meta: { title: '考核评价列表' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/manage/examine-list.vue')
   },
   {
     path: '/no-access',

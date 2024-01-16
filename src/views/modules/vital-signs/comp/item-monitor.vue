@@ -1,7 +1,7 @@
 <script setup>
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 
 const props = defineProps({
   name: {
@@ -22,6 +22,22 @@ const getDetailData = async () => {
 }
 
 getDetailData()
+
+const headerList = [
+  { text: '监测项' },
+  { text: '单次变化量最大值' },
+  { text: '累计变化量最大值' },
+  { text: '预警等级' }
+]
+const dataList = ref([])
+
+const getDataList = async () => {
+  const tempDataList = await commonGatewayApi('21b98197ba', { projectName: props.name })
+
+  dataList.value = tempDataList || []
+}
+
+getDataList()
 </script>
 
 <template>
@@ -66,7 +82,27 @@ getDetailData()
         </div>
       </div>
     </div>
-    <div class=""></div>
+    <div class="table-wrap">
+      <van-grid :column-num="4">
+        <van-grid-item v-for="(item, i) in headerList" :key="i">
+          <div class="item-label">{{ item.text }}</div>
+        </van-grid-item>
+        <template v-for="(item, index) in dataList" :key="index">
+          <van-grid-item>
+            <div class="item-text">{{ item.item_name }}</div>
+          </van-grid-item>
+          <van-grid-item>
+            <div class="item-text">{{ item.max_current_variance }}</div>
+          </van-grid-item>
+          <van-grid-item>
+            <div class="item-text">{{ item.max_total_variance }}</div>
+          </van-grid-item>
+          <van-grid-item>
+            <div :class="['item-status', 'status-' + item.status_new]">{{ item.status }}</div>
+          </van-grid-item>
+        </template>
+      </van-grid>
+    </div>
   </div>
 </template>
 
@@ -157,6 +193,51 @@ getDetailData()
           color: rgba(255, 178, 81, 1);
         }
       }
+    }
+  }
+
+  .table-wrap {
+    padding: 4px 16px;
+
+    .item-text {
+      font-size: 14px;
+      color: #666666;
+      line-height: 18px;
+      text-align: center;
+    }
+
+    .item-label {
+      font-size: 14px;
+      color: #333333;
+      line-height: 22px;
+      text-align: center;
+    }
+
+    .item-status {
+      color: #ffffff;
+      padding: 0 4px;
+      min-width: 40px;
+      height: 24px;
+      font-size: 12px;
+      line-height: 24px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .status-1 {
+      background-color: #FF5167;
+    }
+
+    .status-2 {
+      background-color: #FF6837;
+    }
+
+    .status-3 {
+      background-color: #FFB251;
+    }
+
+    .status-99 {
+      background-color: #0482ff;
     }
   }
 }

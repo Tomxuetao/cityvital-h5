@@ -181,13 +181,7 @@ export const vitalSignsTabs = Object.freeze([
         method: 'get',
         isIndexServer: true,
         code: '21b5953733',
-        customForm: {
-          alarming: undefined,
-          eventStatus: undefined,
-          sortTimeFiled: undefined,
-          latestCheckEndTime: undefined,
-          latestCheckStartTime: undefined
-        }
+        customForm: {}
       },
       {
         title: '作业项目',
@@ -195,12 +189,7 @@ export const vitalSignsTabs = Object.freeze([
         isIndexServer: true,
         code: '21b583ff2a',
         customForm: {
-          is_bj: '1',
-          alarming: undefined,
-          eventStatus: undefined,
-          sortTimeFiled: undefined,
-          latestCheckEndTime: undefined,
-          latestCheckStartTime: undefined
+          is_bj: '1'
         }
       }
     ]
@@ -256,6 +245,38 @@ export const dealStatusMap = new Map([
   ['handle', '已反馈'],
   ['settle', '已办结']
 ])
+
+/**
+ * 行政区划
+ * @type {[{name: string, text: string, value: string},{name: string, text: string, value: string},{name: string, text: string, value: string}]}
+ */
+export const regionList = [
+  { text: '上城区', value: '上城区', name: '上城区' },
+  { text: '拱墅区', value: '拱墅区', name: '拱墅区' },
+  { text: '西湖区', value: '西湖区', name: '西湖区' },
+  { text: '滨江区', value: '滨江区', name: '滨江区' },
+  { text: '萧山区', value: '萧山区', name: '萧山区' },
+  { text: '富阳区', value: '富阳区', name: '富阳区' },
+  { text: '临安区', value: '临安区', name: '临安区' },
+  { text: '钱塘区', value: '钱塘区', name: '钱塘区' },
+  { text: '桐庐区', value: '桐庐区', name: '桐庐区' },
+  { text: '淳安区', value: '淳安区', name: '淳安区' },
+  { text: '建德市', value: '建德市', name: '建德市' }
+]
+
+/**
+ * 管理在线事件状态
+ * @type {Map<string, string>}
+ */
+export const manageEventStatusMap = new Map([
+  ['新建', '未分发'],
+  ['已分发', '已分发'],
+  ['处理中', '处理中'],
+  ['已办结', '已办结'],
+  ['已终止', '已终止']
+])
+
+
 /**
  * 将Map转换成数组
  * @param map
