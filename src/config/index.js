@@ -128,20 +128,20 @@ export const vitalSignsTabs = Object.freeze([
     title: '市容景观',
     children: [
       {
-        title: '开关箱',
+        title: '城市照明',
         ...commonConfig,
-        customForm: { originType: '市容景观', secondType: '开关箱' }
+        customForm: { originType: '市容景观', secondType: '城市照明' }
       },
       {
         title: '户外广告',
         ...commonConfig,
         customForm: { originType: '市容景观', secondType: '户外广告' }
-      },
-      {
-        title: '户外电子屏',
-        ...commonConfig,
-        customForm: { originType: '市容景观', secondType: '户外电子屏' }
       }
+      // {
+      //   title: '户外电子屏',
+      //   ...commonConfig,
+      //   customForm: { originType: '市容景观', secondType: '户外电子屏' }
+      // }
     ]
   },
   {

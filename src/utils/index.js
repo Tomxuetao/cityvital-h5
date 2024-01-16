@@ -41,6 +41,34 @@ export const buildTree = (nodes, parentId, idKey = 'id', pidKey = 'pid') => {
   return tree
 }
 
+export const formatDate = (data, fmt='') => {
+  let _data = null
+  if (data instanceof Date) {
+    _data = data
+  } else {
+    _data = new Date(data)
+  }
+  var o = {
+    'M+': _data.getMonth() + 1, //月份
+    'd+': _data.getDate(), //日
+    'h+': _data.getHours(), //小时
+    'm+': _data.getMinutes(), //分
+    's+': _data.getSeconds(), //秒
+    'q+': Math.floor((_data.getMonth() + 3) / 3), //季度
+    S: _data.getMilliseconds() //毫秒
+  }
+  if (/(y+)/.test(fmt)) {
+    // eslint-disable-next-line no-param-reassign
+    fmt = fmt.replace(RegExp.$1, (_data.getFullYear() + '').substr(4 - RegExp.$1.length))
+  }
+  for (var k in o) {
+    if (new RegExp('(' + k + ')').test(fmt)) {
+      // eslint-disable-next-line no-param-reassign
+      fmt = fmt.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ('00' + o[k]).substr(('' + o[k]).length))
+    }
+  }
+  return fmt
+}
 /**
  * 获取本周的起始日期
  * @param formatStr

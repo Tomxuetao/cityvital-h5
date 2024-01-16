@@ -6,6 +6,7 @@
 		import LineChart from '@/views/modules/vital-signs/comp/line-chart.vue'
 		import lightTimeLine from './light-time-line.vue'
 		import { commonGatewayApi } from '@/api/common-api'
+		import { formatDate } from '@/utils/index.js'
 
 		const props = defineProps({
 			detail: {
@@ -15,12 +16,35 @@
 			}
 		})
     // 初始化data
+		const BASE_TIME = formatDate(new Date(), 'yyyy-MM-dd')
 		const chartDataList = ref([])
 		const activeIndex = ref(0)
 		const options = ref([])
 		const tabLists = ref([])
 		let dianluSelect = reactive('')
 		const jcInfo = ref({})
+		const eOptions = {
+			yAxis: [
+				{
+					type: 'time',
+					splitNumber: 5,
+					min: `${BASE_TIME} 00:00:00`,
+					max: `${BASE_TIME} 23:59:59`,
+					axisLabel: {
+						show: true,
+						formatter: function (value) {
+							return formatDate(value, 'hh:mm')
+						}
+					}
+				}
+			],
+			tooltip: {
+				// 这里建立一个自定义属性，用于格式化浮窗里面的值
+				_formatterValue(v) {
+					return formatDate(v, 'hh:mm')
+				}
+			}
+		}
 
 		const tableHeader = ref([
 			{ label: '序号' },
@@ -69,7 +93,77 @@
         class_code: factory_id,
         flag: dianluSelect 
       }).then((res) => {
+				const getTime = (dateTime) => {
+					// 创建一个 Date 对象
+					let date = new Date(dateTime)
+					// 获取时间戳
+					let timestamp = date.getTime()
+					return timestamp
+				}
         tabLists.value = res
+				const list = (res || []).map((item, index) => {
+					const curDate = item.STATISTIC_TIME.split('~')
+					// 通电 | 断电 开始-结束
+					const sDD = curDate[0]
+					const eDD = curDate[1]
+
+					let sT1 = [sDD,'00'].join(':')
+					let sT2 = [eDD,'00'].join(':')
+					
+					const useData = {
+						startTime: sT1, // 开始日期  完整格式
+						endTime: sT2,
+						startTimestamp: getTime(sT1),
+						totalTimestamp: getTime(sT2) - getTime(sT1) // 毫秒数
+					}
+
+					useData.grade = [
+						// - 实际亮灯时间需要拉一根实线做标记，颜色为绿色
+						// - 意外灭灯时间需要拉一根实线做标记，颜色为红色
+						{
+							type: '1',
+							text: item.NUM_2,
+							posi:  item.STATISTIC_TIME ? getTime((item.STATISTIC_TIME).split('~')[0]) : '' // 1级
+						},
+						// 应亮未亮10分钟、30分钟、60分钟分别需要拉一根虚线做标记，颜色跟三级、二级、一级对应
+						// 注意顺序
+						{
+							type: '2',
+							text: '三级警告',
+							lv: '3',
+							posi:  item.UNIT_2 ? getTime(item.UNIT_2) : '' // 3级
+						},
+						{
+							type: '2',
+							text: '二级警告',
+							lv: '2',
+							posi: item.NUM_3 ? getTime(item.NUM_3) : ''  // 2级
+						},
+						{
+							type: '2',
+							text: '一级警告',
+							lv: '1',
+							posi: item.UNIT_3 ? getTime(item.UNIT_3) : '' // 1级
+						}
+					]
+					
+					if(item.NUM === '通电') {
+						if(eDD.split(' ')[1].split(':')[0] < 10 && eDD.split(' ')[1].split(':')[0] > 0) {
+							let sThisDay = !1
+						}else {
+							let isThisDay = !0
+						}
+					}
+
+					return {
+						useData,
+						...item
+					}
+				}) 
+				//  formatDate(r, 'yyyy-MM-dd hh:mm:ss'),
+				// 通断时间进度
+				console.log(list, 23333)
+				// this.arraylist = list
       })
     }
 
@@ -84,16 +178,12 @@
         date_type: key // 日期（d7,d30）
       }
 			const dataList = await commonGatewayApi(code, params)
-			chartDataList.value.push({ name: '计划亮灯', list: [
-				{name: '00:01', value: '0.01'},
-				{name: '04:01', value: '0.02'},
-				{name: '08:01', value: '0.03'},
-				{name: '12:01', value: '0.04'}] })
-			chartDataList.value.push({ name: '实际亮灯', list: [
-				{name: '00:01', value: '0.02'},
-				{name: '04:01', value: '0.03'},
-				{name: '08:01', value: '0.02'},
-				{name: '12:01', value: '0.05'}] })
+			chartDataList.value.push({ name: '计划亮灯', list: dataList.map(item => {
+				return  { name: item.point_time, value: `${BASE_TIME} ${item.k_time || '00:00'}` }
+			}) })
+			chartDataList.value.push({ name: '实际亮灯', list: dataList.map(item => {
+				return  { name: item.point_time, value:`${BASE_TIME} ${item.sw_time || '00:00'}`}
+			}) })
 		}
 
 		const changeTab = (index, data) => {
@@ -152,7 +242,7 @@
 						</div>
 					</div>
 				</div>
-				<line-chart class="chart-inner" :data-list="chartDataList"></line-chart>
+				<line-chart class="chart-inner" :data-list="chartDataList" :eOptions="eOptions"></line-chart>
 			</div>
 
 			<div class="light-on-off-timeline">

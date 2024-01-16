@@ -16,7 +16,7 @@ const props = defineProps({
     required: true
   }
 })
-
+console.log(props.list, props.emergencyDegree, 222)
 /**
  * 计算当前激活的步骤
  * @param dataList
