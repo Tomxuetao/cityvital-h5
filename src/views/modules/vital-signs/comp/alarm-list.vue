@@ -11,6 +11,7 @@ import CommonSheet from '@/views/common/common-sheet.vue'
 import CommonSearch from '@/views/common/common-search.vue'
 import CommonCalendar from '@/views/common/common-calendar.vue'
 import AlarmCard from '@/views/modules/vital-signs/comp/alarm-card.vue'
+import ElectronicscreensCard from '@/views/modules/vital-signs/comp/electronicscreens-card.vue'
 
 const props = defineProps({
   detail: {
@@ -30,6 +31,8 @@ const listConfig = {
     sortTimeFiled: 'latestCheckTime',
     originType: route.query.originType,
     secondType: route.query.secondType,
+    thirdType: route.query.thirdType,
+    factory_id: route.query.id,
     extraList: props.detail.factory_name + '%'
   }
 }
@@ -98,7 +101,8 @@ watch(() => searchForm, () => {
     <div class="alarm-ctx">
       <common-list ref="commonListRef" :config="listConfig" :default-search-form="searchForm">
         <template #card-item="{ data }">
-          <alarm-card :item-data="data"></alarm-card>
+          <alarm-card :item-data="data" v-if="detail.model != '户外电子屏'"></alarm-card>
+          <electronicscreens-card :item-data="data" v-else></electronicscreens-card>
         </template>
       </common-list>
     </div>

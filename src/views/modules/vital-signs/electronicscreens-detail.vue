@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
-import { commonGatewayApi } from '@/api/common-api'
+import { commonGatewayApi, commonApi } from '@/api/common-api'
 
 import CommonTitle from '@/views/common/common-title.vue'
 import AlarmList from '@/views/modules/vital-signs/comp/alarm-list.vue'
@@ -30,68 +30,42 @@ const dataLoading = ref(true)
 let detailData = reactive({})
 let images = ref([])
 let tabList = ref([])
+let tableLists = ref([])
 const activeTabIndex = ref(0)
 let innerCloums = []
+let innerCloumsStatus = []
+let colorEmnu = {
+	在线: '#19CC96',
+	离线: '#999999'
+}
+const tableHeader = ref([
+	{ label: '播放内容' }
+])
 
 const setInnerCloums = (item) => {
-  if(props.secondType === '城市照明') {
     innerCloums = [
-      { label:'使用状态：', value: item?.box_status }, 
-      { label:'类型：', value: item.remark }, 
-      { label:'所属区域：', value: item.district_name }, 
-      { label:'一把闸刀控制状态：', value: item.is_knife }, 
-      { label:'安装地址：', value: item.address, width:'100%'}
+			{ label:'大屏面积：', value: item.area || '0㎡' }, 
+			{ label:'广告厂商：', value: item.dept, width:'100%' }, 
+			{ label:'所属区划：', value: item.district_name }, 
+			{ label:'地址：', value: item.address }
     ]
-    hasImg 
-  }
-  if(props.secondType === '户外广告') {
-    innerCloums = [
-      { label:'广告面积：', value: item.area }, 
-      { label:'广告性质：', value: item.ggxz }, 
-      { label:'广告形式：', value: item.is_knife }, 
-      { label:'审批日期：', value: item.sprq }, 
-      { label:'安全检测有效期：', value: item.setup_time, width:'100%'},
-      { label:'安全检测报告：', value: item.is_on, width:'100%'},
-      { label:'地址：', value: item.address, width:'100%'},
-      { label:'设置单位：', value: item.szdw, width:'100%'},
-      { label:'联系人：', value: item.contacts },
-      { label:'联系电话：', value: item.phone }
-    ]
-  }
-  if(props.secondType === '户外电子屏') {
-    innerCloums = [
-      { label:'大屏面积：', value: item.area }, 
-      { label:'广告厂商：', value: item.dept }, 
-      { label:'所属区划：', value: item.district_name }, 
-      { label:'地址：', value: item.address, width:'100%'}
-    ]
-  }
+		innerCloumsStatus = [
+			{ label:'大屏状态：', value: item.is_on }, 
+			{ label:'机柜状态：', value: item.is_alarm }
+		]
 }
 const setTabLists = () => {
-  switch(props.secondType) {
-    case '城市照明': tabList.value = [{ text: '监测信息' }, { text: '报警信息' }, { text: '关联灯杆' }];break
-    case '户外广告': tabList.value = [ { text: '报警信息' }, { text: '处置信息' } ];break
-    case '户外广告': tabList.value = [{ text: '监测信息' }, { text: '报警信息' }];break
-  }
-  if(props.secondType === '城市照明') {
-    innerCloums = [
-      { label:'使用状态：', value: '' }, 
-      { label:'类型：', value: '' }, 
-      { label:'所属区域：', value: '' }, 
-      { label:'一把闸刀控制状态：', value: '' }, 
-      { label:'安装地址：', value: '', width:'100%'}
-    ]
-  }
+  tabList.value = [{ text: '监测信息' }, { text: '报警信息' }]
 }
      
-setTabLists()
+
 /**
  * 获取设施的详情信息
  * @returns {Promise<void>}
  */
 const getDetailData = async () => {
   dataLoading.value = true
-  commonGatewayApi('21f3d137dd', { factory_id: props.id })
+  commonGatewayApi('215e4c5e84', { factory_id: props.id })
     .then((dataList) => {
       if (Array.isArray(dataList)) {
         const [data] = dataList
@@ -104,16 +78,25 @@ const getDetailData = async () => {
         }catch {
           PIC_URLS = detailData.PIC_URL ? [detailData.PIC_URL] : []
         }
-        images.value = PIC_URLS.map(img => {
-          return 'https://ywtg.citybrain.hangzhou.gov.cn/cv_data/api/v1/img/cityAppearance?path=' + img.replaceAll('http://172.18.6.65:8090/pic', '') + '&accessToken=' + sessionStorage.getItem('accessToken')
-        })
+        images.value = PIC_URLS
         setInnerCloums(dataList[0])
+        setTabLists()
+				getMaterialListByEndpointId()
       }
     })
     .finally(() => {
       dataLoading.value = false
     })
 }
+
+const getMaterialListByEndpointId = async () => {
+	const data = await commonApi('api/v1/cityscape/getMaterialListByEndpointId', { endpointId: props.id }, { 
+		method: 'get',
+    isIndexServer: false
+	})
+	tableLists.value = data
+}
+
 const changeTabHandler = (index) => {
   if (activeTabIndex.value !== index) {
     activeTabIndex.value = index
@@ -130,22 +113,21 @@ getDetailData()
         :src="images[0]"
         alt=""
       />
-      <!-- <van-swipe class="inner-img" :autoplay="3000">
-        <van-swipe-item v-for="image in images" :key="image">
-          1
-        </van-swipe-item>
-      </van-swipe> -->
       <div class="inner-ctx">
         <div class="ctx-header">
           <common-title :text="name"></common-title>
-          <div class="header-tags" v-if="secondType==='城市照明'">
-            <div class="tag-item warn-level">报警</div>
-            <div class="tag-item status">断电</div>
-          </div>
+          <p class="header-label" v-if="innerCloums.length>0">基本信息</p>
           <div class="header-inner">
             <div class="inner-item" v-for="(item, index) in innerCloums" :key="index" :style="{'width': item.width || '' }">
               <div class="item-label">{{ item.label }}</div>
               <div class="item-text">{{ item.value }}</div>
+            </div>
+          </div>
+					<p class="header-label" v-if="innerCloumsStatus.length>0">状态信息</p>
+					<div class="header-inner">
+            <div class="inner-item" v-for="(item, index) in innerCloumsStatus" :key="index" :style="{'width': item.width || '' }">
+              <div class="item-label">{{ item.label }}</div>
+              <div class="item-text" :style="{ 'color': colorEmnu[item.value] }">{{ item.value }}</div>
             </div>
           </div>
         </div>
@@ -164,7 +146,21 @@ getDetailData()
             加载中...
           </van-loading>
           <template v-else>
-            <switchbox-monitor v-if="secondType==='城市照明' && activeTabIndex===0" :detail="detailData"></switchbox-monitor>
+            <div class="monitor-box" v-if="activeTabIndex===0">
+                <p class="item-label">在播内容</p>
+								<div class="table-item">
+									<van-grid :column-num="1" :border="false" :center="false">
+										<van-grid-item v-for="(item, i) in tableHeader" :key="i" class="table-header"> 
+											<div>{{ item.label }}</div>
+										</van-grid-item>
+										<template v-for="(item, index) in tableLists" :key="index">
+											<van-grid-item > 
+												<div>{{ item.material }}</div>
+											</van-grid-item>
+										</template>
+									</van-grid>
+								</div>
+            </div>
             <alarm-list v-if="tabList[activeTabIndex]?.text === '报警信息'" :detail="detailData"></alarm-list>
           </template>
         </div>
@@ -188,6 +184,14 @@ getDetailData()
         background-color: #ffffff;
         box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
         padding-bottom: 10px;
+				.header-label {
+					font-size: 14px;
+					font-family: PingFang SC, PingFang SC-Medium;
+					font-weight: bold;
+					color: #333333;
+					padding: 10px 16px;
+					margin: 0;
+				}
         .header-tags {
           width: 100%;
           display: flex;
@@ -266,7 +270,7 @@ getDetailData()
         margin-top: 12px;
         border-radius: 12px;
         background-color: #ffffff;
-        min-height: calc(100vh - 198px);
+        min-height: calc(100vh - 300px);
         box-shadow: 0 0 4px 0 rgba(233, 233, 233, 0.5);
       }
     }
@@ -284,5 +288,25 @@ getDetailData()
       margin-top: -12px;
     }
   }
+
+  .monitor-box {
+    padding: 1px 10px;
+		.item-label {
+			font-size: 14px;
+			font-family: PingFang SC, PingFang SC-Medium;
+			font-weight: bold;
+			color: #333333;
+		}
+		::v-deep(.van-grid-item__content) {
+			border: 1px solid #d9d9d9;
+			border-top: 0
+		}
+		.table-header {
+			::v-deep(.van-grid-item__content) {
+				background-color: #D9D9D9;
+			}
+		}
+  }
+	
 }
 </style>

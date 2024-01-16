@@ -44,6 +44,13 @@ const devRoutes = [
     component: () => import('@/views/modules/alarm/alarm-detail.vue')
   },
   {
+    path: '/electronicScreens-alarm-detail',
+    name: 'electronicScreens-alarm-detail',
+    meta: { title: '报警详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/alarm/electronicScreens-alarm-detail.vue')
+  },
+  {
     path: '/vital-signs',
     name: 'vital-signs',
     meta: { title: '城市生命体征' },
@@ -63,6 +70,13 @@ const devRoutes = [
     meta: { title: '市容景观详情' },
     props: (route) => ({ ...route.query }),
     component: () => import('@/views/modules/vital-signs/city-detail.vue')
+  },
+  {
+    path: '/electronicScreens-detail',
+    name: 'electronicScreens-detail',
+    meta: { title: '户外电子屏详情' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/vital-signs/electronicScreens-detail.vue')
   },
   {
     path: '/road-detail',

@@ -25,11 +25,12 @@ const props = defineProps({
         class="card-title"
         @click="
           $router.push({
-            name: 'city-detail',
+            name: data.model==='户外电子屏' ? 'electronicScreens-detail' : 'city-detail',
             query: {
               id: data.extraMap?.factoryId,
               name: data.extraMap?.factoryName,
               originType: originType,
+              thirdType: data.model,
               secondType: secondType,
             },
           })

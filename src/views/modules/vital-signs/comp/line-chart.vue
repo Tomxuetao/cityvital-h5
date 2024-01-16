@@ -27,6 +27,10 @@ const props = defineProps({
   dataList: {
     type: Array,
     required: true
+  },
+  eOptions: {
+    type: Object,
+    required: true
   }
 })
 
@@ -97,7 +101,7 @@ const assembleData = (dataList = []) => {
   const xAxisLabels = dataList.length
     ? dataList[0].list.map((item) => item.name)
     : []
-  return {
+  let eOptions = {
     tooltip: {
       trigger: 'axis'
     },
@@ -149,6 +153,12 @@ const assembleData = (dataList = []) => {
     },
     series: tempSeries
   }
+  if(props.eOptions) {
+    for(let key in props.eOptions ) {
+      eOptions[key] = props.eOptions[key]
+    }
+  }
+  return eOptions
 }
 </script>
 

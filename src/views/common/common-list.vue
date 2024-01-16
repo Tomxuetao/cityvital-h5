@@ -2,7 +2,7 @@
 import { reactive, ref } from 'vue'
 import { useCommonStore } from '@/store'
 
-import { commonApi } from '@/api/common-api'
+import { commonApi, commonGatewayApi } from '@/api/common-api'
 import EmptyPage from '@/views/common/empty-page.vue'
 
 const props = defineProps({
@@ -32,7 +32,21 @@ let searchForm = reactive({
   pageNum: 1,
   pageSize: 10
 })
-
+/**
+ * 市容模块 secondType thirdType 做映射 
+ * @params 
+ */
+const reflectionType = (params) => {
+  const secondType = { '城市照明': '开关箱' }
+  const thirdType = { '其他户外广告': '户外广告', '功能照明': '道路照明' }
+  if(!params.secondType) return
+  if(params.thirdType === '户外电子屏') {
+    params.secondType = '户外电子屏'
+  }
+  secondType[params.secondType] && ( params.secondType = secondType[params.secondType] )
+  thirdType[params.thirdType] && ( params.thirdType = thirdType[params.thirdType] )
+  return params
+}
 /**
  * 构建搜素条件
  * @param defaultSearch
@@ -71,11 +85,25 @@ const getDataListHandler = async (dataForm = {}) => {
     isIndexServer = true,
     customForm = {}
   } = props.config
-  const tempSearchForm = await buildSearchForm(
+  let tempSearchForm = await buildSearchForm(
     props.defaultSearchForm,
     customForm,
     dataForm
   )
+  if(tempSearchForm.originType === '市容景观') {
+    tempSearchForm = reflectionType(tempSearchForm)
+  }
+  if(tempSearchForm.thirdType === '户外电子屏') {
+    let electronicScreensParams = { 
+      pageNum: tempSearchForm.pageNum || searchForm.pageNum, 
+      pageSize: tempSearchForm.pageSize || searchForm.pageSize, 
+      begintiame: tempSearchForm.latestCheckStartTime, 
+      endtime: tempSearchForm.latestCheckEndTime 
+    }
+    tempSearchForm.factory_id && (electronicScreensParams.factory_id = tempSearchForm.factory_id)
+    getElectronicScreens(electronicScreensParams)
+    return
+  }
   commonApi(code, Object.assign(searchForm, tempSearchForm), {
     method: method,
     isIndexServer: isIndexServer
@@ -94,6 +122,36 @@ const getDataListHandler = async (dataForm = {}) => {
       loadFinished.value = true
     })
 }
+// 户外电子屏报警列表
+const getElectronicScreens = async (params) => {
+  commonGatewayApi('24474af120', params)
+    .then(({ list, total }) => {
+      let newList = list.map(item => {
+        return {
+          ...item,
+          extraMap: {
+            factoryId: item.factory_id,
+            factoryName: item.factory_name,
+            originType: '市容景观',
+            secondType: '户外电子屏',
+            latestAlarmLevel: item.level-0,
+            alarmType: item.alarm_type
+          }
+        }
+      })
+      dataLoading.value = false
+      vanLoadingRef.value = false
+      dataList.value = searchForm.pageNum === 1 ? newList : [...dataList.value, ...newList]
+      loadFinished.value = Number(total) <= dataList.value.length
+      searchForm.pageNum += 1
+    })
+    .finally(() => {
+      vanLoadingRef.value = false
+      dataLoading.value = false
+      loadFinished.value = true
+    })
+}
+
 
 getDataListHandler()
 
