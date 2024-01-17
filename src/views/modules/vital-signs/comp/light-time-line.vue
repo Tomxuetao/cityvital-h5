@@ -1,14 +1,17 @@
 <script setup>
+	import { ref, watch } from 'vue'
+
 	const props = defineProps({
-		detail: {
+		arraylist: {
 			type: Object,
 			required: true
 		}
 	})
-
-	// 初始化固定data
-	// const timeType = ref([])
-	// const timeLines = ref([])
+	watch(() => props.arraylist, (list) => {
+		const newLists = JSON.parse(JSON.stringify(list))
+		setTimePeriods(newLists)
+	}, { deep: true })
+	const timeArrs = ref([])
 	const timeTypes = [
 		{ name: '断电时间', color: '#FF4C63' },
 		{ name: '实际亮灯', color: '#FFB251' },
@@ -20,6 +23,30 @@
 		{ name: '应亮未亮', secondName: '三级',  color: '#FF6161' }
 	]
 	const timeLines = ['12', '13', '14', '15', '16', '17', '18']
+	const setTimePeriods = (newLists) => { 
+		const startTime = new Date(newLists['实际亮灯时间'][0]).getTime()
+		const endTime = new Date(newLists['实际亮灯时间'][1]).getTime()
+		const length = endTime - startTime
+		const atimeArrs = [{ left: 0, width: 100, color: '#FFB251', zIndex: 1 }]
+
+		Object.keys(newLists).forEach(key => { 
+			if (key === '实际亮灯时间') return
+			const timeType = timeTypes.find(item => item.name === key)
+			if (!timeType || !Array.isArray(newLists[key])) return
+
+			newLists[key].forEach(item => {
+				const time1 = new Date(item[0]).getTime()
+				const time2 = new Date(item[1]).getTime()
+				const left = Math.max(0, (time1 - startTime) / length)
+				const right = (time2 - startTime) / length
+				const width = Math.max(1, ((right - left) * 100).toFixed(2))
+				const color = timeType.color
+				const zIndex = width <= 1 ? 3 : 2
+				atimeArrs.push({ left: (left * 100).toFixed(2), width, color, zIndex })
+			})
+		})
+		timeArrs.value = atimeArrs
+	}
 </script>
 <template>
   <div class="timeline">
@@ -37,14 +64,19 @@
 					<div class="third-on-light" style="width: 30px;left: 50%"></div>
 			</div>
 			<div class="second-time-line">
+				<template v-for="( item, index ) in timeArrs" :key="index">
+					<div :style="`width: ${item.width}%;left: ${item.left}%;background-color: ${item.color};z-index: ${item.zIndex}`">
+						
+					</div>
+				</template>
 				<!-- 断电时间 -->
-				<div class="outage-time" style="width: 50px;left: 0%"></div>
+				<!-- <div class="outage-time" style="width: 20%;left: 0%"></div> -->
 				<!-- 实际亮灯 -->
-				<div class="real-on-time" style="width: 50px;left: 50px"></div>
+				<!-- <div class="real-on-time" style="width: 50px;left: 50px"></div> -->
 				<!-- 通电时间 -->
-				<div class="power-on-time" style="width: 50px;left: 100px"></div>
+				<!-- <div class="power-on-time" style="width: 50px;left: 100px"></div> -->
 				<!-- 未通电时间 -->
-				<div class="off-time" style="width: 50px;left: 150px"></div>
+				<!-- <div class="off-time" style="width: 50px;left: 150px"></div> -->
 			</div>
 		</div>
 		<div class="time-legend">
@@ -112,7 +144,7 @@
 				}
 			}
 			.second-time-line {
-				width: 100%;
+				width: 80%;
 				height: 12px;
 				position: absolute;
 				left: 7%;

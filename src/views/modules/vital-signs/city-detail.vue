@@ -245,14 +245,18 @@ getDetailData()
         align-items: center;
         border-radius: 8px;
         overflow: hidden;
+        border: 0.5px solid #d9d9d9;
         .tab-item {
           height: 32px;
           color: #666666;
           font-size: 14px;
           line-height: 32px;
           text-align: center;
-          border: 0.5px solid #d9d9d9;
           background-color: #ffffff;
+          border-left: 0.5px solid #d9d9d9;
+          &:nth-child(1) {
+            border-left: 0;
+          }
         }
 
         .tab-active {

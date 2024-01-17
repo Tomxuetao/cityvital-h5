@@ -7,6 +7,7 @@
 		import lightTimeLine from './light-time-line.vue'
 		import { commonGatewayApi } from '@/api/common-api'
 		import { formatDate } from '@/utils/index.js'
+import { timePickerProps } from 'vant'
 
 		const props = defineProps({
 			detail: {
@@ -23,6 +24,7 @@
 		const tabLists = ref([])
 		let dianluSelect = reactive('')
 		const jcInfo = ref({})
+		const arraylist = ref({})
 		const eOptions = {
 			yAxis: [
 				{
@@ -71,100 +73,118 @@
 				dianluSelect = res[0].sw
 				getShiRonDengJCZB()
 				getChartData(tabConfigList[0], [])
-				getAreaListkgxtdd()
       })
 		}
 		// 获取检测信息
     const getShiRonDengJCZB = () => {
       const { detail: { factory_id } } = props
-      commonGatewayApi('218b575c65', {
-        mod_code: 'KGX_JCXX',
-        class_code: factory_id,
-        flag: dianluSelect 
-      }).then((res) => {
-        jcInfo.value = Object.assign({}, res[0] || {})
-      })
+			const mainParams = {
+				class_code: factory_id,
+				flag: dianluSelect 
+			}
+			Promise.all([
+				commonGatewayApi('218b575c65', {
+					mod_code: 'KGX_JCXX',
+					...mainParams
+				}),
+				commonGatewayApi('218b575c65', {
+					mod_code: 'KGX_ZRTDQK',
+					...mainParams
+				})
+			]).then(dataList => {
+				if (Array.isArray(dataList)) { 
+					const [detail, areaList] = dataList
+					jcInfo.value = Object.assign({}, detail[0] || {})
+					setAreaListkgxtdd(detail[0], areaList)
+				}
+			})
     }
 		
-		const getAreaListkgxtdd = () => {
-      const { detail: { factory_id } } = props
-      commonGatewayApi('218b575c65', {
-        mod_code: 'KGX_ZRTDQK',
-        class_code: factory_id,
-        flag: dianluSelect 
-      }).then((res) => {
-				const getTime = (dateTime) => {
-					// 创建一个 Date 对象
-					let date = new Date(dateTime)
-					// 获取时间戳
-					let timestamp = date.getTime()
-					return timestamp
+		const setAreaListkgxtdd = (detail,areaList) => {
+			const getTime = (dateTime) => {
+				// 创建一个 Date 对象
+				let date = new Date(dateTime)
+				// 获取时间戳
+				let timestamp = date.getTime()
+				return timestamp
+			}
+			tabLists.value = areaList
+			const list = (areaList || []).map((item, index) => {
+				const curDate = item.STATISTIC_TIME.split('~')
+				// 通电 | 断电 开始-结束
+				const sDD = curDate[0]
+				const eDD = curDate[1]
+
+				let sT1 = [sDD,'00'].join(':')
+				let sT2 = [eDD,'00'].join(':')
+				
+				const useData = {
+					startTime: sT1, // 开始日期  完整格式
+					endTime: sT2,
+					startTimestamp: getTime(sT1),
+					totalTimestamp: getTime(sT2) - getTime(sT1) // 毫秒数
 				}
-        tabLists.value = res
-				const list = (res || []).map((item, index) => {
-					const curDate = item.STATISTIC_TIME.split('~')
-					// 通电 | 断电 开始-结束
-					const sDD = curDate[0]
-					const eDD = curDate[1]
 
-					let sT1 = [sDD,'00'].join(':')
-					let sT2 = [eDD,'00'].join(':')
-					
-					const useData = {
-						startTime: sT1, // 开始日期  完整格式
-						endTime: sT2,
-						startTimestamp: getTime(sT1),
-						totalTimestamp: getTime(sT2) - getTime(sT1) // 毫秒数
+				useData.grade = [
+					// - 实际亮灯时间需要拉一根实线做标记，颜色为绿色
+					// - 意外灭灯时间需要拉一根实线做标记，颜色为红色
+					{
+						type: '1',
+						text: item.NUM_2,
+						posi:  item.STATISTIC_TIME ? getTime((item.STATISTIC_TIME).split('~')[0]) : '' // 1级
+					},
+					// 应亮未亮10分钟、30分钟、60分钟分别需要拉一根虚线做标记，颜色跟三级、二级、一级对应
+					// 注意顺序
+					{
+						type: '2',
+						text: '三级警告',
+						lv: '3',
+						posi:  item.UNIT_2 ? getTime(item.UNIT_2) : '' // 3级
+					},
+					{
+						type: '2',
+						text: '二级警告',
+						lv: '2',
+						posi: item.NUM_3 ? getTime(item.NUM_3) : ''  // 2级
+					},
+					{
+						type: '2',
+						text: '一级警告',
+						lv: '1',
+						posi: item.UNIT_3 ? getTime(item.UNIT_3) : '' // 1级
 					}
+				]
+				
+				if(item.NUM === '通电') {
+					if(eDD.split(' ')[1].split(':')[0] < 10 && eDD.split(' ')[1].split(':')[0] > 0) {
+						let sThisDay = !1
+					}else {
+						let isThisDay = !0
+					}
+				}
 
-					useData.grade = [
-						// - 实际亮灯时间需要拉一根实线做标记，颜色为绿色
-						// - 意外灭灯时间需要拉一根实线做标记，颜色为红色
-						{
-							type: '1',
-							text: item.NUM_2,
-							posi:  item.STATISTIC_TIME ? getTime((item.STATISTIC_TIME).split('~')[0]) : '' // 1级
-						},
-						// 应亮未亮10分钟、30分钟、60分钟分别需要拉一根虚线做标记，颜色跟三级、二级、一级对应
-						// 注意顺序
-						{
-							type: '2',
-							text: '三级警告',
-							lv: '3',
-							posi:  item.UNIT_2 ? getTime(item.UNIT_2) : '' // 3级
-						},
-						{
-							type: '2',
-							text: '二级警告',
-							lv: '2',
-							posi: item.NUM_3 ? getTime(item.NUM_3) : ''  // 2级
-						},
-						{
-							type: '2',
-							text: '一级警告',
-							lv: '1',
-							posi: item.UNIT_3 ? getTime(item.UNIT_3) : '' // 1级
-						}
-					]
-					
-					if(item.NUM === '通电') {
-						if(eDD.split(' ')[1].split(':')[0] < 10 && eDD.split(' ')[1].split(':')[0] > 0) {
-							let sThisDay = !1
-						}else {
-							let isThisDay = !0
-						}
-					}
+				return {
+					useData,
+					...item
+				}
+			}) 
+			//  formatDate(r, 'yyyy-MM-dd hh:mm:ss'),
+			// 通断时间进度
+			const TimePeriods = {}
+			list.map(item=>{
+				if(!TimePeriods[item.UNIT]) {
+					TimePeriods[item.UNIT] = [item.STATISTIC_TIME.split('~')]
+				}else {
+					TimePeriods[item.UNIT].push(item.STATISTIC_TIME.split('~'))
+				}
+			})
 
-					return {
-						useData,
-						...item
-					}
-				}) 
-				//  formatDate(r, 'yyyy-MM-dd hh:mm:ss'),
-				// 通断时间进度
-				console.log(list, 23333)
-				// this.arraylist = list
-      })
+			TimePeriods['实际亮灯时间'] = detail.NUM_3.split('~').map( (item, index) => {
+				return (index === 0 ? '2024-01-16 ' : '2024-01-17 ' ) + item + ':00'
+			})
+			// TimePeriods['计划亮灯时间'] = detail.IS_N.split('~')
+			TimePeriods['应亮未亮'] = list[0]?.useData?.grade
+			arraylist.value = TimePeriods
     }
 
 		const getChartData = async (config, data) => {
@@ -248,7 +268,7 @@
 			<div class="light-on-off-timeline">
 				<div class="item-title">亮灯情况</div>
 				<div class="timeline-box">
-					<light-time-line></light-time-line>
+					<light-time-line :arraylist="arraylist"></light-time-line>
 				</div> 
 			</div>
 			<div class="light-on-off-table">
@@ -283,10 +303,15 @@
 					background-color: transparent;
 					color: red;
         }
+				.van-dropdown-menu__title {
+					color: #0482FF;
+					&::after {
+						border-color: transparent transparent #0482FF #0482FF;
+					}
+				}
       }
 		}
 		.info-header {
-			border-bottom: 0.5px solid #eeeeee;
 
 			.header-inner {
 				padding: 0 16px;
@@ -361,7 +386,9 @@
 					display: grid;
 					align-items: center;
 					grid-template-columns: repeat(2, 1fr);
-
+					border: 0.5px solid #d9d9d9;
+					border-radius: 4px;
+					overflow: auto;
 					.tab-item {
 						width: 48px;
 						height: 22px;
@@ -369,21 +396,7 @@
 						font-size: 12px;
 						line-height: 22px;
 						text-align: center;
-						border: 0.5px solid #d9d9d9;
 						background-color: #ffffff;
-
-						&:nth-child(2) {
-							border-left: 0;
-							border-right: 0;
-						}
-
-						&:nth-child(1) {
-							border-radius: 4px 0 0 4px;
-						}
-
-						&:nth-child(3) {
-							border-radius: 0 4px 4px 0;
-						}
 					}
 
 					.tab-active {

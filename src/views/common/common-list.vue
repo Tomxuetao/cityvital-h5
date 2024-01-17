@@ -4,6 +4,7 @@ import { useCommonStore } from '@/store'
 
 import { commonApi, commonGatewayApi } from '@/api/common-api'
 import EmptyPage from '@/views/common/empty-page.vue'
+import { reflectionTypeFun } from '@/utils/alarm.js'
 
 const props = defineProps({
   config: {
@@ -37,21 +38,6 @@ let searchForm = reactive({
   pageNum: 1,
   pageSize: 10
 })
-/**
- * 市容模块 secondType thirdType 做映射 
- * @params 
- */
-const reflectionType = (params) => {
-  const secondType = { '城市照明': '开关箱' }
-  const thirdType = { '其他户外广告': '户外广告', '功能照明': '道路照明' }
-  if(!params.secondType) return
-  if(params.thirdType === '户外电子屏') {
-    params.secondType = '户外电子屏'
-  }
-  secondType[params.secondType] && ( params.secondType = secondType[params.secondType] )
-  thirdType[params.thirdType] && ( params.thirdType = thirdType[params.thirdType] )
-  return params
-}
 
 const isExpose = ref(false)
 /**
@@ -62,13 +48,17 @@ const isExpose = ref(false)
  * @returns {Promise<unknown>}
  */
 const buildSearchForm = async (defaultSearch, customForm, dataForm) => {
-  const tempSearchForm = Object.assign(
+  let tempSearchForm = Object.assign(
     {},
     // 外部调用时不再合并默认的搜索条件
     isExpose.value ? {} : defaultSearch,
     customForm,
     dataForm || {}
   )
+  // 处理旧名称映射 配置文件为 utils/ alarm.js
+  if(reflectionTypeFun[tempSearchForm.originType]) {
+    tempSearchForm = reflectionTypeFun[tempSearchForm.originType](tempSearchForm)
+  }
   const { alarming, originType, secondType, thirdType } = tempSearchForm
   if (alarming !== undefined) {
     const alarmList = await commonState.initAlarmListAction()
@@ -93,14 +83,13 @@ const getDataListHandler = async (dataForm = {}) => {
     isIndexServer = true,
     customForm = {}
   } = props.config
-  let tempSearchForm = await buildSearchForm(
+  const tempSearchForm = await buildSearchForm(
     props.defaultSearchForm,
     customForm,
     dataForm
   )
-  if(tempSearchForm.originType === '市容景观') {
-    tempSearchForm = reflectionType(tempSearchForm)
-  }
+  
+  // --- 临时代码 到时候户外电子屏改回alarm接口时删除 --- start
   if(tempSearchForm.thirdType === '户外电子屏') {
     let electronicScreensParams = { 
       pageNum: tempSearchForm.pageNum || searchForm.pageNum, 
@@ -112,6 +101,8 @@ const getDataListHandler = async (dataForm = {}) => {
     getElectronicScreens(electronicScreensParams)
     return
   }
+  // ------------ end
+
   commonApi(code, Object.assign(searchForm, tempSearchForm), {
     method: method,
     isIndexServer: isIndexServer
@@ -133,6 +124,7 @@ const getDataListHandler = async (dataForm = {}) => {
       loadFinished.value = true
     })
 }
+// --- 临时代码 到时候户外电子屏改回alarm接口时删除 --- start
 // 户外电子屏报警列表
 const getElectronicScreens = async (params) => {
   commonGatewayApi('24474af120', params)
@@ -162,7 +154,7 @@ const getElectronicScreens = async (params) => {
       loadFinished.value = true
     })
 }
-
+// ------------ end
 
 getDataListHandler()
 
