@@ -56,7 +56,7 @@ const buildSearchForm = async (defaultSearch, customForm, dataForm) => {
     dataForm || {}
   )
   // 处理旧名称映射 配置文件为 utils/ alarm.js
-  if(reflectionTypeFun[tempSearchForm.originType]) {
+  if (reflectionTypeFun[tempSearchForm.originType]) {
     tempSearchForm = reflectionTypeFun[tempSearchForm.originType](tempSearchForm)
   }
   const { alarming, originType, secondType, thirdType } = tempSearchForm
@@ -88,17 +88,17 @@ const getDataListHandler = async (dataForm = {}) => {
     customForm,
     dataForm
   )
-  
+
   // --- 临时代码 到时候户外电子屏改回alarm接口时删除 --- start
-  if(tempSearchForm.thirdType === '户外电子屏') {
-    let electronicScreensParams = { 
-      pageNum: tempSearchForm.pageNum || searchForm.pageNum, 
-      pageSize: tempSearchForm.pageSize || searchForm.pageSize, 
-      begintiame: tempSearchForm.latestCheckStartTime, 
-      endtime: tempSearchForm.latestCheckEndTime 
+  if (tempSearchForm.thirdType === '户外电子屏') {
+    let electronicScreensParams = {
+      pageNum: tempSearchForm.pageNum || searchForm.pageNum,
+      pageSize: tempSearchForm.pageSize || searchForm.pageSize,
+      begintiame: tempSearchForm.latestCheckStartTime,
+      endtime: tempSearchForm.latestCheckEndTime
     }
     tempSearchForm.factory_id && (electronicScreensParams.factory_id = tempSearchForm.factory_id)
-    getElectronicScreens(electronicScreensParams)
+    await getElectronicScreens(electronicScreensParams)
     return
   }
   // ------------ end
@@ -137,7 +137,7 @@ const getElectronicScreens = async (params) => {
             factoryName: item.factory_name,
             originType: '市容景观',
             secondType: '户外电子屏',
-            latestAlarmLevel: item.level-0,
+            latestAlarmLevel: item.level - 0,
             alarmType: item.alarm_type
           }
         }
