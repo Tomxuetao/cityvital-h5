@@ -137,11 +137,6 @@ export const vitalSignsTabs = Object.freeze([
         ...commonConfig,
         customForm: { originType: '市容景观', secondType: '户外广告' }
       }
-      // {
-      //   title: '户外电子屏',
-      //   ...commonConfig,
-      //   customForm: { originType: '市容景观', secondType: '户外电子屏' }
-      // }
     ]
   },
   {
