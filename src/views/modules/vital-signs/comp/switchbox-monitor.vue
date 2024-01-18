@@ -25,6 +25,7 @@ import { timePickerProps } from 'vant'
 		let dianluSelect = reactive('')
 		const jcInfo = ref({})
 		const arraylist = ref({})
+		const isBeApart = ref(false)
 		const eOptions = {
 			yAxis: [
 				{
@@ -179,12 +180,23 @@ import { timePickerProps } from 'vant'
 				}
 			})
 
-			TimePeriods['实际亮灯时间'] = detail.NUM_3.split('~').map( (item, index) => {
-				return (index === 0 ? '2024-01-16 ' : '2024-01-17 ' ) + item + ':00'
+			// 是否隔天
+			let isBeApartA = detail.IS_N.split('-')[0].split(':')[0] - detail.IS_N.split('-')[1].split(':')[0] > 0 
+
+			TimePeriods['计划亮灯时间'] = detail.IS_N.split('-').map( (item, index) => {
+				let toDay = dayjs().format('YYYY-MM-DD')
+				let beforeDay = dayjs().add(-1, 'day').format('YYYY-MM-DD')
+				return ((item.split(':')[0] - 12 > 0 ? beforeDay : toDay) ) + ' ' + item + ':00'
+			})
+			TimePeriods['实际亮灯时间'] = detail.NUM_3.split('-').map( (item, index) => {
+				let toDay = dayjs().format('YYYY-MM-DD')
+				let beforeDay = dayjs().add(-1, 'day').format('YYYY-MM-DD')
+				return ((item.split(':')[0] - 12 > 0 ? beforeDay : toDay) ) + ' ' + item + ':00'
 			})
 			// TimePeriods['计划亮灯时间'] = detail.IS_N.split('~')
 			TimePeriods['应亮未亮'] = list[0]?.useData?.grade
 			arraylist.value = TimePeriods
+			isBeApart.value = isBeApartA
     }
 
 		const getChartData = async (config, data) => {
@@ -268,7 +280,7 @@ import { timePickerProps } from 'vant'
 			<div class="light-on-off-timeline">
 				<div class="item-title">亮灯情况</div>
 				<div class="timeline-box">
-					<light-time-line :arraylist="arraylist"></light-time-line>
+					<light-time-line :arraylist="arraylist" :isBeApart="isBeApart"></light-time-line>
 				</div> 
 			</div>
 			<div class="light-on-off-table">

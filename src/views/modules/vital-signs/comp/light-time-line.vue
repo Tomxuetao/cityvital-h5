@@ -1,9 +1,13 @@
 <script setup>
-	import { ref, watch } from 'vue'
-
+	import { ref, watch, reactive } from 'vue'
+	import dayjs from 'dayjs'
 	const props = defineProps({
 		arraylist: {
 			type: Object,
+			required: true
+		},
+		isBeApart: {
+			typeo: Boolean,
 			required: true
 		}
 	})
@@ -12,6 +16,9 @@
 		setTimePeriods(newLists)
 	}, { deep: true })
 	const timeArrs = ref([])
+	let firstOffLight = reactive({})
+	let secondOnLight = reactive({})
+	let thirdOnLight = reactive({})
 	const timeTypes = [
 		{ name: '断电时间', color: '#FF4C63' },
 		{ name: '实际亮灯', color: '#FFB251' },
@@ -22,18 +29,32 @@
 		{ name: '应亮未亮', secondName: '二级', color: '#FFE61A' },
 		{ name: '应亮未亮', secondName: '三级',  color: '#FF6161' }
 	]
-	const timeLines = ['12', '13', '14', '15', '16', '17', '18']
+	const timeLines = ref([])
 	const setTimePeriods = (newLists) => { 
-		const startTime = new Date(newLists['实际亮灯时间'][0]).getTime()
-		const endTime = new Date(newLists['实际亮灯时间'][1]).getTime()
+		const startTime = new Date(newLists['计划亮灯时间'][0]).getTime()
+		const endTime = new Date(newLists['计划亮灯时间'][1]).getTime()
 		const length = endTime - startTime
-		const atimeArrs = [{ left: 0, width: 100, color: '#FFB251', zIndex: 1 }]
+
+		const atimeArrs = [{ left: 0, width: newLists['实际亮灯时间'][1] ? 100 : 0, color: '#FFB251', zIndex: 1 }]
+
+		timeLines.value = getTimePeriodArr(dayjs(startTime).format('HH')-0, dayjs(endTime).format('HH')-0, props.isBeApart, dayjs(startTime).get('minute')-0)
 
 		Object.keys(newLists).forEach(key => { 
+			if (key === '计划亮灯时间') return
 			if (key === '实际亮灯时间') return
 			const timeType = timeTypes.find(item => item.name === key)
 			if (!timeType || !Array.isArray(newLists[key])) return
-
+			if (key === '应亮未亮') {
+				newLists[key].forEach(item => {
+					const left = Math.max(0, (item.posi - startTime) * 100 / length).toFixed(2)
+					switch(item.lv) {
+						case '1': firstOffLight = { left: left, width: '2%', zIndex: 1}; break
+						case '2': secondOnLight = { left: left, width: '2%', zIndex: 1}; break
+						case '3': thirdOnLight = { left: left, width: '2%', zIndex: 1}; break
+					}
+				})
+				return
+			}
 			newLists[key].forEach(item => {
 				const time1 = new Date(item[0]).getTime()
 				const time2 = new Date(item[1]).getTime()
@@ -47,21 +68,34 @@
 		})
 		timeArrs.value = atimeArrs
 	}
+	const getTimePeriodArr = (start, end, isBeApart, m) => {
+		// eslint-disable-next-line no-param-reassign
+		end = isBeApart ? (24 + end) : end
+
+		let timeArrs = []
+		let period = parseInt((end - start) / 8) + 1
+		timeArrs.push(start + ':' + m)
+		for( let i = 1; i<7; i++) {
+			timeArrs.push((i*period + start > 24 ? (i*period + start - 24 + ':00') : (i*period + start + ':00')))
+		}
+		timeArrs.push(end > 24 ? (end - 24 + ':00') : (end + ':00'))
+		return timeArrs
+	}
 </script>
 <template>
   <div class="timeline">
 		<div class="time-x-line">
 			<div v-for="(i, index) in timeLines" :key="i" :style="'width:' + parseInt(100 / timeLines.length) + '%'">
 				<p class="y-grid-line" :class="{ 'solid': index === 0 }"></p>
-				{{ i }}:00
+				{{ i }}
 			</div>
 			<div class="first-time-line">
 					<!-- 计划亮灯时间 -->
 					<div class="plan-on-light"></div>
 					<!-- 应亮未亮 -->
-					<div class="first-off-light" style="width: 10px;left: 10%"></div>
-					<div class="second-on-light" style="width: 20px;left: 30%"></div>
-					<div class="third-on-light" style="width: 30px;left: 50%"></div>
+					<div class="first-off-light" :style="{ 'left': firstOffLight.left + '%', 'width': firstOffLight.width }"></div>
+					<div class="second-on-light" :style="{ 'left': secondOnLight.left + '%', 'width': secondOnLight.width }"></div>
+					<div class="third-on-light" :style="{ 'left': thirdOnLight.left + '%', 'width': thirdOnLight.width }"></div>
 			</div>
 			<div class="second-time-line">
 				<template v-for="( item, index ) in timeArrs" :key="index">
@@ -69,14 +103,6 @@
 						
 					</div>
 				</template>
-				<!-- 断电时间 -->
-				<!-- <div class="outage-time" style="width: 20%;left: 0%"></div> -->
-				<!-- 实际亮灯 -->
-				<!-- <div class="real-on-time" style="width: 50px;left: 50px"></div> -->
-				<!-- 通电时间 -->
-				<!-- <div class="power-on-time" style="width: 50px;left: 100px"></div> -->
-				<!-- 未通电时间 -->
-				<!-- <div class="off-time" style="width: 50px;left: 150px"></div> -->
 			</div>
 		</div>
 		<div class="time-legend">
@@ -117,11 +143,11 @@
 				}
 			}
 			.first-time-line {
-				width: 100%;
+				width: 84%;
 				height: 12px;
 				// background-color: #3196FA;
 				position: absolute;
-				left: 7%;
+				left: 6%;
 				top: 10px;
 				> div {
 					position: absolute;
@@ -129,7 +155,7 @@
 					top: 0;
 				}
 				.plan-on-light {
-					width: 70%;
+					width: 100%;
 					background-color: #3196fa;
 					left: 0;
 				}
@@ -144,10 +170,10 @@
 				}
 			}
 			.second-time-line {
-				width: 80%;
+				width: 84%;
 				height: 12px;
 				position: absolute;
-				left: 7%;
+				left: 6%;
 				top: 25px;
 				> div {
 					position: absolute;
