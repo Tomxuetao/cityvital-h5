@@ -88,6 +88,8 @@ const setTabLists = () => {
 }
 
 setTabLists()
+
+const tempReg = /^https?\:\/\/[\w\-\.]+(\:\d+)?\//i
 /**
  * 获取设施的详情信息
  * @returns {Promise<void>}
@@ -99,17 +101,12 @@ const getDetailData = async () => {
       if (Array.isArray(dataList)) {
         const [data] = dataList
         detailData = Object.assign({}, data || {})
-        let PIC_URLS = ''
-        try {
-          PIC_URLS = detailData.PIC_URL
-            ? JSON.parse(detailData.PIC_URL)
-            : []
-        } catch {
-          PIC_URLS = detailData.PIC_URL ? [detailData.PIC_URL] : []
+        if (detailData.type === '开关箱') {
+          const tempImgList = JSON.parse(detailData.PIC_URL || '[]')
+          images.value = tempImgList.map(item => `/back-server/cv_data/api/v1/img/cityAppearance?path=${item.replace(tempReg, '/').replace('/pic/', '/')}`)
+        } else {
+          images.value = detailData.PIC_URL ?  [detailData.PIC_URL] : []
         }
-        images.value = PIC_URLS.map(img => {
-          return '/back-server/cv_data/api/v1/img/cityAppearance?path=' + img.replaceAll('http://172.18.6.65:8090/pic', '') + '&accessToken=' + sessionStorage.getItem('accessToken')
-        })
         setInnerCloums(dataList[0])
       }
     })
