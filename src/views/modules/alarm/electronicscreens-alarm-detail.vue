@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue'
+import { alarmLevelMap } from '@/config'
 import { commonGatewayApi } from '@/api/common-api'
-import { alarmLevelMap, dealStatusMap } from '@/config'
 
 import CommonTitle from '@/views/common/common-title.vue'
 import ElectronicscreensProcessCard from '@/views/modules/alarm/comp/electronicscreens-process-card.vue'

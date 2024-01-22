@@ -25,11 +25,15 @@ const props = defineProps({
   }
 })
 
+/**
+ * 卡片组建 Map
+ * @type {Map<number, any>}
+ */
 const cardCompsMap = new Map([
-  [2, CityCard],
-  [5, MetroCard],
   [0, WaterCard],
-  [3, MunicipCard]
+  [2, CityCard],
+  [3, MunicipCard],
+  [5, MetroCard]
 ])
 
 const commonState = useCommonStore()
@@ -44,6 +48,8 @@ const thirdTypeList = ref([])
 const curDate = dayjs().format('YYYY-MM-DD')
 const nextDate = dayjs().add(1, 'day').format('YYYY-MM-DD')
 
+const dateRange = ref([curDate, nextDate])
+
 let searchForm = reactive({
   alarming: 'true',
   itemName: undefined,
@@ -54,6 +60,12 @@ let searchForm = reactive({
   latestCheckStartTime: `${curDate} 00:00:00`
 })
 
+/**
+ * 组织搜索条件
+ * @param index
+ * @param secondIndex
+ * @returns {{sortTimeFiled: string, latestCheckStartTime: string, alarming: string, latestCheckEndTime: string, eventStatus: undefined, thirdType: undefined}|{start_time: string, end_time: string, item_name: undefined}}
+ */
 const computeSearchForm = (index = activeIndex.value, secondIndex = activeSecondIndex.value) => {
   let tempSearch
   if (index === 5) {
@@ -77,10 +89,14 @@ const computeSearchForm = (index = activeIndex.value, secondIndex = activeSecond
   return tempSearch
 }
 
-const dateRange = ref([new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)])
-
 const customListRef = ref()
 const isTabChange = ref(false)
+
+/**
+ * tab切换方法
+ * @param index - 激活索引
+ * @param level - 分类  1-二级分类、2-三级分类
+ */
 const tabChangeHandler = (index, level) => {
   activeSecondIndex.value = level === 2 ? index : 0
 
@@ -96,7 +112,7 @@ const tabChangeHandler = (index, level) => {
     latestCheckStartTime: `${curDate} 00:00:00`
   })
 
-  dateRange.value = [new Date(searchForm.latestCheckStartTime), new Date(searchForm.latestCheckEndTime)]
+  dateRange.value = [curDate, nextDate]
 
   const tempList = tabConfigList[level === 1 ? index : activeIndex.value].children
   if (tempList.length) {
@@ -109,6 +125,10 @@ const tabChangeHandler = (index, level) => {
   })
 }
 
+/**
+ * 获取领域分类
+ * @returns {Promise<void>}
+ */
 const getAreaDataList = async () => {
   areaDataList.value = await commonState.initAreaListAction()
   tabChangeHandler(activeIndex.value, 1)
@@ -119,8 +139,8 @@ watch(
   () => dateRange.value,
   (dateRange) => {
     const [start, end] = dateRange
-    searchForm.latestCheckEndTime = end ? `${dayjs(end).format('YYYY-MM-DD')} 00:00:00` : undefined
-    searchForm.latestCheckStartTime = start ? `${dayjs(start).format('YYYY-MM-DD')} 00:00:00` : undefined
+    searchForm.latestCheckEndTime = end ? `${end} 00:00:00` : undefined
+    searchForm.latestCheckStartTime = start ? `${start} 00:00:00` : undefined
   }
 )
 
@@ -175,7 +195,6 @@ watch(
                       <common-calendar
                         v-model="dateRange"
                         label="时间选择"
-                        :default-date="dateRange"
                       >
                       </common-calendar>
                       <common-sheet
@@ -202,7 +221,6 @@ watch(
                         <common-calendar
                           v-model="dateRange"
                           label="时间选择"
-                          :default-date="dateRange"
                         >
                         </common-calendar>
                         <common-sheet

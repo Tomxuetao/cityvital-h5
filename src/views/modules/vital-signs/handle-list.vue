@@ -1,5 +1,4 @@
 <script setup>
-import dayjs from 'dayjs'
 import { ref, watch } from 'vue'
 
 import CommonList from '@/views/common/common-list.vue'
@@ -23,25 +22,18 @@ const listConfig = {
 }
 
 const commonListRef = ref()
-const cellValue = ref('')
-const showCalendar = ref(false)
 
-const selectDateRange = ref([])
+const dateRange = ref([])
 
-const formatDate = (date, format = 'YYYY-MM-DD') => dayjs(date).format(format)
-
-watch(() => selectDateRange.value, (dateRange) => {
+watch(() => dateRange.value, (dateRange) => {
   const tempSearchForm = {
     endtime: undefined,
     begintime: undefined
   }
   if (dateRange.length > 1) {
     const [start, end] = dateRange
-    tempSearchForm.endtime = formatDate(end)
-    tempSearchForm.begintime = formatDate(start)
-    cellValue.value = `${tempSearchForm.begintime} - ${tempSearchForm.endtime}`
-  } else {
-    cellValue.value = ''
+    tempSearchForm.endtime = end
+    tempSearchForm.begintime = start
   }
   commonListRef.value.getDataList(tempSearchForm)
 }, { deep: true })
@@ -52,8 +44,9 @@ watch(() => selectDateRange.value, (dateRange) => {
   <div class="handle-list">
     <div class="list-inner">
       <div class="inner-header">
-        <common-title text="报警处置"></common-title>
-        <van-cell title="请选择开始结束日期" is-link :value="cellValue" @click="showCalendar = true"/>
+        <common-title text="报警处置">
+          <common-calendar v-model="dateRange" :show-label="true" label="请选择起始日期" format="YYYY-MM-DD"></common-calendar>
+        </common-title>
       </div>
       <div class="inner-ctx">
         <common-list :config="listConfig" ref="commonListRef">
@@ -63,7 +56,6 @@ watch(() => selectDateRange.value, (dateRange) => {
         </common-list>
       </div>
     </div>
-    <common-calendar :show-label="false" v-model="selectDateRange" v-model:show="showCalendar"/>
   </div>
 </template>
 

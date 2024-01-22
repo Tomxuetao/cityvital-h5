@@ -68,7 +68,7 @@ export default defineConfig({
         rewrite: (path) => path.replace(/^\/back-server/, '')
       },
       // 指标平台服务
-      '/gateway-server/cv_data': {
+      '/gateway-server': {
         secure: false,
         changeOrigin: true,
         target: 'https://ywtg.citybrain.hangzhou.gov.cn',

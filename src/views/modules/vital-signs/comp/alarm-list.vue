@@ -48,9 +48,9 @@ let searchForm = reactive({
 const formatDate = (date, format = 'YYYY-MM-DD HH:mm:ss') => dayjs(date).format(format)
 
 const commonListRef = ref()
-const defaultDateRange = ref([])
+const dateRange = ref([])
 
-watch(() => defaultDateRange.value, (dateRange) => {
+watch(() => dateRange.value, (dateRange) => {
   const tempDate = {
     latestCheckEndTime: undefined,
     latestCheckStartTime: undefined
@@ -77,7 +77,7 @@ watch(() => searchForm, () => {
           <template #custom-select>
             <div class="select-wrap">
               <common-calendar
-                v-model="defaultDateRange"
+                v-model="dateRange"
                 label="时间选择"
               >
               </common-calendar>

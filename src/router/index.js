@@ -200,6 +200,11 @@ router.beforeEach((to, from, next) => {
           getUserDataHandler('').then(() => {
             next()
           })
+        } else {
+          next({
+            replace: true,
+            name: 'no-access'
+          })
         }
       }
     }

@@ -30,7 +30,7 @@ const props = defineProps({
               name: data.extraMap?.factoryName,
               originType: originType,
               secondType: secondType,
-            },
+            }
           })
         "
       >

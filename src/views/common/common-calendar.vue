@@ -36,8 +36,9 @@ const [start, end] = props.modelValue
 
 const startYear = new Date().getFullYear() - 1
 
+const dateRange = ref(start ? [new Date(start), new Date(end)] : [])
 
-const formatDate = (date) => dayjs(date).format(props.format)
+const formatDate = (date, formatStr = '') => dayjs(date).format(formatStr || props.format)
 
 const selectName = ref(props.modelValue.length > 1 ? `${formatDate(start)} - ${formatDate(end)}` : props.label)
 
@@ -55,13 +56,16 @@ const onClear = () => {
 const onConfirm = (values) => {
   show.value = false
   const [start, end] = values
-  selectName.value = `${formatDate(start)} - ${formatDate(end)}`
+  const tempStart = formatDate(start)
+  const tempEnd = formatDate(end)
+  selectName.value = `${tempStart} - ${tempEnd}`
   onClose()
-  emit('update:modelValue', values)
+  emit('update:modelValue', [formatDate(start, 'YYYY-MM-DD'), formatDate(end, 'YYYY-MM-DD')])
 }
 
 watch(() => props.modelValue, (list) => {
   const [start, end] = list
+  dateRange.value = start ? [new Date(start), new Date(end)] : []
   selectName.value = list.length > 1 ? `${formatDate(start)} - ${formatDate(end)}` : props.label
 }, { deep: true })
 </script>
@@ -85,8 +89,9 @@ watch(() => props.modelValue, (list) => {
       :row-height="54"
       :show-mark="false"
       :lazy-render="true"
+      :default-date="dateRange"
       :max-date="new Date(nextDate)"
-      :min-date="new Date(startYear, 0, 0)"
+      :min-date="new Date(startYear, 0, 1)"
       v-bind="$attrs"
       @confirm="onConfirm"
     >

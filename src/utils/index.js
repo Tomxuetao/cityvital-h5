@@ -41,7 +41,7 @@ export const buildTree = (nodes, parentId, idKey = 'id', pidKey = 'pid') => {
   return tree
 }
 
-export const formatDate = (data, fmt='') => {
+export const formatDate = (data, fmt = '') => {
   let _data = null
   if (data instanceof Date) {
     _data = data

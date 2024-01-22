@@ -32,7 +32,7 @@ const props = defineProps({
               originType: originType,
               thirdType: data.model,
               secondType: secondType,
-            },
+            }
           })
         "
       >

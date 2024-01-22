@@ -186,8 +186,11 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
                 <div class="header-title">{{ ctx.title }}</div>
                 <div class="header-time">{{ ctx.time }}</div>
               </div>
-              <div :class="['header-status', ctx.isRead ? '' : 'status-read']" v-if="ctx.isRead !== undefined"
-                   @click="getReaderList(ctx)">
+              <div
+                v-if="ctx.isRead !== undefined"
+                :class="['header-status', ctx.isRead ? 'status-read' : '']"
+                @click="getReaderList(ctx)"
+              >
                 {{ ctx.isRead ? '已读' : '未读' }}
               </div>
             </div>
@@ -297,11 +300,11 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
               font-size: 12px;
               border-radius: 4px;
               line-height: 24px;
-              background-color: rgba(255, 240, 243, 1);
+              background-color: #FF5167;
             }
 
             .status-read {
-              background-color: #ffb251;;
+              background-color: #0482FF;;
             }
           }
 
@@ -313,7 +316,7 @@ const getReaderList = ({ unitId, taskNum, unitName }) => {
         }
       }
 
-      &:nth-child(-n + 2) {
+      &:not(:last-child) {
         .item-round {
           position: relative;
 
