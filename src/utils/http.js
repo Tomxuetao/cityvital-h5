@@ -1,6 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 import { showFailToast } from 'vant'
+import { TOKEN_KEY } from '@/utils/index'
 
 export function createHttp() {
   const http = axios.create({
@@ -18,10 +19,10 @@ export function createHttp() {
     (config) => {
       config.headers = Object.assign(
         {},
-        { ...config.headers },
         {
-          'Access-Token': sessionStorage.getItem('accessToken')
-        }
+          'Access-Token': sessionStorage.getItem(TOKEN_KEY)
+        },
+        { ...config.headers }
       )
       return config
     },
@@ -67,6 +68,8 @@ export function createHttp() {
 }
 
 export const http = createHttp()
+
+export const openApiServer = '/openapi'
 
 export const oauth2Server = '/oauth2'
 

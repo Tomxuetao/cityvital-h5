@@ -5,6 +5,7 @@ import { getImgUrlFn } from '@/utils'
 
 import { commonGatewayApi } from '@/api/common-api'
 import CommonTitle from '@/views/common/common-title.vue'
+import { useRouter } from 'vue-router'
 
 const getImgUrl = getImgUrlFn('../views/modules/manage/img')
 
@@ -31,7 +32,7 @@ const getAnalysisList = async (index = 0) => {
 getAnalysisList()
 
 const commandList = ref([
-  { text: '平时总览', img: getImgUrl('icon-1') },
+  { text: '平时总览', img: getImgUrl('icon-1'), routeName: 'regular-command'},
   { text: '受理事件数', num: '', unit: '' },
   { text: '结案事件数', num: '', unit: '' },
   { text: '战时指挥', img: getImgUrl('icon-2') },
@@ -98,6 +99,16 @@ const changeTab = (index) => {
     getAnalysisList(index)
   }
 }
+
+const router = useRouter()
+
+const gotoOtherRoute = ({ routeName }) => {
+  if (routeName) {
+    router.push({
+      name: routeName
+    })
+  }
+}
 </script>
 
 <template>
@@ -134,7 +145,12 @@ const changeTab = (index) => {
       <div class="inner-item">
         <common-title text="指挥协调"></common-title>
         <div class="item-wrap command-wrap">
-          <div class="command-item" v-for="(item, index) in commandList" :key="index">
+          <div
+            class="command-item"
+            v-for="(item, index) in commandList"
+            :key="index"
+            @click="gotoOtherRoute(item)"
+          >
             <template v-if="item.img">
               <img class="item-img" :src="item.img" alt="">
               <div class="item-title">{{ item.text }}</div>

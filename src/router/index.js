@@ -1,5 +1,5 @@
 import { getUserDataHandler } from '@/api/login-api'
-import { getEnvByUa } from '@/utils'
+import { getEnvByUa, TOKEN_KEY } from '@/utils'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const devRoutes = [
@@ -48,7 +48,7 @@ const devRoutes = [
     name: 'electronicScreens-alarm-detail',
     meta: { title: '报警详情' },
     props: (route) => ({ ...route.query }),
-    component: () => import('@/views/modules/alarm/electronicScreens-alarm-detail.vue')
+    component: () => import('@/views/modules/alarm/electronicscreens-alarm-detail.vue')
   },
   {
     path: '/vital-signs',
@@ -76,7 +76,7 @@ const devRoutes = [
     name: 'electronicScreens-detail',
     meta: { title: '户外电子屏详情' },
     props: (route) => ({ ...route.query }),
-    component: () => import('@/views/modules/vital-signs/electronicScreens-detail.vue')
+    component: () => import('@/views/modules/vital-signs/electronicscreens-detail.vue')
   },
   {
     path: '/municip-detail',
@@ -156,6 +156,13 @@ const devRoutes = [
     component: () => import('@/views/modules/manage/examine-list.vue')
   },
   {
+    path: '/regular-command',
+    name: 'regular-command',
+    meta: { title: '平时指挥' },
+    props: (route) => ({ ...route.query }),
+    component: () => import('@/views/modules/manage/regular-command.vue')
+  },
+  {
     path: '/no-access',
     name: 'no-access',
     meta: { title: '无访问权限' },
@@ -185,20 +192,28 @@ router.beforeEach((to, from, next) => {
   if (['no-access'].includes(to.name)) {
     next()
   } else {
-    const { token } = to.query
-    if (token) {
-      sessionStorage.setItem('accessToken', token)
-      next({
-        replace: true,
-        name: to.name
-      })
+    if (sessionStorage.getItem(TOKEN_KEY)) {
+      next()
     } else {
-      if (sessionStorage.getItem('accessToken')) {
-        next()
+      if (tempEnv !== 'h5') {
+        console.log('我进入了这政钉登录的逻辑')
+        getUserDataHandler().then(() => {
+          next()
+        }).catch((e) => {
+          console.log(e)
+          next({
+            replace: true,
+            name: 'no-access'
+          })
+        })
       } else {
-        if (tempEnv !== 'h5') {
-          getUserDataHandler('').then(() => {
-            next()
+        console.log('我进入了accessToken验证逻辑')
+        const { accessToken } = to.query
+        if (accessToken) {
+          sessionStorage.setItem(TOKEN_KEY, accessToken.toString())
+          next({
+            replace: true,
+            name: to.name
           })
         } else {
           next({

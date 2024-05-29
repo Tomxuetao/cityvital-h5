@@ -1,4 +1,5 @@
 import { createApp } from 'vue'
+import VConsole from 'vconsole'
 
 import App from './App.vue'
 
@@ -12,6 +13,8 @@ import 'vant/es/image-preview/style'
 
 import '@/assets/font/index.css'
 import '@/assets/scss/index.scss'
+
+new VConsole({ theme: 'dark' })
 
 const app = createApp(App)
 

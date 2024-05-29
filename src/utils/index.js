@@ -12,7 +12,7 @@ export const getEnvByUa = () => {
   return tempEnv
 }
 
-const imgRecords = import.meta.glob(['../views/modules/*/img/*', '../views/common/img/*'], { as: 'url', eager: true })
+const imgRecords = import.meta.glob(['../views/modules/*/img/*', '../views/common/img/*'], { query: '?url', import: 'default', eager: true })
 export const getImgUrlFn = (base) => {
   return (name, extName = '.webp') => imgRecords[`${base}/${name}${extName}`]
 }
@@ -83,3 +83,6 @@ export const getCurWeek = (formatStr = 'YYYY-MM-DD') => [
     .endOf('week')
     .format(formatStr)
 ]
+
+
+export const TOKEN_KEY = 'vital-h5'

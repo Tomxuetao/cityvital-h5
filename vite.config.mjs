@@ -26,6 +26,11 @@ export default defineConfig({
         changOrigin: true,
         target: 'http://10.54.38.116'
       },
+      '/openapi': {
+        secure: false,
+        changOrigin: true,
+        target: 'http://10.54.38.116'
+      },
       // 第三方图片
       '/taiyuan_rongliangfugai': {
         secure: false,

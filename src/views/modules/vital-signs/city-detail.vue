@@ -105,7 +105,7 @@ const getDetailData = async () => {
           const tempImgList = JSON.parse(detailData.PIC_URL || '[]')
           images.value = tempImgList.map(item => `/back-server/cv_data/api/v1/img/cityAppearance?path=${item.replace(tempReg, '/').replace('/pic/', '/')}`)
         } else {
-          images.value = detailData.PIC_URL ?  [detailData.PIC_URL] : []
+          images.value = detailData.PIC_URL ? [detailData.PIC_URL] : []
         }
         setInnerCloums(dataList[0])
       }
