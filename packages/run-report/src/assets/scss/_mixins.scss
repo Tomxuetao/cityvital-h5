@@ -1,0 +1,15 @@
+@mixin ellipsis($row: 1) {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-clamp: $row;
+  word-break: break-all;
+  -webkit-line-clamp: $row;
+  -webkit-box-orient: vertical;
+}
+
+@mixin text-gradient($gradient) {
+  color: transparent;
+  background-clip: text;
+  background-image: $gradient;
+}
