@@ -1,7 +1,7 @@
 import globals from 'globals'
 import pluginJs from '@eslint/js'
-import pluginVue from 'eslint-plugin-vue'
 import { readFileSync } from 'node:fs'
+import pluginVue from 'eslint-plugin-vue'
 
 const autoImportFile = new URL('./auto-import.json', import.meta.url)
 const autoImportGlobals = JSON.parse(readFileSync(autoImportFile, 'utf8'))
@@ -49,6 +49,6 @@ export default [
         }
       ]
     },
-    ignores: ['node_modules', 'dist', '*.d.ts', '.husky', './src/**/*.d.ts']
+    ignores: ['node_modules', 'dist', 'components.d.ts', 'auto-imports.d.ts', '.husky', './src/**/*.d.ts']
   }
 ]

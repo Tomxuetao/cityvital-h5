@@ -13,9 +13,7 @@ export const getEnvByUa = () => {
 }
 
 const imgRecords = import.meta.glob(['../views/modules/*/img/*', '../views/common/img/*'], { query: '?url', import: 'default', eager: true })
-export const getImgUrlFn = (base) => {
-  return (name, extName = '.webp') => imgRecords[`${base}/${name}${extName}`]
-}
+export const getImgUrlFn = (base) => (name, extName = '.webp') => imgRecords[`${base}/${name}${extName}`]
 
 /**
  * 构建树形结构

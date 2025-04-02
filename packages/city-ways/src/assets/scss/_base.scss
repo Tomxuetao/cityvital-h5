@@ -1,0 +1,56 @@
+*,
+*:before,
+*:after {
+  user-select: none;
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.15;
+  color: #303133;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+}
+
+img {
+  user-select: none;
+  pointer-events: none;
+  vertical-align: middle;
+}
+
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+
+.clearfix:after {
+  clear: both;
+}
+
+
+.status-1 {
+  background-color: rgba(4, 130, 255, 1);
+}
+
+.status-2 {
+  background-color: rgba(4, 130, 255, 1);
+}
+
+.status-3 {
+  background-color: rgba(1, 193, 163, 1);
+}
+
+.status-4 {
+  background-color: rgba(1, 193, 163, 1);
+}
+
+.status-5 {
+  background-color: rgba(245, 118, 14, 1);
+}
+

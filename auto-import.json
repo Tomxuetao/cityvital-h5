@@ -75,6 +75,9 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true
+    "watchSyncEffect": true,
+    "CustomMarker": true,
+    "registerCustomElement": true,
+    "CustomMarkerCtx": true
   }
 }

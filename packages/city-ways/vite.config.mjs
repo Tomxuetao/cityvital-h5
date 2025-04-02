@@ -18,9 +18,7 @@ export default defineConfig({
   plugins: [
     vue(),
     legacy({
-      targets: ['defaults', 'not IE 11'],
-      modernPolyfills: ['es.promise.finally'],
-      polyfills: ['es.promise.finally', 'es/map', 'es/set']
+      targets: ['defaults', 'not IE 11']
     }),
     visualizer({
       open: true,
@@ -54,6 +52,7 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
+        additionalData: '@use "@/assets/scss/_mixins" as *;'
       }
     }
   },
@@ -74,7 +73,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          'vue': ['vue']
+          'vue': ['vue'],
+          'vue-router': ['vue-router']
         }
       }
     }

@@ -4,8 +4,15 @@
     "rootDir": ".",
     "paths": {
       "@/*": ["packages/*/src"]
-    }
+    },
+    "moduleResolution": "nodenext"
   },
-  "exclude": ["packages/*/node_modules", "packages/*/dist"],
-  "include": ["packages/*/src"]
+  "include": [
+    "packages/*/src",
+    "components.d.ts",
+    "auto-imports.d.ts",
+    "packages/*/components.d.ts",
+    "packages/*/auto-imports.d.ts"
+  ],
+  "exclude": ["packages/*/node_modules", "packages/*/dist"]
 }

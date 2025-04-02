@@ -6,9 +6,9 @@
 
 <style scoped lang="scss">
 .site-wrap {
-  position: relative;
-  width: 100vw;
   height: 100vh;
+  width: 375px;
+  position: relative;
   background-color: #185891;
 }
 </style>

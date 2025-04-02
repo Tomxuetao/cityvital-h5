@@ -6,6 +6,8 @@
 // biome-ignore lint: disable
 export {}
 declare global {
+  const CustomMarker: typeof import('./src/views/common/index.js')['CustomMarker']
+  const CustomMarkerCtx: typeof import('./src/views/common/index.js')['CustomMarkerCtx']
   const EffectScope: typeof import('vue')['EffectScope']
   const computed: typeof import('vue')['computed']
   const createApp: typeof import('vue')['createApp']
@@ -43,6 +45,7 @@ declare global {
   const reactive: typeof import('vue')['reactive']
   const readonly: typeof import('vue')['readonly']
   const ref: typeof import('vue')['ref']
+  const registerCustomElement: typeof import('./src/views/common/index.js')['registerCustomElement']
   const resolveComponent: typeof import('vue')['resolveComponent']
   const shallowReactive: typeof import('vue')['shallowReactive']
   const shallowReadonly: typeof import('vue')['shallowReadonly']

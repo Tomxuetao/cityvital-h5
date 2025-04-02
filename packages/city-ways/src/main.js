@@ -1,9 +1,11 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-
 import router from './router'
+import '@/assets/scss/index.scss'
 
-import 'normalize.css/normalize.css'
+import { registerCustomElement } from '@/views/common'
+
+registerCustomElement()
 
 const app = createApp(App)
 
