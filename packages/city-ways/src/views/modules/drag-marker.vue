@@ -55,8 +55,9 @@ const saveUpdateStyle = async () => {
 <style scoped lang="scss">
 .drag-marker {
   width: 375px;
-  height: 100vh;
-  background-size: 100% 100%;
+  height: 100%;
+  background-size: contain;
+  background-position: center;
   background-repeat: no-repeat;
 
   .marker-wrap {
