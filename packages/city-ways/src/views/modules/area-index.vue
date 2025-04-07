@@ -1,0 +1,42 @@
+<script setup>
+import { useCommonStore } from '@/store'
+import { areaIndexMap, getImgUrlFn } from '@/utils'
+import CommonMarker from '@/views/common/common-marker.vue'
+
+const getImg = getImgUrlFn('../assets/img')
+
+const route = useRoute()
+const commonState = useCommonStore()
+
+const dataList = ref([])
+const getDataList = async () => {
+  const tempList = await commonState.initDataAction() || []
+
+  dataList.value = tempList.filter(item => item.area === areaIndexMap.get(+route.params.index)) || []
+}
+
+getDataList()
+</script>
+
+<template>
+  <div class="area-index" :style="{backgroundImage: `url(${getImg(`img-${route.params.index}`)})`}">
+    <div class="marker-wrap">
+      <common-marker v-for="(item, index) in dataList" :data="item" :key="index"></common-marker>
+    </div>
+  </div>
+</template>
+
+<style scoped lang="scss">
+.area-index {
+  width: 375px;
+  height: 100vh;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+
+  .marker-wrap {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+}
+</style>

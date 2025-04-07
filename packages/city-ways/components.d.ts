@@ -9,10 +9,12 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     CommonLegend: typeof import('./src/views/common/common-legend.vue')['default']
+    CommonMarker: typeof import('./src/views/common/common-marker.vue')['default']
     CommonPopup: typeof import('./src/views/common/common-popup.vue')['default']
     'CustomMarker.ce': typeof import('./src/views/common/custom-marker.ce.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VanActionSheet: typeof import('vant/es')['ActionSheet']
     VanConfigProvider: typeof import('vant/es')['ConfigProvider']
     VanImage: typeof import('vant/es')['Image']
     VanPopup: typeof import('vant/es')['Popup']

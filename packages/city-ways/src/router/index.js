@@ -5,7 +5,19 @@ const devRoutes = [
     path: '/home',
     name: 'home',
     meta: { title: '首页' },
-    component: () => import('../views/modules//home/index.vue')
+    component: () => import('../views/modules//home.vue')
+  },
+  {
+    path: '/area-index/:index?',
+    name: 'area-index',
+    meta: { title: '<UNK>' },
+    component: () => import('../views/modules/area-index.vue')
+  },
+  {
+    path: '/drag-marker/:index?',
+    name: 'drag-marker',
+    meta: { title: '<UNK>' },
+    component: () => import('../views/modules/drag-marker.vue')
   }
 ]
 const routes = [

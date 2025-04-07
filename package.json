@@ -10,12 +10,14 @@
     "version": "changeset version",
     "commit": "git add . && git-cz",
     "preinstall": "npx only-allow pnpm",
+    "pushpkg": "node scripts/deploy.mjs",
     "dev": "pnpm -r --filter='./packages/*' run dev",
     "build": "pnpm -r --filter='./packages/*' run build",
     "dev:city-ways": "pnpm --dir packages/city-ways dev",
     "dev:cityvital": "pnpm --dir packages/cityvital dev",
     "dev:run-report": "pnpm --dir packages/run-report dev",
-    "lint": "eslint ./packages/**/src --ext .js,.ts,.tsx,.mjs,.cjs --fix"
+    "lint": "eslint ./packages/**/src --ext .js,.ts,.tsx,.mjs,.cjs --fix",
+    "build:city-ways": "pnpm -r --filter='./packages/city-ways' run build"
   },
   "repository": {
     "type": "git",
@@ -26,18 +28,20 @@
     "@changesets/cli": "^2.28.1",
     "@commitlint/cli": "^18.6.1",
     "@commitlint/config-conventional": "^18.6.3",
-    "@eslint/js": "^9.23.0",
+    "@eslint/js": "^9.24.0",
     "@vant/auto-import-resolver": "^1.3.0",
     "@vitejs/plugin-legacy": "^6.0.2",
     "@vitejs/plugin-vue": "^5.2.3",
-    "eslint": "^9.23.0",
+    "eslint": "^9.24.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-vue": "^10.0.0",
+    "execa": "^9.5.2",
     "git-cz": "^4.9.0",
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "nano-staged": "^0.8.0",
-    "vue-eslint-parser": "^10.1.1"
+    "vconsole": "^3.15.1",
+    "vue-eslint-parser": "^10.1.3"
   },
   "nano-staged": {
     "*.{vue,js,ts}": "eslint --fix"

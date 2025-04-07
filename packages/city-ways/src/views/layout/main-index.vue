@@ -9,6 +9,8 @@
   height: 100vh;
   width: 375px;
   position: relative;
-  background-color: #185891;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-image: url("@/assets/img/img-bg.webp");
 }
 </style>

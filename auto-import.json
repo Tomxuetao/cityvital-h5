@@ -78,6 +78,7 @@
     "watchSyncEffect": true,
     "CustomMarker": true,
     "registerCustomElement": true,
-    "CustomMarkerCtx": true
+    "CustomMarkerCtx": true,
+    "showSuccessToast": true
   }
 }

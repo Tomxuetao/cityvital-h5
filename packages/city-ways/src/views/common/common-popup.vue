@@ -17,22 +17,44 @@ defineProps({
 const descList = [
   { label: '城区：', key: 'area' },
   { label: '街道：', key: 'street' },
-  { label: '营业时间：', key: 'hours' },
+  { label: '营业时间：', key: 'busHours' },
   { label: '业态类型：', key: 'type' },
   { label: '摊位个数：', key: 'num' },
   { label: '业态分布：', key: 'dist' },
-  { label: '点位介绍：', key: 'desc' }
+  { label: '点位介绍：', key: 'intro' }
 ]
 
-const gotoGaoDeNav = (data) => {
-  const { title, center } = data
-  window.location.href = `https://uri.amap.com/marker?position=${center.join(',')}&name=${title}&src=manpage&coordinate=gaode&callnative=1`
-}
+const showSheet = ref(false)
 
-const gotoBaiduNav = (data) => {
-  const { title, center } = data
-  const baiduCenter = gcoord.transform(center, gcoord.GCJ02, gcoord.BD09)
-  window.location.href = `https://api.map.baidu.com/marker?location=${baiduCenter[1]},${baiduCenter[0]}&title=${title}&content=${title}&output=html`
+const navHandlerMap = new Map([
+  [
+    '高德地图',
+    (data) => {
+      const { title, center } = data
+      window.location.href = `https://uri.amap.com/marker?position=${center.join(',')}&name=${title}&src=manpage&coordinate=gaode&callnative=1`
+    }
+  ],
+  [
+    '百度地图',
+    (data) => {
+      const { title, center } = data
+      const baiduCenter = gcoord.transform(center, gcoord.GCJ02, gcoord.BD09)
+      window.location.href = `https://api.map.baidu.com/marker?location=${baiduCenter[1]},${baiduCenter[0]}&title=${title}&content=${title}&output=html`
+    }
+  ],
+  [
+    '腾讯地图',
+    (data) => {
+      const { title, center, address } = data
+      window.location.href = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${center[1]},${center[0]};title:${title};addr:${address}&referer=myapp`
+    }
+  ]
+])
+
+const gotoNavHandler = (action, data) => {
+  showSheet.value = false
+  const gotoNav = navHandlerMap.get(action.name)
+  gotoNav(data)
 }
 </script>
 
@@ -57,7 +79,8 @@ const gotoBaiduNav = (data) => {
       <div class="inner-ctx">
         <div class="ctx-wrap">
           <div class="ctx-title">
-            <span>{{ data.title }}</span>
+            <div class="title-icon"></div>
+            <div class="title-text">{{ data.name }}</div>
           </div>
           <div class="desc-wrap">
             <div class="desc-inner">
@@ -67,20 +90,19 @@ const gotoBaiduNav = (data) => {
               </div>
             </div>
           </div>
-          <div class="goto-btns">
-            <div class="goto-btn" @click="gotoBaiduNav(data)">
-              <img class="btn-img" src="@/assets/img/icon-baidu.webp" alt="">
-              <div class="btn-text">导航前往</div>
-            </div>
-            <div class="goto-btn" @click="gotoGaoDeNav(data)">
-              <img class="btn-img" src="@/assets/img/icon-gaode.webp" alt="">
-              <div class="btn-text">导航前往</div>
-            </div>
-          </div>
+          <div class="goto-nav" @click="showSheet = true">导航前往</div>
         </div>
       </div>
     </div>
   </van-popup>
+
+  <van-action-sheet
+    cancel-text="取消"
+    v-model:show="showSheet"
+    @select="(action) => gotoNavHandler(action, data)"
+    :actions="[...navHandlerMap.keys()].map(item => ({ name: item}))"
+  >
+  </van-action-sheet>
 </template>
 
 <style scoped lang="scss">
@@ -128,26 +150,26 @@ const gotoBaiduNav = (data) => {
         grid-template-rows: 28px 1fr 44px;
 
         .ctx-title {
-          position: relative;
           height: 28px;
+          display: grid;
+          grid-gap: 0 8px;
           line-height: 28px;
-          font-size: 18px;
-          font-weight: 500;
-          color: #333333;
-          @include ellipsis(1);
+          position: relative;
+          align-items: center;
+          grid-auto-flow: column;
+          grid-template-columns: max-content;
 
-          span {
-            padding-left: 10px;
-          }
-
-          &:before {
-            position: absolute;
-            content: '';
+          .title-icon {
             height: 14px;
             width: 4px;
-            top: 50%;
-            transform: translate(0, -50%);
             background-image: linear-gradient(180deg, rgba(78, 162, 255, 1), rgba(46, 107, 255, 1));
+          }
+
+          .title-text {
+            color: #333333;
+            font-size: 18px;
+            font-weight: 500;
+            @include ellipsis(1);
           }
         }
 
@@ -178,36 +200,18 @@ const gotoBaiduNav = (data) => {
 
         }
 
-        .goto-btns {
-          display: grid;
-          margin: 0 14px;
-          grid-gap: 0 16px;
-          grid-auto-flow: column;
-
-          .goto-btn {
-            display: grid;
-            grid-gap: 0 8px;
-            align-items: center;
-            grid-auto-flow: column;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 8px;
-            background-color: rgba(6, 115, 255, 1);
-
-            .btn-img {
-              width: 24px;
-              height: 24px;
-              object-fit: cover;
-            }
-
-            .btn-text {
-              font-size: 18px;
-              color: #ffffff;
-            }
-          }
+        .goto-nav {
+          font-size: 18px;
+          color: #ffffff;
+          cursor: pointer;
+          line-height: 44px;
+          border-radius: 8px;
+          text-align: center;
+          background-color: rgba(6, 115, 255, 1);
         }
       }
     }
   }
 }
 </style>
+

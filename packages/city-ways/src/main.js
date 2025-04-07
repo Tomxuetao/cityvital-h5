@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import App from './App.vue'
+import store from './store'
 import router from './router'
 import '@/assets/scss/index.scss'
 
@@ -9,4 +10,4 @@ registerCustomElement()
 
 const app = createApp(App)
 
-app.use(router).mount('#app')
+app.use(store).use(router).mount('#app')

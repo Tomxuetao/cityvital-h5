@@ -14,6 +14,19 @@ export default defineConfig({
   server: {
     open: false,
     host: true,
+    proxy: {
+      '/venus-data': {
+        secure: true,
+        changeOrigin: true,
+        target: 'https://tomxuetao.xyz'
+      },
+      '/venus-api': {
+        secure: true,
+        changeOrigin: true,
+        target: 'https://tomxuetao.xyz/venus-api',
+        rewrite: (path) => path.replace(/^\/venus-api/, '')
+      }
+    }
   },
   plugins: [
     vue(),

@@ -1,4 +1,6 @@
 <script setup>
+import { getTypeIconSrc } from '@/utils'
+
 defineProps({
   data: {
     type: Object,
@@ -15,8 +17,8 @@ defineProps({
 
 <template>
   <div class="custom-marker">
-    <img class="marker-img" :src="data.icon" alt="">
-    <div class="marker-title">{{ data.title }}</div>
+    <img class="marker-img" :src="getTypeIconSrc(data.type)" alt="">
+    <div class="marker-title">{{ data.name }}</div>
   </div>
 </template>
 
