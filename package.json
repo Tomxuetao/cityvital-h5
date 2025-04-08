@@ -16,8 +16,10 @@
     "dev:city-ways": "pnpm --dir packages/city-ways dev",
     "dev:cityvital": "pnpm --dir packages/cityvital dev",
     "dev:run-report": "pnpm --dir packages/run-report dev",
-    "lint": "eslint ./packages/**/src --ext .js,.ts,.tsx,.mjs,.cjs --fix",
-    "build:city-ways": "pnpm -r --filter='./packages/city-ways' run build"
+    "build:cityvital": "pnpm --dir packages/cityvital build",
+    "build:city-ways": "pnpm --dir packages/city-ways build",
+    "build:run-report": "pnpm --dir packages/run-report build",
+    "lint": "eslint ./packages/**/src --ext .js,.ts,.tsx,.mjs,.cjs --fix"
   },
   "repository": {
     "type": "git",
