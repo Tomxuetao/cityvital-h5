@@ -69,11 +69,12 @@ const gotoNavHandler = (action, data) => {
     class="custom-popup"
     :lock-scroll="false"
     @click-overlay="emit('close')"
+    @click-close-icon="emit('close')"
   >
-    <div class="popup-inner">
-      <van-swipe class="inner-swipe" :autoplay="5000">
+    <div :class="['popup-inner', data.imgList.length > 0 ? 'popup-inner-imgs' : '']">
+      <van-swipe v-if="data.imgList.length" class="inner-swipe" :autoplay="5000">
         <van-swipe-item class="swiper-item" v-for="(item, index) in data.imgList" :key="index">
-          <van-image class="item-img" :src="item.url"></van-image>
+          <van-image class="item-img" :src="item.src"></van-image>
         </van-swipe-item>
       </van-swipe>
       <div class="inner-ctx">
@@ -119,7 +120,10 @@ const gotoNavHandler = (action, data) => {
     display: grid;
     grid-auto-flow: row;
     pointer-events: all;
-    grid-template-rows: 170px 1fr;
+
+    &-imgs {
+      grid-template-rows: 170px 1fr;
+    }
 
     .inner-swipe {
       height: 170px;

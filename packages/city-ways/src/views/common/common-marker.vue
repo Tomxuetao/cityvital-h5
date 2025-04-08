@@ -1,6 +1,5 @@
 <script setup>
 import { getTypeIconSrc } from '@/utils'
-import CommonPopup from '@/views/common/common-popup.vue'
 
 const props = defineProps({
   data: {
@@ -77,13 +76,6 @@ const dragHandle = (draggable) => {
   }, { passive: false })
 }
 
-const showPopup = ref(false)
-
-const popupShow = () => {
-  if (!props.draggable) {
-    showPopup.value = true
-  }
-}
 onMounted(() => {
   if (props.draggable) {
     dragHandle(domRef.value)
@@ -92,21 +84,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="domRef" class="custom-marker" :draggable="draggable" :style="{ top: data.y, left: data.x}" @click="popupShow()">
+  <div ref="domRef" class="common-marker" :draggable="draggable" :style="{ top: data.y, left: data.x}">
     <img class="marker-img" :src="getTypeIconSrc(data.type)" alt="">
     <div class="marker-title">{{ data.name }}</div>
-    <common-popup
-      v-if="showPopup"
-      v-model="showPopup"
-      :data="data"
-      @close="showPopup = false"
-    >
-    </common-popup>
   </div>
 </template>
 
 <style scoped lang="scss">
-.custom-marker {
+.common-marker {
   position: absolute;
   display: grid;
   grid-gap: 0 4px;

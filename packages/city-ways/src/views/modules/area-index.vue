@@ -6,6 +6,7 @@ import CommonMarker from '@/views/common/common-marker.vue'
 const getImg = getImgUrlFn('../assets/img')
 
 const route = useRoute()
+const router = useRouter()
 const commonState = useCommonStore()
 
 const dataList = ref([])
@@ -16,12 +17,18 @@ const getDataList = async () => {
 }
 
 getDataList()
+
 </script>
 
 <template>
   <div class="area-index" :style="{backgroundImage: `url(${getImg(`img-${route.params.index}`)})`}">
     <div class="marker-wrap">
-      <common-marker v-for="(item, index) in dataList" :data="item" :key="index"></common-marker>
+      <common-marker
+        v-for="(item, index) in dataList"
+        :data="item" :key="index"
+        @click="router.push({ path: `/real-map/${item.id}`})"
+      >
+      </common-marker>
     </div>
   </div>
 </template>

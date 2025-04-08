@@ -1,9 +1,5 @@
-import { getImgUrlFn } from '@/utils'
 import { commonApi } from '@/api/common-api'
 import { defineStore, createPinia } from 'pinia'
-
-const getImg = getImgUrlFn('../assets/img')
-const imgList = [{ url: getImg('detail-0') }, { url: getImg('detail-1') }]
 
 export const useCommonStore = defineStore('common', {
   state: () => ({
@@ -21,8 +17,8 @@ export const useCommonStore = defineStore('common', {
           this.dataList = tempList.map(item => {
             return {
               ...item,
-              imgList: imgList,
-              center: [item.lng, item.lat]
+              center: [item.lng, item.lat],
+              imgList: item.files ? (JSON.parse(item.files) || []) : []
             }
           })
         }
