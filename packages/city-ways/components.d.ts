@@ -13,6 +13,7 @@ declare module 'vue' {
     CommonPopup: typeof import('./src/views/common/common-popup.vue')['default']
     CommonSearch: typeof import('./src/views/common/common-search.vue')['default']
     'CustomMarker.ce': typeof import('./src/views/common/custom-marker.ce.vue')['default']
+    IndexMarker: typeof import('./src/views/common/index-marker.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     VanActionSheet: typeof import('vant/es')['ActionSheet']

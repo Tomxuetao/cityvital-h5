@@ -17,11 +17,13 @@ const getDataList = async () => {
 }
 
 getDataList()
-
 </script>
 
 <template>
   <div class="area-index" :style="{backgroundImage: `url(${getImg(`img-${route.params.index}`)})`}">
+    <div class="title-wrap">
+      <img class="title-img" :src="getImg(`img-title-${route.params.index}`)" alt=""/>
+    </div>
     <div class="marker-wrap">
       <common-marker
         v-for="(item, index) in dataList"
@@ -37,9 +39,22 @@ getDataList()
 .area-index {
   width: 375px;
   height: 100%;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+
+  .title-wrap {
+    position: absolute;
+    top: 42px;
+    left: 45%;
+    transform: translateX(-50%);
+
+    .title-img {
+      width: 259px;
+      height: 102px;
+      object-fit: contain;
+    }
+  }
 
   .marker-wrap {
     width: 100%;

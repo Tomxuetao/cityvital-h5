@@ -2,7 +2,7 @@
   "name": "cityvital-h5",
   "private": true,
   "version": "0.0.0",
-  "packageManager": "pnpm@10.5.2",
+  "packageManager": "pnpm@10.8.0",
   "scripts": {
     "prepare": "husky",
     "changeset": "changeset",

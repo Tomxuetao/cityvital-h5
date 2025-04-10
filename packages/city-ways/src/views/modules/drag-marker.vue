@@ -1,7 +1,10 @@
 <script setup>
 import { useCommonStore } from '@/store'
 import { commonApi } from '@/api/common-api'
-import { areaIndexMap, getImgUrlFn } from '@/utils'
+import {
+ areaIndexMap, getImgUrlFn, dragMarkerHandle 
+} from '@/utils'
+
 import CommonMarker from '@/views/common/common-marker.vue'
 
 const getImg = getImgUrlFn('../assets/img')
@@ -14,6 +17,14 @@ const getDataList = async () => {
   const tempList = await commonState.initDataAction() || []
 
   dataList.value = tempList.filter(item => item.area === areaIndexMap.get(+route.params.index)) || []
+
+  nextTick(() => {
+    const elements = document.querySelectorAll('[data-id]')
+    console.log(elements)
+    elements.forEach(item => {
+      dragMarkerHandle(item)
+    })
+  })
 }
 
 getDataList()
@@ -39,14 +50,26 @@ const saveUpdateStyle = async () => {
 <template>
   <div class="drag-marker" :style="{backgroundImage: `url(${getImg(`img-${route.params.index}`)})`}">
     <div class="marker-wrap">
-      <common-marker
-        v-for="(item, index) in dataList"
-        :data="item"
-        :key="index"
-        :draggable="true"
-        :data-id="item.id"
-      >
-      </common-marker>
+      <template v-if="route.params.index !== '0'">
+        <common-marker
+          v-for="(item, index) in dataList"
+          :data="item"
+          :key="index"
+          draggable="true"
+          :data-id="item.id"
+        >
+        </common-marker>
+      </template>
+      <template v-else>
+        <index-marker
+          v-for="(item, index) in dataList"
+          :data="item"
+          :key="index"
+          draggable="true"
+          :data-id="item.id"
+        >
+        </index-marker>
+      </template>
     </div>
     <div class="save-btn" @click="saveUpdateStyle()">保存更改</div>
   </div>
@@ -56,7 +79,7 @@ const saveUpdateStyle = async () => {
 .drag-marker {
   width: 375px;
   height: 100%;
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
