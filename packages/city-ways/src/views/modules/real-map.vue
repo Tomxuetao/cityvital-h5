@@ -13,7 +13,7 @@ const activeData = reactive({})
 const commonState = useCommonStore()
 
 const initMarkerLayer = (dataList) => {
-  const markerLayer = createMarkerLayer(dataList)
+  const markerLayer = createMarkerLayer(dataList.filter(item => item.area !== '杭州市'))
   markerLayer.on('click', ({ target }) => {
     showPopup.value = true
     Object.assign(activeData, target.getExtData())

@@ -30,23 +30,23 @@ const navHandlerMap = new Map([
   [
     '高德地图',
     (data) => {
-      const { title, center } = data
-      window.location.href = `https://uri.amap.com/marker?position=${center.join(',')}&name=${title}&src=manpage&coordinate=gaode&callnative=1`
+      const { name, center } = data
+      window.location.href = `https://uri.amap.com/marker?position=${center.join(',')}&name=${name}&src=manpage&coordinate=gaode&callnative=1`
     }
   ],
   [
     '百度地图',
     (data) => {
-      const { title, center } = data
+      const { name, center } = data
       const baiduCenter = gcoord.transform(center, gcoord.GCJ02, gcoord.BD09)
-      window.location.href = `https://api.map.baidu.com/marker?location=${baiduCenter[1]},${baiduCenter[0]}&title=${title}&content=${title}&output=html`
+      window.location.href = `https://api.map.baidu.com/marker?location=${baiduCenter[1]},${baiduCenter[0]}&title=${name}&content=${name}&output=html`
     }
   ],
   [
     '腾讯地图',
     (data) => {
-      const { title, center, address } = data
-      window.location.href = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${center[1]},${center[0]};title:${title};addr:${address}&referer=myapp`
+      const { name, center, address } = data
+      window.location.href = `https://apis.map.qq.com/uri/v1/marker?marker=coord:${center[1]},${center[0]};title:${name};addr:${address}&referer=myapp`
     }
   ]
 ])
