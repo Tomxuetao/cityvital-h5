@@ -10,6 +10,13 @@ export const useCommonStore = defineStore('common', {
       this.dataList = list
     },
 
+    updateDataById(data) {
+      const tempData = this.dataList.find(item => item.id === data?.id)
+      if (tempData) {
+        Object.assign(tempData, data)
+      }
+    },
+
     async initDataAction() {
       if (this.dataList?.length === 0) {
         const tempList = await commonApi('/city/site/list')

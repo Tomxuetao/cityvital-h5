@@ -24,6 +24,18 @@ const devRoutes = [
     name: 'drag-marker',
     meta: { title: '拖拽点位' },
     component: () => import('../views/modules/drag-marker.vue')
+  },
+  {
+    path: 'site-list',
+    name: 'site-list',
+    meta: { title: '点位列表' },
+    component: () => import('../views/modules/site-list.vue')
+  },
+  {
+    path: 'site-detail/:id',
+    name: 'site-detail',
+    meta: { title: '点位详情' },
+    component: () => import('../views/modules/site-detail.vue')
   }
 ]
 const routes = [
