@@ -30,15 +30,17 @@ export const markerConfigMap = new Map([
   ['滨江区', { name: '滨江区', index: 3, color: '#4abbaf', anchor: 'top' }],
   ['萧山区', { name: '萧山区', index: 3, color: '#f5af16', anchor: 'top' }],
   ['余杭区', { name: '余杭区', index: 3, color: '#6d5ca6', anchor: 'left' }],
+  ['临平区', { name: '临平区', index: 3, color: '#6eba3a', anchor: 'left' }],
+  ['钱塘区', { name: '钱塘区', index: 3, color: '#4abbaf', anchor: 'top' }],
   ['富阳区', { name: '富阳区', index: 3, color: '#6eba3a', anchor: 'left' }],
   ['临安区', { name: '临安区', index: 3, color: '#f5af16', anchor: 'bottom' }],
-  ['钱塘区', { name: '钱塘区', index: 3, color: '#4abbaf', anchor: 'top' }],
-  ['临平区', { name: '临平区', index: 3, color: '#6eba3a', anchor: 'left' }],
   ['桐庐县', { name: '桐庐县', index: 3, color: '#dc5873', anchor: 'left' }],
   ['淳安县', { name: '淳安县', index: 3, color: '#6d5ca6', anchor: 'right' }],
   ['建德市', { name: '建德市', index: 3, color: '#ed6a1a', anchor: 'left' }],
-  ['西湖景区', { name: '西湖景区', index: 3, color: '#6eba3a', anchor: 'right' }]
+  ['西湖风景名胜区', { name: '西湖风景名胜区', index: 3, color: '#6eba3a', anchor: 'right' }]
 ])
+
+export const areaSet = new Set([...markerConfigMap.keys()])
 
 export const areaIndexMap = new Map([...markerConfigMap.values()].map((item) => [item.index, item.name]))
 

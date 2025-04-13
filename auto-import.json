@@ -79,6 +79,8 @@
     "CustomMarker": true,
     "registerCustomElement": true,
     "CustomMarkerCtx": true,
-    "showSuccessToast": true
+    "showSuccessToast": true,
+    "Slot": true,
+    "Slots": true
   }
 }

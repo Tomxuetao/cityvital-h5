@@ -6,11 +6,9 @@ import router from '@/router'
 
 let mapInstance
 const route = useRoute()
-
 const showPopup = ref(false)
-const activeData = reactive({})
-
 const commonState = useCommonStore()
+const activeData = reactive({})
 
 const initMarkerLayer = (dataList) => {
   const markerLayer = createMarkerLayer(dataList.filter(item => item.area !== '杭州市'))
@@ -41,13 +39,13 @@ const initMap = () => {
   mapInstance = new AMap.Map('map-ctx', {
     pitch: 0,
     zoom: 12,
+    layers: [],
     zooms: [8, 20],
     mapStyle: '',
     dragEnable: true,
     pitchEnable: false,
     doubleClickZoom: false,
-    center: [119.533452, 29.877637],
-    layers: []
+    center: [119.533452, 29.877637]
   })
 }
 
@@ -60,7 +58,11 @@ const executeSearch = (searchForm) => {
   const overlays = mapInstance.getAllOverlays('marker')
 
   overlays.forEach(overlay => {
-    if (overlay.getExtData().name.includes(searchForm.name || '')) {
+    const { name, area, type } = overlay.getExtData()
+    if (name.includes(searchForm.name || '')
+      && area.includes(searchForm.area || '')
+      && type.includes(searchForm.type || '')
+    ) {
       overlay.show()
     } else {
       overlay.hide()

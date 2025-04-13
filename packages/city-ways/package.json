@@ -16,7 +16,7 @@
     "axios": "^1.8.4",
     "gcoord": "^1.0.7",
     "normalize.css": "^8.0.1",
-    "pinia": "^3.0.1",
+    "pinia": "^3.0.2",
     "vant": "^4.9.18",
     "vue": "^3.5.13",
     "vue-router": "^4.5.0"
@@ -35,7 +35,7 @@
     "unplugin-auto-import": "^19.1.2",
     "unplugin-vue-components": "^28.4.1",
     "vconsole": "^3.15.1",
-    "vite": "^6.2.5",
+    "vite": "^6.2.6",
     "vite-plugin-compression": "^0.5.1"
   },
   "browserslist": [
