@@ -82,10 +82,7 @@ onMounted(() => {
       <common-search @search="executeSearch"></common-search>
     </div>
     <div class="map-btns">
-      <div class="btn-item btn-item-back" @click="router.back()">
-        <div class="back-text">烟火</div>
-        <div class="back-text">地图</div>
-      </div>
+      <div class="btn-item btn-item-back" @click="router.back()"></div>
     </div>
   </div>
   <common-popup
@@ -146,22 +143,10 @@ onMounted(() => {
       &-back {
         width: 36px;
         height: 36px;
-        color: #ffffff;
-        font-size: 12px;
-        text-align: center;
-        border-radius: 50%;
-        display: grid;
-        grid-auto-flow: row;
-        align-items: center;
-        align-content: center;
-        justify-items: center;
-        justify-content: center;
-        background-color: royalblue;
-        grid-template-rows: max-content max-content;
-
-        .back-text {
-          line-height: 12px;
-        }
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-image: url("@/assets/img/img-map.webp");
       }
     }
   }

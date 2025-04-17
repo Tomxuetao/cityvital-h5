@@ -40,6 +40,7 @@ getDataList()
 .map-wrap {
   width: 375px;
   height: 100%;
+  position: relative;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -61,6 +62,17 @@ getDataList()
     width: 100%;
     height: 100%;
     position: relative;
+  }
+
+  &:after {
+    width: 375px;
+    height: 100%;
+    content: '';
+    top: 0;
+    position: absolute;
+    background-size: cover;
+    background-position: center;
+    background-image: url("@/assets/img/img-bird.gif");
   }
 }
 </style>
