@@ -25,7 +25,8 @@ export const useCommonStore = defineStore('common', {
             return {
               ...item,
               center: [item.lng, item.lat],
-              imgList: item.files ? (JSON.parse(item.files) || []) : []
+              imgList: item.files ? (JSON.parse(item.files) || []) : [],
+              area: item.area === '西湖景区' ? '西湖风景名胜区' : item.area
             }
           })
         }

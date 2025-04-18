@@ -30,7 +30,7 @@ const getDataList = async () => {
     Object.assign(activeData, dataList.value.find(item => item.id === route.params.id))
   }
 
-  initMarkerLayer(dataList.value)
+  initMarkerLayer(dataList.value.filter(item => item.lng && item.lat))
 }
 
 getDataList()

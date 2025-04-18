@@ -14,8 +14,10 @@ const getDataList = async () => {
 
 getDataList()
 
+const activeKey = ref('')
 const executeSearch = (searchForm) => {
   dataList.value = allList.value.filter(({ name, area, type }) => name.includes(searchForm.name || '') && area.includes(searchForm.area || '') && type.includes(searchForm.type || ''))
+  activeKey.value = JSON.stringify(searchForm)
 }
 </script>
 
@@ -24,7 +26,7 @@ const executeSearch = (searchForm) => {
     <van-sticky>
       <common-search @search="executeSearch"></common-search>
     </van-sticky>
-    <common-list v-if="dataList.length" v-model="dataList">
+    <common-list v-if="dataList.length" v-model="dataList" :key="activeKey">
       <template #card-item="{ data }">
         <common-card :data="data" @click="router.push({ path: `/site-detail/${data.id}`})"></common-card>
       </template>

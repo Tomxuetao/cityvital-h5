@@ -35,7 +35,7 @@
     "unplugin-auto-import": "^19.1.2",
     "unplugin-vue-components": "^28.5.0",
     "vconsole": "^3.15.1",
-    "vite": "^6.3.1",
+    "vite": "^6.3.2",
     "vite-plugin-compression": "^0.5.1"
   },
   "browserslist": [

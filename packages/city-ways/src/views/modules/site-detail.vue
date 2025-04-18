@@ -1,7 +1,12 @@
 <script setup>
+import { http } from '@/utils/http'
 import { useCommonStore } from '@/store'
+import { commonApi } from '@/api/common-api'
 
 const route = useRoute()
+const router  = useRouter()
+
+const imgList = ref([])
 const dataList = ref([])
 const commonState = useCommonStore()
 
@@ -22,8 +27,6 @@ const dataForm = reactive({
   busHours: undefined
 })
 
-const imgList = ref([])
-
 const getDataList = async () => {
   const tempList = await commonState.initDataAction() || []
   dataList.value = tempList.filter(item => item.area !== '杭州市')
@@ -32,7 +35,8 @@ const getDataList = async () => {
     imgList.value = JSON.parse(dataForm.files || '[]').map((item) => {
       return {
         url: item.src,
-        isImage: true
+        isImage: true,
+        imgForm: item
       }
     })
   }
@@ -40,8 +44,29 @@ const getDataList = async () => {
 
 getDataList()
 
-const onSubmit = () => {
+const uploadFile = async (item) => {
+  const data = await http.postForm('/venus-api/city/site/upload', { file: item.file })
+  Object.assign(item, { imgForm: data })
+  console.log(data)
+}
 
+const onAfterRead = async (data) => {
+  console.log(data)
+  await uploadFile(data)
+}
+
+const onSubmit = async () => {
+  const tempList = imgList.value.map((item) => item.imgForm)
+  dataForm.files = JSON.stringify(tempList || '')
+  await commonApi('/city/site/update', dataForm, {
+    method: 'put'
+  })
+
+
+  commonState.updateDataById(Object.assign(dataForm, { imgList: tempList }))
+  showSuccessToast('修改成功')
+
+  await router.push({ name: 'site-list' })
 }
 </script>
 
@@ -70,11 +95,6 @@ const onSubmit = () => {
           label="详细地址"
         />
         <van-field
-          v-model="dataForm.busHours"
-          name="busHours"
-          label="营业时间"
-        />
-        <van-field
           v-model="dataForm.type"
           name="type"
           label="业态类型"
@@ -83,6 +103,11 @@ const onSubmit = () => {
           v-model="dataForm.dist"
           name="dist"
           label="业态分布"
+        />
+        <van-field
+          v-model="dataForm.busHours"
+          name="busHours"
+          label="营业时间"
         />
         <van-field
           v-model="dataForm.intro"
@@ -101,7 +126,11 @@ const onSubmit = () => {
         </van-field>
         <van-field name="uploader" label="文件上传">
           <template #input>
-            <van-uploader v-model="imgList" />
+            <van-uploader
+              v-model="imgList"
+              accept="image/*"
+              :after-read="onAfterRead"
+            />
           </template>
         </van-field>
       </van-cell-group>

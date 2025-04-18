@@ -7,6 +7,15 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    CommonBar: typeof import('./src/views/common/common-bar.vue')['default']
+    CommonCalendar: typeof import('./src/views/common/common-calendar.vue')['default']
+    CommonField: typeof import('./src/views/common/common-field.vue')['default']
+    CommonList: typeof import('./src/views/common/common-list.vue')['default']
+    CommonRing: typeof import('./src/views/common/common-ring.vue')['default']
+    CommonSheet: typeof import('./src/views/common/common-sheet.vue')['default']
+    CommonTabs: typeof import('./src/views/common/common-tabs.vue')['default']
+    CommonTitle: typeof import('./src/views/common/common-title.vue')['default']
+    EmptyPage: typeof import('./src/views/common/empty-page.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     VanActionSheet: typeof import('vant/es')['ActionSheet']

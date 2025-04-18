@@ -13,7 +13,7 @@ const dataList = ref([])
 const getDataList = async () => {
   const tempList = await commonState.initDataAction() || []
 
-  dataList.value = tempList.filter(item => item.area === areaIndexMap.get(+route.params.index)) || []
+  dataList.value = tempList.filter(item => item.area === areaIndexMap.get(+route.params.index) && item.isShow === 1) || []
 }
 
 getDataList()

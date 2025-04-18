@@ -2,7 +2,9 @@
 import { useCommonStore } from '@/store'
 import { commonApi } from '@/api/common-api'
 import {
- areaIndexMap, getImgUrlFn, dragMarkerHandle 
+  getImgUrlFn,
+  areaIndexMap,
+  dragMarkerHandle
 } from '@/utils'
 
 import CommonMarker from '@/views/common/common-marker.vue'
